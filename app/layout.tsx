@@ -9,6 +9,7 @@ import "@fontsource/noto-naskh-arabic/700.css";
 import "@fontsource-variable/manrope";
 import "@fontsource-variable/cormorant-garamond";
 import "./globals.css";
+import "./wisal-atlas.css";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://wisal-wedding.vercel.app";
 
@@ -48,7 +49,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" dir="ltr">
-      <body>{children}</body>
+      <body>
+        <template
+          data-impeccable-contract="1917206f"
+          dangerouslySetInnerHTML={{
+            __html: `<!--
+THESIS: Wisal is a celestial guest atlas, not a pastel wedding-template catalogue.
+OWN-WORLD: Plum-black observatory fields, cold ivory type, copper instruments, ruled rails, and one luminous invitation plate.
+STORY: Couples see invitation craft and guest control as one system, trust the workflow, then begin their invitation.
+FIRST VIEWPORT: Copy occupies the left third; a large copper astrolabe owns the right, holding the invitation while an RSVP rail crosses its lower edge. The primary action sits beneath the headline.
+FORM: Celestial Guest Atlas, first in the chosen ordered direction set; seed 1917206f.
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+-->`,
+          }}
+        />
+        {children}
+      </body>
     </html>
   );
 }

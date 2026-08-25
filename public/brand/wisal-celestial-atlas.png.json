@@ -1,0 +1,10 @@
+{
+  "asset": "wisal-celestial-atlas.png",
+  "generator": "OpenAI image generation",
+  "createdFor": "Wisal Celestial Guest Atlas marketing hero",
+  "sourceReference": ".impeccable/mocks/decision/assigned.png",
+  "promptSummary": "A production hero render of a monumental Egyptian-inspired copper astronomical instrument on a uniform near-black plum field, without people, logos, or readable text.",
+  "materialRole": "hero focal instrument",
+  "approvedDirectionSeed": "1917206f",
+  "generated": true
+}

@@ -17,7 +17,7 @@ test("the public experience exposes an accessible language switcher", () => {
   assert.match(pageSource, /className="locale-switch"/);
   assert.match(pageSource, /Switch to English/);
   assert.match(pageSource, /التبديل إلى العربية/);
-  assert.match(pageSource, /No real payment will be requested/);
+  assert.match(pageSource, /Online payment stays paused while the platform is tested/);
 });
 
 test("LTR uses explicit direction-aware layout overrides", () => {

@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-25T16:29:43.0811438+03:00",
+  "title": "Design System: Wisal Celestial Guest Atlas",
+  "extensions": {
+    "colorMeta": {
+      "observatory-black": { "role": "neutral", "displayName": "Observatory Black", "canonical": "#120914", "tonalRamp": ["oklch(15% 0.030 326)", "oklch(25% 0.030 326)", "oklch(35% 0.028 326)", "oklch(47% 0.024 326)", "oklch(59% 0.020 326)", "oklch(71% 0.015 326)", "oklch(83% 0.010 326)", "oklch(95% 0.004 326)"] },
+      "raised-plum": { "role": "neutral", "displayName": "Raised Plum", "canonical": "#1a0d1d", "tonalRamp": ["oklch(15% 0.035 326)", "oklch(25% 0.035 326)", "oklch(35% 0.032 326)", "oklch(47% 0.028 326)", "oklch(59% 0.023 326)", "oklch(71% 0.017 326)", "oklch(83% 0.011 326)", "oklch(95% 0.004 326)"] },
+      "softened-plum": { "role": "neutral", "displayName": "Softened Plum", "canonical": "#211126", "tonalRamp": ["oklch(15% 0.040 326)", "oklch(25% 0.040 326)", "oklch(35% 0.037 326)", "oklch(47% 0.032 326)", "oklch(59% 0.026 326)", "oklch(71% 0.019 326)", "oklch(83% 0.012 326)", "oklch(95% 0.004 326)"] },
+      "cold-ivory": { "role": "neutral", "displayName": "Cold Ivory", "canonical": "#f6efe7", "tonalRamp": ["oklch(15% 0.010 68)", "oklch(25% 0.012 68)", "oklch(35% 0.014 68)", "oklch(47% 0.016 68)", "oklch(59% 0.018 68)", "oklch(71% 0.020 68)", "oklch(83% 0.021 68)", "oklch(95% 0.020 68)"] },
+      "starlight-muted": { "role": "neutral", "displayName": "Starlight Muted", "canonical": "#b9aeb9", "tonalRamp": ["oklch(15% 0.014 326)", "oklch(25% 0.016 326)", "oklch(35% 0.018 326)", "oklch(47% 0.020 326)", "oklch(59% 0.021 326)", "oklch(71% 0.021 326)", "oklch(83% 0.018 326)", "oklch(95% 0.008 326)"] },
+      "instrument-copper": { "role": "primary", "displayName": "Instrument Copper", "canonical": "#d79261", "tonalRamp": ["oklch(15% 0.055 52)", "oklch(25% 0.075 52)", "oklch(35% 0.095 52)", "oklch(47% 0.115 52)", "oklch(59% 0.130 52)", "oklch(71% 0.125 52)", "oklch(83% 0.090 52)", "oklch(95% 0.030 52)"] },
+      "luminous-copper": { "role": "primary", "displayName": "Luminous Copper", "canonical": "#efad76", "tonalRamp": ["oklch(15% 0.060 55)", "oklch(25% 0.080 55)", "oklch(35% 0.100 55)", "oklch(47% 0.120 55)", "oklch(59% 0.135 55)", "oklch(71% 0.130 55)", "oklch(83% 0.095 55)", "oklch(95% 0.032 55)"] },
+      "copper-rule": { "role": "primary", "displayName": "Copper Rule", "canonical": "rgba(215, 146, 97, .28)", "tonalRamp": ["oklch(15% 0.035 52)", "oklch(25% 0.050 52)", "oklch(35% 0.065 52)", "oklch(47% 0.080 52)", "oklch(59% 0.090 52)", "oklch(71% 0.085 52)", "oklch(83% 0.060 52)", "oklch(95% 0.022 52)"] },
+      "ivory-rule": { "role": "neutral", "displayName": "Ivory Rule", "canonical": "rgba(246, 239, 231, .12)", "tonalRamp": ["oklch(15% 0.004 68)", "oklch(25% 0.006 68)", "oklch(35% 0.008 68)", "oklch(47% 0.010 68)", "oklch(59% 0.012 68)", "oklch(71% 0.014 68)", "oklch(83% 0.014 68)", "oklch(95% 0.008 68)"] },
+      "invitation-paper": { "role": "secondary", "displayName": "Invitation Paper", "canonical": "#eee4da", "tonalRamp": ["oklch(15% 0.012 63)", "oklch(25% 0.016 63)", "oklch(35% 0.020 63)", "oklch(47% 0.024 63)", "oklch(59% 0.027 63)", "oklch(71% 0.029 63)", "oklch(83% 0.028 63)", "oklch(95% 0.018 63)"] },
+      "invitation-ink": { "role": "secondary", "displayName": "Invitation Ink", "canonical": "#28162a", "tonalRamp": ["oklch(15% 0.038 326)", "oklch(25% 0.042 326)", "oklch(35% 0.042 326)", "oklch(47% 0.038 326)", "oklch(59% 0.031 326)", "oklch(71% 0.022 326)", "oklch(83% 0.014 326)", "oklch(95% 0.005 326)"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Celestial Display", "purpose": "First-viewport thesis and dominant English propositions." },
+      "headline": { "displayName": "Editorial Headline", "purpose": "Section propositions and final calls to action." },
+      "arabic-display": { "displayName": "Arabic Celestial Display", "purpose": "Native Arabic display copy with directionally correct metrics." },
+      "body": { "displayName": "English Operational Body", "purpose": "Manrope for English explanations, feature descriptions, controls, and supporting prose." },
+      "arabic-body": { "displayName": "Arabic Operational Body", "purpose": "IBM Plex Sans Arabic for directionally correct Arabic explanations, feature descriptions, controls, and supporting prose." },
+      "label": { "displayName": "Instrument Label", "purpose": "Direction-aware Manrope or IBM Plex Sans Arabic for actions, metadata, prices, and live state." }
+    },
+    "shadows": [
+      { "name": "action-lift", "value": "0 16px 34px rgba(7, 3, 9, .26)", "purpose": "Compact lift beneath the primary copper action." },
+      { "name": "instrument-falloff", "value": "drop-shadow(0 34px 64px rgba(4, 1, 6, .38))", "purpose": "Separates the copper astronomical instrument from the plum field." },
+      { "name": "invitation-object", "value": "0 22px 70px rgba(6, 2, 8, .54), inset 0 0 0 7px #eee4da, inset 0 0 0 8px rgba(70, 35, 50, .18)", "purpose": "Makes the invitation plate read as printed and physically mounted." },
+      { "name": "response-overlay", "value": "0 22px 54px rgba(5, 2, 7, .42)", "purpose": "Lifts live RSVP and proof overlays above media." }
+    ],
+    "motion": [
+      { "name": "reveal-ease", "value": "cubic-bezier(.16, 1, .3, 1)", "purpose": "Settled entrance motion for copy, instrument, invitation, rail, and template media." },
+      { "name": "navigation-ease", "value": "cubic-bezier(.2, .8, .2, 1)", "purpose": "Copper underline reveal in desktop navigation." },
+      { "name": "state-fast", "value": ".22s ease", "purpose": "Primary button hover and press feedback." },
+      { "name": "media-drift", "value": ".8s cubic-bezier(.16, 1, .3, 1)", "purpose": "Restrained template-image scale on hover." }
+    ],
+    "breakpoints": [
+      { "name": "desktop-compact", "value": "1100px" },
+      { "name": "tablet-stack", "value": "900px" },
+      { "name": "mobile", "value": "600px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Atlas Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The singular copper action used to begin or advance invitation creation.",
+      "html": "<button class=\"ds-atlas-primary\">Create your invitation <span aria-hidden=\"true\">→</span></button>",
+      "css": ".ds-atlas-primary { min-height: 50px; padding: 0 21px; border: 1px solid #d79261; border-radius: 4px; background: #d79261; color: #28162a; font: 750 12px/1 'Manrope', 'Segoe UI', Arial, sans-serif; letter-spacing: .02em; box-shadow: 0 16px 34px rgba(7,3,9,.26); transition: transform .22s ease, background-color .22s ease; } .ds-atlas-primary span { margin-inline-start: 16px; } .ds-atlas-primary:hover { background: #efad76; transform: translateY(-2px); } .ds-atlas-primary:active { transform: translateY(1px) scale(.99); } .ds-atlas-primary:focus-visible { outline: 2px solid #efad76; outline-offset: 4px; }"
+    },
+    {
+      "name": "Atlas Text Link",
+      "kind": "button",
+      "refersTo": "button-link",
+      "description": "A quiet underlined route paired with, but visually subordinate to, the primary action.",
+      "html": "<button class=\"ds-atlas-link\">Explore templates</button>",
+      "css": ".ds-atlas-link { min-height: 44px; padding: 0 0 2px; border: 0; border-bottom: 1px solid rgba(215,146,97,.28); border-radius: 0; background: transparent; color: #f6efe7; font: 650 12px/1 'Manrope', 'Segoe UI', Arial, sans-serif; } .ds-atlas-link:hover { border-bottom-color: #efad76; } .ds-atlas-link:focus-visible { outline: 2px solid #efad76; outline-offset: 4px; }"
+    },
+    {
+      "name": "Observatory Navigation",
+      "kind": "nav",
+      "description": "Small ivory navigation whose copper rule appears only on interaction.",
+      "html": "<nav class=\"ds-atlas-nav\" aria-label=\"Primary\"><button>Templates</button><button>How it works</button><button>Plans</button></nav>",
+      "css": ".ds-atlas-nav { display: flex; gap: 32px; padding: 0 24px; border-bottom: 1px solid rgba(246,239,231,.12); background: rgba(18,9,20,.88); } .ds-atlas-nav button { position: relative; min-height: 56px; padding: 0; border: 0; background: transparent; color: #f6efe7; font: 400 12px/1 'Manrope', 'Segoe UI', Arial, sans-serif; letter-spacing: .04em; } .ds-atlas-nav button::after { content: ''; position: absolute; right: 0; bottom: 10px; left: 0; height: 1px; background: #d79261; transform: scaleX(0); transition: transform .24s cubic-bezier(.2,.8,.2,1); } .ds-atlas-nav button:hover::after, .ds-atlas-nav button:focus-visible::after { transform: scaleX(1); } .ds-atlas-nav button:focus-visible { outline: 2px solid #efad76; outline-offset: 4px; }"
+    },
+    {
+      "name": "Invitation Plate",
+      "kind": "card",
+      "refersTo": "invitation-plate",
+      "description": "The luminous invitation artifact mounted inside the darker celestial instrument.",
+      "html": "<article class=\"ds-invitation\"><small>WITH LOVE, WE INVITE YOU</small><h2>Layla<span>&amp;</span>Kareem</h2><p>Saturday, 18 October 2026</p><p>Nile Palace, Cairo</p><button>RSVP</button></article>",
+      "css": ".ds-invitation { width: 240px; aspect-ratio: .72; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 28px 20px; border: 1px solid rgba(215,146,97,.74); border-radius: 4px; background: #eee4da; color: #28162a; text-align: center; box-shadow: 0 22px 70px rgba(6,2,8,.54), inset 0 0 0 7px #eee4da, inset 0 0 0 8px rgba(70,35,50,.18); } .ds-invitation small { color: #725f68; font: 400 9px/1 'Manrope', 'Segoe UI', Arial, sans-serif; letter-spacing: .08em; } .ds-invitation h2 { display: grid; margin: 22px 0 18px; color: #2b172d; font: 560 48px/.67 'Cormorant Garamond', Georgia, serif; } .ds-invitation h2 span { color: #a45939; font-size: .46em; font-style: italic; line-height: 1.1; } .ds-invitation p { margin: 3px 0; color: #67535f; font: 400 9px/1.3 'Manrope', 'Segoe UI', Arial, sans-serif; letter-spacing: .04em; } .ds-invitation button { min-height: 40px; margin-top: 22px; padding: 0 20px; border: 1px solid #6c3940; border-radius: 3px; background: transparent; color: #4c2632; font: 750 10px/1 'Manrope', 'Segoe UI', Arial, sans-serif; transition: background-color .2s ease, color .2s ease; } .ds-invitation button:hover { background: #4c2632; color: #f5ece4; } .ds-invitation button:focus-visible { outline: 2px solid #efad76; outline-offset: 4px; }"
+    },
+    {
+      "name": "Live RSVP Rail",
+      "kind": "custom",
+      "refersTo": "response-rail",
+      "description": "A signature status rail that binds guest response data to the invitation artifact.",
+      "html": "<aside class=\"ds-rsvp\"><span><small>LIVE RESPONSE EXAMPLE</small><b>41 of 68</b></span><div class=\"ds-rsvp-line\"><i></i><i></i><i></i></div><span class=\"ds-rsvp-status\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"m8 12 2.5 2.5L16 9\"/></svg><small>Confirmed</small></span></aside>",
+      "css": ".ds-rsvp { width: 360px; min-height: 74px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 18px; padding: 15px 18px; border: 1px solid rgba(215,146,97,.28); border-radius: 4px; background: rgba(24,11,27,.9); color: #f6efe7; box-shadow: 0 22px 54px rgba(5,2,7,.42); backdrop-filter: blur(14px); font-family: 'Manrope', 'Segoe UI', Arial, sans-serif; } .ds-rsvp span { display: grid; gap: 4px; } .ds-rsvp small { color: #b9aeb9; font-size: 8px; } .ds-rsvp b { font-size: 15px; } .ds-rsvp-line { position: relative; height: 1px; background: rgba(215,146,97,.28); } .ds-rsvp-line i { position: absolute; top: 50%; width: 7px; height: 7px; border: 1px solid #d79261; border-radius: 50%; background: #1a0d1d; transform: translate(-50%,-50%); } .ds-rsvp-line i:nth-child(1) { left: 12%; } .ds-rsvp-line i:nth-child(2) { left: 54%; background: #d79261; } .ds-rsvp-line i:nth-child(3) { left: 88%; } .ds-rsvp-status { justify-items: center; color: #efad76; }"
+    },
+    {
+      "name": "Orbit Journey Step",
+      "kind": "custom",
+      "description": "A ruled workflow step with a copper circular marker, serif title, and quiet operational copy.",
+      "html": "<article class=\"ds-orbit-step\"><span class=\"ds-orbit-icon\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.4\" aria-hidden=\"true\"><path d=\"M4 5h16v14H4zM9 5v14M9 10h11\"/></svg></span><div><h3>Choose the template</h3><p>Begin with a design that suits the celebration.</p></div></article>",
+      "css": ".ds-orbit-step { position: relative; width: 460px; min-height: 142px; display: grid; grid-template-columns: 60px 1fr; gap: 28px; padding: 12px 0 40px; color: #f6efe7; font-family: 'Manrope', 'Segoe UI', Arial, sans-serif; } .ds-orbit-step::before { content: ''; position: absolute; top: 54px; bottom: 0; left: 20px; width: 1px; background: rgba(215,146,97,.28); } .ds-orbit-icon { position: relative; z-index: 1; width: 42px; height: 42px; display: grid; place-items: center; border: 1px solid #d79261; border-radius: 50%; background: #1a0d1d; color: #efad76; } .ds-orbit-step h3 { margin: 2px 0 13px; font: 540 36px/1 'Cormorant Garamond', Georgia, serif; } .ds-orbit-step p { max-width: 360px; margin: 0; color: #b9aeb9; font-size: 13px; line-height: 1.8; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Celestial Guest Atlas",
+    "overview": "Wisal presents invitation craft and guest control as one composed instrument. Plum-black observatory fields make the interface feel ceremonial without becoming ornamental; copper rules, orbit markers, and one luminous invitation plate turn operational RSVP information into part of the same visual story.\n\nThe world is editorial, nocturnal, and precise. It avoids the soft gradients, florals, pill-heavy controls, and interchangeable pastel cards of a generic wedding-template catalogue. Its drama comes from scale, sparse light, and working-instrument geometry rather than decoration.",
+    "keyCharacteristics": [
+      "A near-black plum field with cold ivory type and copper used as a scarce navigational signal.",
+      "Large, low-leading serif headlines balanced by compact, highly legible interface labels.",
+      "Ruled rails and circular orbit marks that make guest status feel measured and live.",
+      "One pale invitation plate held inside the darker system as the principal luminous object.",
+      "Complete LTR and RTL composition, with Arabic display typography treated as a native mode."
+    ],
+    "rules": [
+      { "name": "The Copper Is an Instrument Rule", "body": "Copper indicates action, measurement, or a live state; it is never sprayed across large decorative surfaces.", "section": "colors" },
+      { "name": "The One Light Plate Rule", "body": "Pale invitation paper belongs to the invitation artifact. The surrounding product interface remains dark so the crafted object keeps its authority.", "section": "colors" },
+      { "name": "The Two Voices Rule", "body": "Serif type carries ceremony and propositions; sans-serif type carries instructions, controls, evidence, prices, and state.", "section": "typography" },
+      { "name": "The Instrument Owns the Air Rule", "body": "Do not center the hero into two equal cards. Preserve the imbalance between concise copy and the large working visual.", "section": "layout" },
+      { "name": "The Physical Object Rule", "body": "If a surface is not an object or an overlay, separate it with tone and rules rather than a shadow.", "section": "elevation" },
+      { "name": "The Square Control Rule", "body": "Calls to action and functional overlays use compact corners, not soft capsules.", "section": "shapes" }
+    ],
+    "dos": [
+      "Do preserve the plum-black field, cold ivory hierarchy, and sparse copper signal across new marketing sections.",
+      "Do use rules, axes, orbit marks, and asymmetric grids to organize dense information.",
+      "Do let one crafted invitation or artifact dominate a composition while operational proof crosses or frames it.",
+      "Do mirror composition and directional arrows for RTL, and switch Arabic display copy to Noto Naskh Arabic with its own leading.",
+      "Do honor reduced-motion and reduced-transparency preferences without weakening hierarchy."
+    ],
+    "donts": [
+      "Don't turn Wisal into a pastel wedding-template catalogue, floral mood board, or grid of interchangeable rounded cards.",
+      "Don't use copper as a large background wash; its rarity is what makes action and measurement legible.",
+      "Don't introduce pill-shaped primary controls or excessive corner rounding into the atlas world.",
+      "Don't add unverified testimonials, customer counts, conversion claims, or payment capability as visual proof.",
+      "Don't animate continuously. Entry motion should reveal hierarchy, settle, and disappear."
+    ]
+  }
+}

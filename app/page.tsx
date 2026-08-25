@@ -477,106 +477,112 @@ function Landing({ locale, plans, templates, content, onStart, onGuest, onChoose
   const copy = (key: string, fallbackAr: string, fallbackEn: string) => content[key]?.[ar ? "ar" : "en"] || (ar ? fallbackAr : fallbackEn);
   const signatureTemplates = ["love-poem", "garden-night", "cinema-night"].map((code) => templates.find((template) => template.code === code)).filter(Boolean) as PublicTemplate[];
   return (
-    <>
-      <section className="hero">
-        <div className="hero-copy">
-          <span className="eyebrow"><i /> {copy("hero_eyebrow", "مساحتكم الخاصة للاحتفال", "Your private celebration space")}</span>
-          <h1>{ar ? <>تفاصيل فرحتكم،<br /><em>مجتمعة بأجمل صورة.</em></> : <>Your celebration,<br /><em>beautifully gathered.</em></>}</h1>
-          <p>{ar ? "مساحة زفاف خاصة تجمع كل تفصيلة، وكل ضيف، وكل تأكيد حضور." : "Create a private wedding space for every detail, every guest, and every yes."}</p>
-          <div className="hero-actions">
-            <button className="primary" onClick={onStart}>{copy("hero_primary_cta", "أنشئ دعوتك", "Create your invitation")} <span>{ar ? "←" : "→"}</span></button>
-            <button className="text-button" onClick={() => document.getElementById("templates")?.scrollIntoView({ behavior: "smooth" })}>{ar ? "استكشف القوالب" : "Explore templates"} <span>{ar ? "←" : "→"}</span></button>
-          </div>
-          <div className="trust-row">
-            <span><Icon>✓</Icon> {ar ? "بدون خبرة تصميم" : "No design skills needed"}</span>
-            <span><Icon>⌁</Icon> {ar ? "رابط خاص وآمن" : "Private, secure link"}</span>
-            <span><Icon>♡</Icon> {ar ? "تجربة عربية وإنجليزية" : "Arabic and English ready"}</span>
+    <div className="atlas-home">
+      <section className="atlas-hero">
+        <div className="atlas-hero-copy">
+          <h1>{ar ? <>كل ضيوفكم.<br /><em>في مدار واحد.</em></> : <>Every guest.<br /><em>In perfect orbit.</em></>}</h1>
+          <p className="atlas-intro">{ar ? "دعوة خاصة وإدارة حضور هادئة، صُممتا لتعملا معًا." : "A private invitation and calm RSVP control, designed as one."}</p>
+          <div className="atlas-actions">
+            <button className="atlas-primary" onClick={onStart}>{copy("hero_primary_cta", "أنشئ دعوتك", "Create your invitation")} <span aria-hidden="true">{ar ? "←" : "→"}</span></button>
+            <button className="atlas-link" onClick={() => document.getElementById("templates")?.scrollIntoView({ behavior: "smooth" })}>{ar ? "استكشف القوالب" : "Explore templates"}</button>
           </div>
         </div>
 
-        <div className="hero-visual" aria-label={ar ? "معاينة دعوة زفاف رقمية" : "Digital wedding invitation preview"}>
-          <div className="orb orb-one" /><div className="orb orb-two" />
-          <div className="invite-card">
-            <span className="floral floral-top">❧</span>
-            <small>{ar ? "بكل الحب ندعوكم لمشاركتنا" : "With love, we invite you to celebrate"}</small>
-            <h2>{ar ? "ليلى" : "Layla"} <b>&</b> {ar ? "كريم" : "Kareem"}</h2>
-            <div className="date-line"><span /> {ar ? "السبت · ١٨ أكتوبر ٢٠٢٦" : "Saturday · 18 October 2026"} <span /></div>
-            <p>{ar ? "قصر النيل · القاهرة" : "Nile Palace · Cairo"}</p>
+        <div className="atlas-stage" aria-label={ar ? "دعوة داخل أداة فلكية نحاسية" : "Invitation composed within a copper astronomical instrument"}>
+          <Image className="atlas-instrument" src="/brand/wisal-celestial-atlas.png" width={1448} height={1086} priority sizes="(max-width: 900px) 100vw, 68vw" alt="" unoptimized />
+          <article className="atlas-invitation">
+            <small>{ar ? "بكل الحب ندعوكم" : "With love, we invite you"}</small>
+            <h2>{ar ? "ليلى" : "Layla"}<span>&amp;</span>{ar ? "كريم" : "Kareem"}</h2>
+            <p>{ar ? "السبت، ١٨ أكتوبر ٢٠٢٦" : "Saturday, 18 October 2026"}</p>
+            <p>{ar ? "قصر النيل، القاهرة" : "Nile Palace, Cairo"}</p>
             <button onClick={onGuest}>{ar ? "تأكيد الحضور" : "RSVP"}</button>
-            <span className="floral floral-bottom">❧</span>
-          </div>
-          <div className="floating-note note-one"><Icon>✓</Icon><span><b>{ar ? "تم تأكيد الحضور" : "RSVP confirmed"}</b><small>{ar ? "مريم + مرافق" : "Mariam + guest"}</small></span></div>
-          <div className="floating-note note-two"><span className="avatars">{ar ? "مـ كـ سـ" : "M K S"}</span><span><b>{ar ? "+١٢٤ ضيفًا" : "124+ guests"}</b><small>{ar ? "وصلتهم الدعوة" : "invited personally"}</small></span></div>
-          <aside className="hero-rsvp-panel" aria-label={ar ? "ملخص تأكيدات الحضور" : "RSVP overview"}><small>{ar ? "ملخص الحضور" : "RSVP overview"}</small><b>{ar ? "٤١ من ٦٨ ردًا" : "41 of 68 replies"}</b><span><i /></span><ul><li><strong>MC</strong><em>{ar ? "مريم شريف" : "Maya Chen"}<small>{ar ? "تحضر" : "Attending"}</small></em></li><li><strong>OA</strong><em>{ar ? "عمر علي" : "Omar Ali"}<small>{ar ? "ربما" : "Maybe"}</small></em></li><li><strong>SL</strong><em>{ar ? "سارة لويس" : "Sophie Lewis"}<small>{ar ? "تحضر" : "Attending"}</small></em></li></ul></aside>
+          </article>
+          <aside className="atlas-rsvp" aria-label={ar ? "مثال لملخص الحضور" : "Example RSVP overview"}>
+            <span><small>{ar ? "مثال حي للردود" : "Live response example"}</small><b>{ar ? "٤١ من ٦٨" : "41 of 68"}</b></span>
+            <div className="atlas-rsvp-line"><i /><i /><i /></div>
+            <span><CircleCheckBig aria-hidden="true" /><small>{ar ? "تم التأكيد" : "Confirmed"}</small></span>
+          </aside>
         </div>
       </section>
 
-      <section className="social-proof">
-        <p>{ar ? "صُممت تفاصيلها لتمنحكم راحة أكبر في أهم أيامكم" : "Every detail is designed to make your biggest day feel easier"}</p>
-        <div><span>{ar ? "٣ دقائق" : "3 min"}</span><small>{ar ? "لإنشاء أول دعوة" : "to create your first invitation"}</small></div>
-        <div><span>{ar ? "١٠٠٪" : "100%"}</span><small>{ar ? "متجاوبة مع الهاتف" : "mobile responsive"}</small></div>
-        <div><span>{ar ? "لحظيًا" : "Live"}</span><small>{ar ? "تحديثات الحضور" : "RSVP updates"}</small></div>
-        <div><span>AR / EN</span><small>{ar ? "اتجاه صحيح لكل لغة" : "native direction for every language"}</small></div>
+      <section className="atlas-proof" aria-label={ar ? "مزايا أساسية" : "Core product strengths"}>
+        <p>{ar ? "تفاصيل أقل تشتتًا. صورة أوضح ليومكم." : "Less chasing. A clearer picture of your day."}</p>
+        <div><strong>{ar ? "عربي وإنجليزي" : "Arabic and English"}</strong><small>{ar ? "تجربة صحيحة في الاتجاهين" : "Native in both directions"}</small></div>
+        <div><strong>{ar ? "رابط خاص" : "Private link"}</strong><small>{ar ? "لكل ضيف أو مجموعة" : "For every guest or group"}</small></div>
+        <div><strong>{ar ? "ردود لحظية" : "Live replies"}</strong><small>{ar ? "في لوحة واحدة" : "In one focused dashboard"}</small></div>
       </section>
 
-      <section className="section templates-section" id="templates">
-        <div className="section-heading"><span className="eyebrow"><i /> {ar ? "لمستكم الخاصة" : "Your signature style"}</span><h2>{ar ? "قوالب أنيقة… تتحدث عنكم" : "Elegant templates that feel like you"}</h2><p>{ar ? "اختاروا البداية الأقرب لذوقكم، ثم غيّروا كل التفاصيل بسهولة." : "Choose the design that feels closest to you, then make every detail your own."}</p></div>
-        <div className="template-grid">
-          {signatureTemplates.map((template) => (
-            <button className="template-card" key={template.name} onClick={onStart}>
-              <div className={`template-art template-art-${template.art}`}>{template.previewImage ? <Image className="template-concept-image" src={template.previewImage} width={853} height={1844} alt={ar ? `معاينة قالب ${template.name}` : `${template.enName} template preview`} unoptimized /> : null}</div>
-              <div><span><b>{ar ? template.name : template.enName}</b><small>{ar ? template.tag : template.enTag}</small></span><i>{ar ? "معاينة ←" : "Preview →"}</i></div>
+      <section className="atlas-section atlas-templates" id="templates">
+        <header className="atlas-section-head">
+          <h2>{ar ? "اختاروا المزاج الذي يشبهكم" : "Choose the mood that feels like you"}</h2>
+          <p>{ar ? "ثلاث بدايات منتقاة، وكل تفصيلة بعدها قابلة للتخصيص." : "Three curated starting points, with every detail ready to become yours."}</p>
+        </header>
+        <div className="atlas-template-grid">
+          {signatureTemplates.map((template, index) => (
+            <button className={`atlas-template atlas-template-${index + 1}`} key={template.name} onClick={onStart}>
+              <span className="atlas-template-media">{template.previewImage ? <Image src={template.previewImage} width={853} height={1844} alt={ar ? `معاينة قالب ${template.name}` : `${template.enName} template preview`} unoptimized /> : null}</span>
+              <span className="atlas-template-label"><span><b>{ar ? template.name : template.enName}</b><small>{ar ? template.tag : template.enTag}</small></span><i aria-hidden="true">{ar ? "←" : "→"}</i></span>
             </button>
           ))}
         </div>
       </section>
 
-      <section className="section journey-section">
-        <div className="section-heading light"><span className="eyebrow"><i /> {ar ? "من الفكرة إلى الدعوة" : "From idea to invitation"}</span><h2>{ar ? "دعوتكم جاهزة في ثلاث خطوات واضحة" : "Your invitation, ready in three clear steps"}</h2><p>{ar ? "اختاروا الشكل، أضيفوا التفاصيل، ثم شاركوا الدعوة وتابعوا الردود من مكان واحد." : "Choose the look, add your details, then share and follow every response from one place."}</p></div>
-        <div className="journey-grid">
-          <article><div className="journey-step-head"><span>{ar ? "الخطوة ٠١" : "Step 01"}</span><LayoutTemplate aria-hidden="true" /></div><h3>{ar ? "اختاروا القالب" : "Choose your template"}</h3><p>{ar ? "تصفحوا تصاميم منتقاة، ثم اختاروا التجربة الأقرب لشخصيتكم وأسلوب المناسبة." : "Explore curated designs and choose the experience that feels closest to your celebration."}</p></article>
-          <article><div className="journey-step-head"><span>{ar ? "الخطوة ٠٢" : "Step 02"}</span><ListChecks aria-hidden="true" /></div><h3>{ar ? "أضيفوا التفاصيل" : "Add your details"}</h3><p>{ar ? "نظّموا الأسماء، المواعيد، المواقع، الصور، والرسالة الخاصة بكل فئة من الضيوف." : "Organise names, schedules, venues, photos, and the right message for every guest group."}</p></article>
-          <article><div className="journey-step-head"><span>{ar ? "الخطوة ٠٣" : "Step 03"}</span><Send aria-hidden="true" /></div><h3>{ar ? "شاركوا وتابعوا الردود" : "Share and follow RSVPs"}</h3><p>{ar ? "أرسلوا رابطًا شخصيًا أنيقًا، وتابعوا الفتح والحضور لكل مرحلة بشكل لحظي." : "Send a polished personal link and follow opens and attendance for every event stage live."}</p></article>
+      <section className="atlas-section atlas-journey">
+        <div className="atlas-journey-intro">
+          <h2>{ar ? "من أول اسم إلى آخر رد" : "From the first name to the final reply"}</h2>
+          <p>{ar ? "مسار واحد واضح يبقي الدعوة والضيوف في الصورة نفسها." : "One clear path keeps the invitation and every guest in the same picture."}</p>
+          <button className="atlas-primary" onClick={onStart}>{ar ? "ابدأ التصميم" : "Start designing"} <span aria-hidden="true">{ar ? "←" : "→"}</span></button>
         </div>
-        <button className="primary rose" onClick={onStart}>{ar ? "ابدأوا تصميم دعوتكم" : "Start designing"} <span>{ar ? "←" : "→"}</span></button>
-      </section>
-
-      <section className="section features-section" id="product">
-        <div className="section-heading light"><span className="eyebrow"><i /> {ar ? "أكثر من دعوة جميلة" : "More than a beautiful invitation"}</span><h2>{ar ? "كل التفاصيل الهادئة، في مكان واحد" : "Every meaningful detail, beautifully in one place"}</h2><p>{ar ? "من أول رابط حتى آخر تأكيد حضور، وِصال يمنحكم صورة واضحة من دون تعقيد." : "From the first link to the final RSVP, Wisal gives you clarity without adding work."}</p></div>
-        <div className="feature-grid">
-          <article><UsersRound aria-hidden="true" /><h3>{ar ? "ضيوفكم منظّمون" : "Guests, thoughtfully organised"}</h3><p>{ar ? "فئات خاصة، روابط شخصية، وصلاحيات مناسبة لكل جزء من الاحتفال." : "Private groups, personal links, and the right access for every part of the celebration."}</p></article>
-          <article><Eye aria-hidden="true" /><h3>{ar ? "رؤية لحظية" : "A clear live picture"}</h3><p>{ar ? "تابعوا الفتح والردود وعدد الحضور من لوحة واحدة سهلة." : "Follow opens, replies, and attendance from one calm, focused dashboard."}</p></article>
-          <article><MessageSquareText aria-hidden="true" /><h3>{ar ? "رسائل في توقيتها" : "Messages at the right moment"}</h3><p>{ar ? "أرسلوا التذكير المناسب لمن يحتاجه فقط، عبر واتساب أو البريد لاحقًا." : "Send the right reminder to the right guests, with WhatsApp and email-ready flows."}</p></article>
+        <div className="atlas-orbit-steps">
+          <article><LayoutTemplate aria-hidden="true" /><span><h3>{ar ? "اختاروا القالب" : "Choose the template"}</h3><p>{ar ? "ابدؤوا من تصميم يناسب روح المناسبة." : "Begin with a design that suits the celebration."}</p></span></article>
+          <article><ListChecks aria-hidden="true" /><span><h3>{ar ? "أضيفوا التفاصيل" : "Add the details"}</h3><p>{ar ? "رتبوا الموعد والمكان والرسالة ومجموعات الضيوف." : "Arrange the date, venue, message, and guest groups."}</p></span></article>
+          <article><Send aria-hidden="true" /><span><h3>{ar ? "شاركوا وتابعوا" : "Share and follow"}</h3><p>{ar ? "أرسلوا الرابط وشاهدوا الفتح والردود فورًا." : "Send the link and see opens and replies as they arrive."}</p></span></article>
         </div>
       </section>
 
-      <section className="testimonial-section">
-        <div className="testimonial-media">
-          <Image src="/brand/cinematic-palace-hero.webp" width={1672} height={941} sizes="(max-width: 900px) 100vw, 58vw" alt={ar ? "مشهد افتتاح سينمائي لدعوة وِصال" : "Cinematic opening scene for a Wisal invitation"} unoptimized />
-          <div className="testimonial-proof"><CircleCheckBig aria-hidden="true" /><span><small>{ar ? "ردود الحضور" : "RSVP responses"}</small><b>{ar ? "٤١ من ٦٨ ضيفًا" : "41 of 68 guests"}</b></span></div>
+      <section className="atlas-section atlas-product" id="product">
+        <div className="atlas-product-title">
+          <h2>{ar ? "دعوة جميلة، ونظام يعرف من سيحضر" : "A beautiful invitation that knows who is coming"}</h2>
+          <p>{ar ? "وِصال يجمع التجربة التي يراها الضيف مع الأدوات التي تحتاجونها خلف الكواليس." : "Wisal joins the guest experience to the tools you need behind the scenes."}</p>
         </div>
-        <div className="testimonial-copy"><Quote aria-hidden="true" className="testimonial-quote-icon" /><span className="eyebrow"><i /> {ar ? "صُممت لراحة البال" : "Designed for peace of mind"}</span><blockquote>{ar ? "بدل متابعة كل رسالة وحدها، أصبحت الردود واضحة، والضيوف منظمين، وكل تفاصيل يومنا في مكان واحد." : "Instead of chasing every message, our replies felt clear, our guests organised, and every detail stayed in one place."}</blockquote><p>{ar ? "ليلى وكريم · القاهرة" : "Layla & Kareem · Cairo"}</p></div>
+        <div className="atlas-feature-list">
+          <article><UsersRound aria-hidden="true" /><b>{ar ? "ضيوف منظمون" : "Organised guests"}</b><p>{ar ? "مجموعات وروابط وصلاحيات تناسب كل جزء من يومكم." : "Groups, links, and access shaped for each part of your day."}</p></article>
+          <article><Eye aria-hidden="true" /><b>{ar ? "صورة حية وواضحة" : "A clear live picture"}</b><p>{ar ? "تعرفون من فتح ومن رد وعدد الحضور المتوقع." : "Know who opened, who replied, and the expected headcount."}</p></article>
+          <article><MessageSquareText aria-hidden="true" /><b>{ar ? "رسالة تصل لمن يحتاجها" : "The right message reaches the right people"}</b><p>{ar ? "اختاروا الفئة المناسبة بدل إرسال كل تحديث للجميع." : "Choose the right audience instead of sending every update to everyone."}</p></article>
+        </div>
       </section>
 
-      <section className="section pricing-section" id="pricing">
-        <div className="section-heading"><span className="eyebrow"><i /> {ar ? "باقات واضحة لمناسبة واحدة" : "Simple plans for one celebration"}</span><h2>{ar ? "اختاروا ما يناسب فرحتكم" : "Choose what fits your celebration"}</h2><p>{ar ? "نعرض الباقات للتخطيط فقط حاليًا، وسيظل الدفع الإلكتروني مؤجلًا حتى اكتمال اختبار المنصة." : "Plans are shown for planning only. Online payments remain paused until the platform is fully tested."}</p></div>
-        <div className="pricing-grid">
-          {plans.map((plan) => <article className={`pricing-card ${plan.featured ? "popular" : ""}`} key={plan.code}>
-            {plan.featured && <span className="popular-badge">{ar ? "الأكثر اختيارًا" : "Most popular"}</span>}
-            <h3>{ar ? plan.nameAr : plan.nameEn}</h3><p>{plan.guestLimit ? (ar ? `حتى ${plan.guestLimit} ضيفًا` : `Up to ${plan.guestLimit} guests`) : (ar ? "ضيوف بلا حد" : "Unlimited guests")}</p><div className="plan-price"><b>{plan.priceEgp}</b><span>{ar ? <>جنيه<br />للمناسبة</> : <>EGP<br />per event</>}</span></div>
-            <ul>{(ar ? plan.featuresAr : plan.featuresEn).map((feature) => <li key={feature}>✓ {feature}</li>)}</ul>
-            <button className={plan.featured ? "primary" : "ghost"} onClick={() => onChoosePlan(plan.code)}>{ar ? `ابدأ بخطة ${plan.nameAr} ←` : `Start with ${plan.nameEn} →`}</button>
+      <section className="atlas-story">
+        <div className="atlas-story-media">
+          <Image src="/brand/cinematic-palace-hero.webp" width={1672} height={941} sizes="(max-width: 900px) 100vw, 55vw" alt={ar ? "مشهد افتتاح سينمائي لدعوة وِصال" : "Cinematic opening scene for a Wisal invitation"} unoptimized />
+          <div className="atlas-story-proof"><CircleCheckBig aria-hidden="true" /><span><small>{ar ? "مثال لردود الحضور" : "Example RSVP responses"}</small><b>{ar ? "٤١ من ٦٨ ضيفًا" : "41 of 68 guests"}</b></span></div>
+        </div>
+        <div className="atlas-story-copy"><Quote aria-hidden="true" /><blockquote>{ar ? "دعوتنا بقيت جميلة. وضيوفنا بقوا منظّمين." : "Our invitation stayed beautiful. Our guests stayed organised."}</blockquote><p>{ar ? "ليلى وكريم، مثال توضيحي" : "Layla and Kareem, illustrative example"}</p></div>
+      </section>
+
+      <section className="atlas-section atlas-pricing" id="pricing">
+        <header className="atlas-section-head">
+          <h2>{ar ? "خطة تناسب حجم احتفالكم" : "A plan shaped for your celebration"}</h2>
+          <p>{ar ? "الباقات معروضة للتخطيط. الدفع الإلكتروني متوقف حتى اكتمال اختبار المنصة." : "Plans are shown for planning. Online payment stays paused while the platform is tested."}</p>
+        </header>
+        <div className="atlas-plan-list">
+          {plans.map((plan) => <article className={plan.featured ? "is-featured" : ""} key={plan.code}>
+            <div><h3>{ar ? plan.nameAr : plan.nameEn}</h3><p>{plan.guestLimit ? (ar ? `حتى ${plan.guestLimit} ضيفًا` : `Up to ${plan.guestLimit} guests`) : (ar ? "ضيوف بلا حد" : "Unlimited guests")}</p></div>
+            <ul>{(ar ? plan.featuresAr : plan.featuresEn).map((feature) => <li key={feature}><CircleCheckBig aria-hidden="true" />{feature}</li>)}</ul>
+            <div className="atlas-plan-action"><span><b>{plan.priceEgp}</b><small>{ar ? "جنيه للمناسبة" : "EGP per event"}</small></span><button onClick={() => onChoosePlan(plan.code)}>{ar ? "اختيار الخطة" : "Choose plan"}</button></div>
           </article>)}
         </div>
-        <p className="pricing-note">{ar ? "لن يُطلب أي دفع حقيقي خلال مرحلة التطوير والاختبار الحالية." : "No real payment will be requested during the current development and testing phase."}</p>
       </section>
 
-      <section className="section cta-section">
-        <span className="eyebrow"><i /> {ar ? "ابدأوا على مهل" : "Begin, beautifully"}</span><h2>{ar ? "دعوتكم تستحق بداية لا تُنسى" : "Your celebration deserves an unforgettable beginning"}</h2><p>{ar ? "اختاروا قالبًا، أضيفوا تفاصيلكم، واصنعوا رابطًا يليق بمن تحبون." : "Choose a template, add your details, and create a link worthy of the people you love."}</p><button className="primary" onClick={onStart}>{ar ? "صمّم دعوتك الآن" : "Design your invitation"} <span>{ar ? "←" : "→"}</span></button>
+      <section className="atlas-final">
+        <span className="atlas-final-ring" aria-hidden="true" />
+        <h2>{ar ? "ابدؤوا دعوتكم من مكان يليق بالحكاية" : "Begin your invitation somewhere worthy of the story"}</h2>
+        <p>{ar ? "اختاروا القالب، أضيفوا تفاصيلكم، وشاركوا رابطًا يليق بمن تحبون." : "Choose a template, add your details, and share a link worthy of the people you love."}</p>
+        <button className="atlas-primary" onClick={onStart}>{ar ? "أنشئ دعوتك" : "Create your invitation"} <span aria-hidden="true">{ar ? "←" : "→"}</span></button>
       </section>
 
-      <footer className="marketing-footer"><Mark locale={locale} /><div><p>{ar ? "صُنعت بحب لتبدأ حكايتكم بأجمل صورة." : "Made with care, so your story begins beautifully."}</p><nav><a href="/privacy">{ar ? "سياسة الخصوصية" : "Privacy"}</a><a href="/terms">{ar ? "شروط الاستخدام" : "Terms"}</a></nav></div><button onClick={onStart}>{ar ? "أنشئ دعوتك" : "Create your invitation"}</button></footer>
-    </>
+      <footer className="atlas-footer"><Mark locale={locale} /><p>{ar ? "صُنعت بعناية لتبدأ حكايتكم بصورة أجمل." : "Made with care, so your story begins beautifully."}</p><nav><a href="/privacy">{ar ? "سياسة الخصوصية" : "Privacy"}</a><a href="/terms">{ar ? "شروط الاستخدام" : "Terms"}</a></nav></footer>
+    </div>
   );
 }
 
