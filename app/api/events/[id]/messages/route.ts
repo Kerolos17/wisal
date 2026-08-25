@@ -1,0 +1,18 @@
+import { getCurrentOwnerEmail } from "@/lib/current-owner";
+import { createMessage } from "@/lib/wisal-data";
+
+export const dynamic = "force-dynamic";
+
+export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const { id } = await params;
+    const payload = await request.json();
+    if (!payload.title?.trim() || !payload.body?.trim()) return Response.json({ error: "عنوان الرسالة ومحتواها مطلوبان" }, { status: 400 });
+    if (payload.audience && !["all", "pending", "confirmed", "unopened", "opened_pending", "maybe", "declined"].includes(payload.audience)) return Response.json({ error: "فئة المستلمين غير صالحة" }, { status: 400 });
+    const event = await createMessage(await getCurrentOwnerEmail(), id, payload);
+    return event ? Response.json(event, { status: 201 }) : Response.json({ error: "المناسبة غير موجودة" }, { status: 404 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "تعذر حفظ الرسالة";
+    return Response.json({ error: message }, { status: 500 });
+  }
+}

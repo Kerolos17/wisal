@@ -1,0 +1,1 @@
+ALTER TABLE `invitations` ADD `cover_image_key` text;

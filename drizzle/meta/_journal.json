@@ -1,0 +1,55 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1784763045358,
+      "tag": "0000_large_sleeper",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1784764393842,
+      "tag": "0001_concerned_chimera",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1784765951287,
+      "tag": "0002_broken_colossus",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1784766856195,
+      "tag": "0003_cheerful_mole_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1784827029955,
+      "tag": "0004_canonical-owner",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1784897711779,
+      "tag": "0005_complex_crystal",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1784898929263,
+      "tag": "0006_fearless_colonel_america",
+      "breakpoints": true
+    }
+  ]
+}
