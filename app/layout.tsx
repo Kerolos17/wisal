@@ -10,7 +10,7 @@ import "@fontsource-variable/manrope";
 import "@fontsource-variable/cormorant-garamond";
 import "./globals.css";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://wisal-wedding.vercel.app";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://wisal-wedding.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
