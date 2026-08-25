@@ -67,3 +67,13 @@ test("mobile event owners can switch events and reach every dashboard section", 
   assert.match(pageSource, /<MessageSquareText aria-hidden="true"/);
   assert.match(stylesSource, /\.dashboard-mobile-tabs,\.admin-mobile-tabs\{display:flex;overflow-x:auto/);
 });
+
+test("studio keeps live preview and progression controls within reach", () => {
+  assert.match(pageSource, /className="phone-preview-head"/);
+  assert.match(pageSource, /aria-label=\{L\("المعاينة المباشرة للدعوة", "Live invitation preview"\)\}/);
+  assert.match(pageSource, /<h1 dir="auto">\{draft\.title\}<\/h1>/);
+  assert.match(pageSource, /<p aria-live="polite">/);
+  assert.match(stylesSource, /Studio workbench/);
+  assert.match(stylesSource, /\.view-studio \.phone-preview\{position:sticky/);
+  assert.match(stylesSource, /\.view-studio \.studio-actions\{position:sticky/);
+});
