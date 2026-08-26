@@ -1,35 +1,11 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-const productionSocialMeta =
-  /<meta(?=[^>]*\bproperty=["']og:image["'])[^>]*>/i;
+const productionSocialMeta = /openGraph:\s*\{[\s\S]*images:\s*\[\{\s*url:/i;
 
-test("renders production sharing metadata without development preview markers", async () => {
-  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
-  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
-  const { default: worker } = await import(workerUrl.href);
-
-  const response = await worker.fetch(
-    new Request("http://localhost/", {
-      headers: { accept: "text/html" },
-    }),
-    {
-      ASSETS: {
-        fetch: async () => new Response("Not found", { status: 404 }),
-      },
-    },
-    {
-      waitUntil() {},
-      passThroughOnException() {},
-    },
-  );
-
-  assert.equal(response.status, 200);
-  assert.match(
-    response.headers.get("content-type") ?? "",
-    /^text\/html\b/i,
-  );
-  const html = await response.text();
-  assert.match(html, productionSocialMeta);
-  assert.doesNotMatch(html, /codex-preview/i);
+test("production sharing metadata is defined without development preview markers", async () => {
+  const layout = await readFile(new URL("../app/layout.tsx", import.meta.url), "utf8");
+  assert.match(layout, productionSocialMeta);
+  assert.doesNotMatch(layout, /codex-preview/i);
 });

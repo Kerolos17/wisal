@@ -2,16 +2,6 @@ import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { getDb } from "@/db";
 import { activityLogs, eventSegments, events, guestGroupMemberships, guestGroups, guests, guestSegmentAccess, invitations, messages, segmentRsvps, users } from "@/db/schema";
 
-const DEMO_EVENT_ID = "00000000-0000-4000-8000-000000000101";
-const DEMO_SLUG = "layla-kareem";
-
-const demoGuests = [
-  { id: "00000000-0000-4000-8000-000000000201", inviteToken: "00000000-0000-4000-8000-000000000301", name: "مريم وعمرو", status: "yes" as const, partySize: 2, meal: "عادي", openedAt: "2026-07-22T18:00:00.000Z", respondedAt: "2026-07-22T18:04:00.000Z" },
-  { id: "00000000-0000-4000-8000-000000000202", inviteToken: "00000000-0000-4000-8000-000000000302", name: "نورهان أحمد", status: "maybe" as const, partySize: 1, meal: "نباتي", openedAt: "2026-07-22T19:00:00.000Z", respondedAt: "2026-07-22T19:10:00.000Z" },
-  { id: "00000000-0000-4000-8000-000000000203", inviteToken: "00000000-0000-4000-8000-000000000303", name: "يوسف خالد", status: "pending" as const, partySize: 2, meal: "—", openedAt: "2026-07-23T08:00:00.000Z" },
-  { id: "00000000-0000-4000-8000-000000000204", inviteToken: "00000000-0000-4000-8000-000000000304", name: "سارة محمد", status: "no" as const, partySize: 1, meal: "—", openedAt: "2026-07-23T09:00:00.000Z", respondedAt: "2026-07-23T09:02:00.000Z" },
-];
-
 function createInviteToken() {
   return crypto.randomUUID();
 }
@@ -70,75 +60,6 @@ export type GuestGroupInput = {
   partyLimit?: number;
 };
 
-export async function ensureDemoEvent(ownerEmail = "owner@wisal.app") {
-  const db = getDb();
-  const ownerId = await ensureOwner(ownerEmail);
-  await db.insert(events).values({
-    id: DEMO_EVENT_ID,
-    ownerId,
-    title: "زفاف ليلى وكريم",
-    brideName: "ليلى",
-    groomName: "كريم",
-    eventDate: "2026-10-18T19:00:00+03:00",
-    venue: "قصر النيل",
-    city: "القاهرة",
-    slug: DEMO_SLUG,
-    status: "published",
-    publishedAt: "2026-07-23T00:00:00+03:00",
-  }).onConflictDoNothing();
-
-  await db.update(events).set({ ownerId }).where(eq(events.id, DEMO_EVENT_ID));
-
-  await db.insert(invitations).values({
-    id: "00000000-0000-4000-8000-000000000102",
-    eventId: DEMO_EVENT_ID,
-    template: "قصيدة حب",
-    message: "بكل الحب والفرح، يسعدنا أن تشاركونا بداية حكايتنا الجديدة.",
-    rsvpDeadline: "2026-10-10",
-  }).onConflictDoNothing();
-
-  await db.insert(eventSegments).values({
-    id: "00000000-0000-4000-8000-000000000401",
-    eventId: DEMO_EVENT_ID,
-    title: "حفل الزفاف",
-    kind: "reception",
-    startsAt: "2026-10-18T19:00:00+03:00",
-    venueName: "قصر النيل",
-    city: "القاهرة",
-    position: 0,
-  }).onConflictDoNothing();
-
-  await db.insert(eventSegments).values({
-    id: "00000000-0000-4000-8000-000000000402",
-    eventId: DEMO_EVENT_ID,
-    title: "مراسم الإكليل",
-    kind: "ceremony",
-    startsAt: "2026-10-18T16:00:00+03:00",
-    venueName: "كنيسة القديس مارمرقس",
-    city: "القاهرة",
-    address: "مصر الجديدة، القاهرة",
-    position: 0,
-  }).onConflictDoNothing();
-  await db.update(eventSegments).set({ position: 1 }).where(eq(eventSegments.id, "00000000-0000-4000-8000-000000000401"));
-
-  await db.insert(guests).values(demoGuests.map((guest) => ({ ...guest, eventId: DEMO_EVENT_ID }))).onConflictDoNothing();
-  await db.insert(guestGroups).values([
-    { id: "00000000-0000-4000-8000-000000000501", eventId: DEMO_EVENT_ID, name: "الكنيسة والقاعة", description: "مدعوون إلى مراسم الإكليل وحفل الاستقبال", isDefault: true },
-    { id: "00000000-0000-4000-8000-000000000502", eventId: DEMO_EVENT_ID, name: "الكنيسة فقط", description: "مدعوون إلى مراسم الإكليل فقط" },
-  ]).onConflictDoNothing();
-  await db.insert(guestGroupMemberships).values([
-    { guestId: demoGuests[0].id, groupId: "00000000-0000-4000-8000-000000000501" },
-    { guestId: demoGuests[1].id, groupId: "00000000-0000-4000-8000-000000000501" },
-    { guestId: demoGuests[2].id, groupId: "00000000-0000-4000-8000-000000000502" },
-  ]).onConflictDoNothing();
-  await db.insert(guestSegmentAccess).values([
-    { segmentId: "00000000-0000-4000-8000-000000000401", groupId: "00000000-0000-4000-8000-000000000501", partyLimit: 2 },
-    { segmentId: "00000000-0000-4000-8000-000000000402", groupId: "00000000-0000-4000-8000-000000000501", partyLimit: 2 },
-    { segmentId: "00000000-0000-4000-8000-000000000402", groupId: "00000000-0000-4000-8000-000000000502", partyLimit: 2 },
-  ]).onConflictDoNothing();
-  return DEMO_EVENT_ID;
-}
-
 async function ensureGuestInviteTokens(eventId: string) {
   const db = getDb();
   const rows = await db.select({ id: guests.id, inviteToken: guests.inviteToken }).from(guests).where(eq(guests.eventId, eventId));
@@ -195,19 +116,19 @@ async function overviewForEvent(eventId: string) {
   return { event, invitation, segments: segmentRows, guestGroups: enrichedGroups, segmentRsvps: segmentRsvpRows, guests: guestRows, activity: activityRows, messages: messageRows, stats };
 }
 
-export async function getEventOverview(eventId?: string, ownerEmail = "owner@wisal.app") {
-  const ownerId = await ensureOwner(ownerEmail);
-  const demoId = await ensureDemoEvent(ownerEmail);
-  const selectedId = eventId || demoId;
-  const overview = await overviewForEvent(selectedId);
-  if (!overview || overview.event.ownerId !== ownerId) return null;
-  return overview;
-}
-
-export async function listEvents(ownerEmail = "owner@wisal.app") {
+export async function getEventOverview(eventId: string | undefined, ownerEmail: string) {
   const db = getDb();
   const ownerId = await ensureOwner(ownerEmail);
-  await ensureDemoEvent(ownerEmail);
+  const [event] = eventId
+    ? await db.select().from(events).where(and(eq(events.id, eventId), eq(events.ownerId, ownerId))).limit(1)
+    : await db.select().from(events).where(eq(events.ownerId, ownerId)).orderBy(desc(events.updatedAt)).limit(1);
+  if (!event) return null;
+  return overviewForEvent(event.id);
+}
+
+export async function listEvents(ownerEmail: string) {
+  const db = getDb();
+  const ownerId = await ensureOwner(ownerEmail);
   const eventRows = await db.select().from(events).where(eq(events.ownerId, ownerId)).orderBy(desc(events.updatedAt));
   return Promise.all(eventRows.map(async (event) => {
     const overview = await overviewForEvent(event.id);
@@ -523,7 +444,7 @@ export async function trackInvitationOpen(eventId: string, inviteToken: string) 
 }
 
 export async function saveRsvp(input: {
-  eventId?: string;
+  eventId: string;
   name: string;
   status: "yes" | "maybe" | "no";
   partySize: number;
@@ -532,8 +453,9 @@ export async function saveRsvp(input: {
   inviteToken?: string;
   segmentResponses?: Array<{ segmentId: string; status: "yes" | "maybe" | "no"; partySize: number }>;
 }) {
+  if (!input.eventId?.trim()) throw new Error("المناسبة مطلوبة");
   const db = getDb();
-  const eventId = input.eventId || await ensureDemoEvent();
+  const eventId = input.eventId;
   const [event] = await db.select().from(events).where(eq(events.id, eventId)).limit(1);
   const [invitation] = await db.select().from(invitations).where(eq(invitations.eventId, eventId)).limit(1);
   if (!event || event.status !== "published" || !invitation?.rsvpEnabled) throw new Error("تأكيد الحضور غير متاح لهذه الدعوة");
