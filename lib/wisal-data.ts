@@ -141,6 +141,15 @@ function safeText(value: string | undefined, fallback: string) {
   return trimmed || fallback;
 }
 
+function slugPart(value: string) {
+  return value
+    .normalize("NFKD")
+    .toLowerCase()
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 function cairoDateTime(value: string) {
   const localValue = /^\d{4}-\d{2}-\d{2}$/.test(value) ? `${value}T19:00` : value;
   if (/Z$|[+-]\d{2}:\d{2}$/.test(localValue)) return localValue;
@@ -156,7 +165,8 @@ export async function createEvent(ownerEmail: string, input: EventInput) {
   const ownerId = await ensureOwner(ownerEmail);
   const id = crypto.randomUUID();
   const token = id.replaceAll("-", "").slice(0, 8);
-  const slug = `joy-${token}`;
+  const coupleSlug = [slugPart(input.brideName), slugPart(input.groomName)].filter(Boolean).join("-");
+  const slug = `${coupleSlug || "joy"}-${token}`;
   const now = new Date().toISOString();
   const eventDate = cairoDateTime(input.eventDate);
   await db.insert(events).values({
