@@ -8,6 +8,7 @@ const stylesSource = await readFile(new URL("../app/globals.css", import.meta.ur
 const schemaSource = await readFile(new URL("../db/schema.ts", import.meta.url), "utf8");
 const dataSource = await readFile(new URL("../lib/wisal-data.ts", import.meta.url), "utf8");
 const eventRouteSource = await readFile(new URL("../app/api/events/[id]/route.ts", import.meta.url), "utf8");
+const conceptSource = await readFile(new URL("../lib/invitation-concepts.ts", import.meta.url), "utf8");
 
 test("builder exposes three opening and layout experiences", () => {
   for (const value of ["envelope", "card", "curtain", "classic", "story", "cinematic"]) assert.match(pageSource, new RegExp(`value: "${value}"`));
@@ -75,6 +76,19 @@ test("template art is carried into the public invitation and has real visual ass
   await access(new URL("../public/brand/templates/editorial-arch.webp", import.meta.url));
   await access(new URL("../public/brand/templates/romantic-botanical.webp", import.meta.url));
   await access(new URL("../public/brand/templates/arabic-glass-luxury.webp", import.meta.url));
+});
+
+test("every invitation resolves to its own authored concept", () => {
+  const concepts = ["love-poem", "garden-night", "moonlight", "golden-vows", "white-story", "cinema-night", "rose-garden", "cathedral-light", "desert-sunset", "velvet-night", "coastal-breeze", "modern-monogram"];
+  for (const concept of concepts) {
+    assert.match(conceptSource, new RegExp(`"${concept}"`));
+    assert.match(stylesSource, new RegExp(`template-concept-${concept}`));
+    assert.match(stylesSource, new RegExp(`concept-${concept}`));
+  }
+  assert.match(inviteSource, /resolveInvitationConcept\(invitation\.template\)/);
+  assert.match(inviteSource, /invite-concept-\$\{templateConcept\}/);
+  assert.match(inviteSource, /opening-concept-\$\{templateConcept\}/);
+  assert.match(pageSource, /template-concept-\$\{template\.code\}/);
 });
 
 test("English remains the platform default while Arabic is an explicit preference", async () => {
