@@ -109,6 +109,11 @@ const templates: PublicTemplate[] = [
   { code: "modern-monogram", name: "حروف النور", enName: "Noor Monogram", tag: "عربي عصري", enTag: "Arabic luxury", category: "cinematic", color: "template-mono", openingStyle: "curtain", layoutStyle: "cinematic", art: "arabic", description: "فخامة عربية حديثة بزجاج داكن وظلال هندسية رقيقة.", enDescription: "Modern Arabic luxury shaped with dark glass and subtle geometric light." },
 ];
 
+// Editorial Atelier launches with six authored worlds. The remaining legacy
+// definitions stay available for rendering older invitations, but are not
+// offered as new choices in the studio or public catalogue.
+const atelierTemplates = templates.slice(0, 6);
+
 function InvitationSpecimen({ template, brideName, groomName, date, venue, city, locale, phone = false }: { template: PublicTemplate; brideName: string; groomName: string; date: string; venue?: string; city?: string; locale: Locale; phone?: boolean }) {
   const ar = locale === "ar";
   const couple = `${brideName || (ar ? "العروس" : "Bride")} ${ar ? "و" : "&"} ${groomName || (ar ? "العريس" : "Groom")}`;
@@ -137,8 +142,8 @@ const templateAccentByArt: Record<TemplateArt, "plum" | "sage" | "blue" | "sand"
   arabic: "plum",
 };
 
-const mergePublicTemplates = (rows: Array<{ code: string; nameAr: string; nameEn: string; category: string }>) => rows.map((row, index) => {
-  const visual = templates.find((item) => item.code === row.code) ?? templates[index % templates.length];
+const mergePublicTemplates = (rows: Array<{ code: string; nameAr: string; nameEn: string; category: string }>) => rows.filter((row) => atelierTemplates.some((item) => item.code === row.code)).map((row, index) => {
+  const visual = atelierTemplates.find((item) => item.code === row.code) ?? atelierTemplates[index % atelierTemplates.length];
   return { ...visual, code: row.code, category: row.category };
 });
 
@@ -261,7 +266,7 @@ export default function Home({ initialView = "home", authenticated = false, acco
   const [selectedPlan, setSelectedPlan] = useState<PlanCode>(() => typeof window === "undefined" ? "elegant" : new URLSearchParams(window.location.search).get("plan") || "elegant");
   const [publicPlans, setPublicPlans] = useState<PublicPlan[]>(defaultPlans);
   const [publicContent, setPublicContent] = useState<PublicContent>({});
-  const [publicTemplates, setPublicTemplates] = useState<PublicTemplate[]>(templates);
+  const [publicTemplates, setPublicTemplates] = useState<PublicTemplate[]>(atelierTemplates);
   const [guestEditor, setGuestEditor] = useState<{ mode: "add" | "edit"; guest?: GuestRecord } | null>(null);
 
   const loadEvent = useCallback(async (eventId?: string, showLoading = true) => {
@@ -272,7 +277,7 @@ export default function Home({ initialView = "home", authenticated = false, acco
       const data = await response.json() as EventOverview;
       if (!data?.event) throw new Error(tr(locale, "لم يتم العثور على دعوة نشطة.", "No active invitation was found."));
       setEventData(data);
-      setSelectedTemplate(Math.max(0, templateIndexForName(templates, data.invitation.template)));
+      setSelectedTemplate(Math.max(0, templateIndexForName(atelierTemplates, data.invitation.template)));
       setDataState("ready");
       setDataError("");
       return true;
@@ -329,7 +334,10 @@ export default function Home({ initialView = "home", authenticated = false, acco
         .then((config: { content?: Array<{ key: string; valueAr: string; valueEn: string }>; plans?: PublicPlan[]; templates?: Array<{ code: string; nameAr: string; nameEn: string; category: string }> } | null) => {
           if (!config) return;
           if (config.plans?.length) setPublicPlans(config.plans);
-          if (config.templates?.length) setPublicTemplates(mergePublicTemplates(config.templates));
+          if (config.templates?.length) {
+            const availableTemplates = mergePublicTemplates(config.templates);
+            if (availableTemplates.length) setPublicTemplates(availableTemplates);
+          }
           if (config.content) setPublicContent(Object.fromEntries(config.content.map((item) => [item.key, { ar: item.valueAr, en: item.valueEn }])));
         });
     }, 0);
@@ -364,7 +372,7 @@ export default function Home({ initialView = "home", authenticated = false, acco
     setEventData(created);
     setDataState("ready");
     setDataError("");
-    setSelectedTemplate(Math.max(0, templateIndexForName(templates, created.invitation.template)));
+    setSelectedTemplate(Math.max(0, templateIndexForName(atelierTemplates, created.invitation.template)));
     const listResponse = await fetch("/api/events", { cache: "no-store" });
     if (listResponse.ok) setEventList((await listResponse.json() as { events: EventSummary[] }).events);
     setStep(1);
@@ -814,7 +822,7 @@ function Studio({ step, setStep, selectedTemplate, setSelectedTemplate, template
             <div className="template-filter" aria-label={L("تصفية القوالب", "Filter templates")}>
               {[["all", L("الكل", "All")], ["classic", L("كلاسيكي", "Classic")], ["botanical", L("طبيعي", "Botanical")], ["modern", L("عصري", "Modern")], ["luxury", L("فاخر", "Luxury")], ["minimal", L("بسيط", "Minimal")], ["cinematic", L("سينمائي", "Cinematic")]].map(([value, label]) => <button type="button" key={value} className={templateFilter === value ? "active" : ""} onClick={() => setTemplateFilter(value)}>{label}</button>)}
             </div>
-            <div className="studio-templates">{templates.map((template, i) => ({ template, i })).filter(({ template }) => templateFilter === "all" || template.category === templateFilter).map(({ template, i }) => <button type="button" key={template.code} onClick={() => chooseTemplate(i)} className={selectedTemplate === i ? "selected" : ""}><div className={`mini-template ${template.color} template-art-${template.art} template-concept-${template.code}`}><InvitationSpecimen template={template} brideName={draft.brideName} groomName={draft.groomName} date={draft.eventDate.slice(0, 10)} locale={locale} /></div><span><b>{ar ? template.name : template.enName}</b><small>{ar ? template.tag : template.enTag}</small></span>{selectedTemplate === i && <i>✓</i>}</button>)}</div>
+            <div className="studio-templates">{templates.slice(0, 6).map((template, i) => ({ template, i })).filter(({ template }) => templateFilter === "all" || template.category === templateFilter).map(({ template, i }) => <button type="button" key={template.code} onClick={() => chooseTemplate(i)} className={selectedTemplate === i ? "selected" : ""}><div className={`mini-template ${template.color} template-art-${template.art} template-concept-${template.code}`}><InvitationSpecimen template={template} brideName={draft.brideName} groomName={draft.groomName} date={draft.eventDate.slice(0, 10)} locale={locale} /></div><span><b>{ar ? template.name : template.enName}</b><small>{ar ? template.tag : template.enTag}</small></span>{selectedTemplate === i && <i>✓</i>}</button>)}</div>
             <section className={`selected-template-note template-art-${selectedTemplateData.art} template-concept-${selectedTemplateData.code}`}><div><Image src="/brand/wisal-monogram-64.png" width={36} height={36} alt="" unoptimized /><span><small>{L("التجربة المختارة", "Selected experience")}</small><b>{ar ? selectedTemplateData.name : selectedTemplateData.enName}</b><p>{ar ? selectedTemplateData.description : selectedTemplateData.enDescription}</p></span></div><span className="template-experience-meta"><b>{openingStyles.find((item) => item.value === selectedTemplateData.openingStyle)?.[ar ? "name" : "enName"]}</b><small>{layoutStyles.find((item) => item.value === selectedTemplateData.layoutStyle)?.[ar ? "name" : "enName"]}</small></span></section>
             <section className="experience-picker"><div><span className="eyebrow"><i /> {L("لحظة الوصول", "Arrival moment")}</span><h3>{L("كيف تبدأ الدعوة؟", "How should the invitation begin?")}</h3></div><div className="choice-grid opening-grid">{openingStyles.map((option) => <button type="button" key={option.value} className={draft.openingStyle === option.value ? "selected" : ""} onClick={() => setField("openingStyle", option.value)}><span>{option.icon}</span><b>{ar ? option.name : option.enName}</b><small>{ar ? option.description : option.enDescription}</small>{draft.openingStyle === option.value && <i>✓</i>}</button>)}</div></section>
             <section className="experience-picker"><div><span className="eyebrow"><i /> {L("أسلوب الحكاية", "Story style")}</span><h3>{L("كيف تظهر التفاصيل؟", "How should the details unfold?")}</h3></div><div className="choice-grid">{layoutStyles.map((option) => <button type="button" key={option.value} className={draft.layoutStyle === option.value ? "selected" : ""} onClick={() => setField("layoutStyle", option.value)}><b>{ar ? option.name : option.enName}</b><small>{ar ? option.description : option.enDescription}</small>{draft.layoutStyle === option.value && <i>✓</i>}</button>)}</div></section>
