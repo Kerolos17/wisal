@@ -7,6 +7,8 @@ const styles = await readFile(new URL("../app/globals.css", import.meta.url), "u
 const identity = await readFile(new URL("../lib/auth/identity.ts", import.meta.url), "utf8");
 const authServer = await readFile(new URL("../lib/auth/server.ts", import.meta.url), "utf8");
 const authForm = await readFile(new URL("../app/auth/auth-form.tsx", import.meta.url), "utf8");
+const authCallback = await readFile(new URL("../app/auth/callback/route.ts", import.meta.url), "utf8");
+const authProxy = await readFile(new URL("../proxy.ts", import.meta.url), "utf8");
 const signInPage = await readFile(new URL("../app/auth/sign-in/page.tsx", import.meta.url), "utf8");
 const connectGooglePage = await readFile(new URL("../app/auth/connect-google/page.tsx", import.meta.url), "utf8");
 const recoveryCard = await readFile(new URL("../app/auth/password-recovery-card.tsx", import.meta.url), "utf8");
@@ -38,8 +40,12 @@ test("auth return paths reject protocol-relative and cross-origin redirects", ()
 test("authentication UI supports Arabic, English, email, and Google", () => {
   assert.match(authForm, /useWisalLocale\(\)/);
   assert.match(authForm, /sign-in\/social/);
-  assert.match(authForm, /new URL\(returnTo, window\.location\.origin\)/);
+  assert.match(authForm, /new URL\("\/auth\/callback", window\.location\.origin\)/);
   assert.match(authForm, /errorCallbackURL/);
+  assert.match(authCallback, /safeReturnPath/);
+  assert.match(authCallback, /NextResponse\.redirect/);
+  assert.match(authProxy, /getNeonAuth\(\)\.middleware/);
+  assert.match(authProxy, /\/auth\/callback/);
   assert.match(signInPage, /account_not_linked/);
   assert.match(signInPage, /password sign-in/);
   assert.doesNotMatch(signInPage, /linkGoogleAfterPassword/);

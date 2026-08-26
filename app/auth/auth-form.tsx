@@ -44,13 +44,14 @@ export default function AuthForm({ mode, returnTo, initialError = "" }: { mode: 
     setLoading("google");
     setError("");
     try {
-      const callbackURL = new URL(returnTo, window.location.origin).toString();
+      const callbackURL = new URL("/auth/callback", window.location.origin);
+      callbackURL.searchParams.set("returnTo", returnTo);
       const errorURL = new URL("/auth/sign-in", window.location.origin);
       errorURL.searchParams.set("returnTo", returnTo);
       const response = await fetch("/api/auth/sign-in/social", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ provider: "google", callbackURL, errorCallbackURL: errorURL.toString() }),
+        body: JSON.stringify({ provider: "google", callbackURL: callbackURL.toString(), errorCallbackURL: errorURL.toString() }),
       });
       const data = await response.json().catch(() => ({})) as { url?: string; message?: string; error?: { message?: string } };
       if (!response.ok || !data.url) throw new Error(data.error?.message || data.message || L("تسجيل الدخول عبر Google غير متاح حاليًا.", "Google sign-in is not available right now."));

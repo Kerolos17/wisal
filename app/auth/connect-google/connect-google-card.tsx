@@ -17,8 +17,11 @@ export default function ConnectGoogleCard({ returnTo, email, initialError = "" }
     setLoading(true);
     setError("");
     try {
-      const callbackURL = new URL(returnTo, window.location.origin);
-      callbackURL.searchParams.set("google", "linked");
+      const destinationURL = new URL(returnTo, window.location.origin);
+      destinationURL.searchParams.set("google", "linked");
+      const destinationPath = `${destinationURL.pathname}${destinationURL.search}${destinationURL.hash}`;
+      const callbackURL = new URL("/auth/callback", window.location.origin);
+      callbackURL.searchParams.set("returnTo", destinationPath);
       const errorURL = new URL("/auth/connect-google", window.location.origin);
       errorURL.searchParams.set("returnTo", returnTo);
       const response = await fetch("/api/auth/link-social", {
