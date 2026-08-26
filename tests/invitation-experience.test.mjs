@@ -44,6 +44,13 @@ test("opening moments are skippable and respect reduced motion", () => {
   assert.match(inviteSource, /event\.key === "Escape"/);
 });
 
+test("opening cards keep readable contrast across light and photographic themes", () => {
+  assert.match(stylesSource, /Opening-card contrast/);
+  assert.match(stylesSource, /\.opening-mode-card \.opening-card\{color:#2a1d33\}/);
+  assert.match(stylesSource, /\.opening-theme-cinematic \.opening-card,\.opening-theme-coastal \.opening-card,\.opening-theme-royal \.opening-card\{[^}]*background:rgba\(20,11,22,\.76\)[^}]*color:#fff/);
+  assert.match(stylesSource, /\.opening-theme-cinematic \.opening-card strong[^}]*color:#fff4ee/);
+});
+
 test("studio exposes a filterable twelve-template library with coherent experiences", () => {
   assert.equal((pageSource.match(/code: "(?:love-poem|garden-night|moonlight|golden-vows|white-story|cinema-night|rose-garden|cathedral-light|desert-sunset|velvet-night|coastal-breeze|modern-monogram)"/g) || []).length, 12);
   assert.match(pageSource, /className="template-filter"/);
