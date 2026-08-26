@@ -427,7 +427,7 @@
 @media(prefers-reduced-motion:reduce){.view-studio .save-dot.saving{animation:none}}
 
 /* Invitation collection — twelve authored keepsakes, one dependable guest flow. */
-:root{--invitation-collection-version:2}
+:root{--invitation-collection-version:3}
 .mini-template[class*="template-concept-"],.phone-invite[class*="template-concept-"]{--spec-paper:#f4eadc;--spec-ink:#2e2324;--spec-accent:#9b6250;--spec-muted:#746566;position:relative;display:flex!important;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;isolation:isolate;background:var(--spec-paper)!important;color:var(--spec-ink)!important;text-shadow:none!important}
 .mini-template[class*="template-concept-"]{height:230px;padding:18px!important;border-radius:12px}.phone-invite[class*="template-concept-"]{min-height:100%;padding:58px 26px 38px!important}
 .mini-template[class*="template-concept-"]:before,.phone-invite[class*="template-concept-"]:before{content:"";display:block!important;position:absolute;inset:0;z-index:-2;background:var(--spec-image,none) center/cover no-repeat;opacity:var(--spec-image-opacity,.18)}
