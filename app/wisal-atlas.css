@@ -1200,3 +1200,147 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
   min-width: 44px;
   min-height: 44px;
 }
+
+/* Six-world template gallery: each preview carries the same art direction as its invitation. */
+.atlas-templates {
+  background: var(--atlas-ground);
+}
+.atlas-templates .atlas-section-head {
+  max-width: 720px;
+}
+.atlas-template-grid {
+  max-width: 1240px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(390px, 1fr));
+  gap: 18px;
+}
+.atlas-template,
+.atlas-template-1,
+.atlas-template-2,
+.atlas-template-3 {
+  min-height: 390px;
+  grid-row: auto;
+  grid-column: auto;
+  border-color: color-mix(in srgb, var(--atlas-copper) 28%, transparent);
+  background: #201323;
+}
+.atlas-template:focus-visible {
+  outline: 3px solid var(--atlas-copper-bright);
+  outline-offset: 5px;
+}
+.atlas-template-media {
+  isolation: isolate;
+  background: var(--preview-bg, #201323);
+}
+.atlas-template-media::after {
+  z-index: 1;
+  background: linear-gradient(to top, rgba(15, 7, 17, .96), rgba(15, 7, 17, .03) 62%);
+}
+.atlas-template-media img {
+  position: relative;
+  z-index: 0;
+  object-position: center 28%;
+  filter: saturate(.86) contrast(1.06);
+}
+.atlas-template-fallback {
+  position: absolute !important;
+  z-index: 0;
+  inset: 18px !important;
+  width: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  border-radius: 2px !important;
+  box-shadow: 0 24px 50px rgba(5, 2, 8, .28);
+}
+.atlas-template-fallback::before {
+  opacity: .32 !important;
+}
+.atlas-template-fallback .concept-mark {
+  width: 30px !important;
+  height: 30px !important;
+  object-fit: contain !important;
+}
+.atlas-template-fallback .concept-couple {
+  max-width: 90%;
+  font-size: 24px;
+}
+.atlas-template-label {
+  z-index: 2;
+  padding: 22px 22px 20px;
+  align-items: end;
+}
+.atlas-template-label > span:first-child {
+  min-width: 0;
+}
+.atlas-template-label b {
+  font-size: clamp(25px, 2.2vw, 34px);
+  line-height: .96;
+}
+.atlas-template-description {
+  max-width: 34ch;
+  color: rgba(255, 247, 238, .78) !important;
+  font-size: 11px !important;
+  line-height: 1.5;
+}
+.atlas-template-cta {
+  display: grid;
+  justify-items: end;
+  gap: 5px;
+  flex: 0 0 auto;
+}
+.atlas-template-cta small {
+  color: var(--atlas-copper-bright);
+  font-size: 9px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.atlas-template-cta i {
+  line-height: 1;
+}
+.atlas-template-love-poem { --preview-bg: #6d1e2b; }
+.atlas-template-garden-night { --preview-bg: #344b3d; }
+.atlas-template-moonlight { --preview-bg: #152735; }
+.atlas-template-golden-vows { --preview-bg: #4a1b2a; }
+.atlas-template-white-story { --preview-bg: #f3f0e9; color: #242124; }
+.atlas-template-cinema-night { --preview-bg: #160d15; }
+.atlas-template-white-story .atlas-template-media::after {
+  background: linear-gradient(to top, rgba(243, 240, 233, .98), rgba(243, 240, 233, .08) 68%);
+}
+.atlas-template-white-story .atlas-template-label b,
+.atlas-template-white-story .atlas-template-label small,
+.atlas-template-white-story .atlas-template-description {
+  color: #242124 !important;
+}
+.atlas-template-white-story .atlas-template-cta small,
+.atlas-template-white-story .atlas-template-cta i {
+  color: #7e5b43;
+}
+.atlas-template:hover .atlas-template-label b {
+  color: var(--atlas-copper-bright);
+}
+.atlas-template-white-story:hover .atlas-template-label b {
+  color: #571d28;
+}
+@media (max-width: 980px) {
+  .atlas-template-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(360px, 1fr));
+  }
+  .atlas-template,
+  .atlas-template-1,
+  .atlas-template-2,
+  .atlas-template-3 { min-height: 360px; }
+}
+@media (max-width: 600px) {
+  .atlas-template-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+  }
+  .atlas-template,
+  .atlas-template-1,
+  .atlas-template-2,
+  .atlas-template-3 { min-height: 410px; }
+  .atlas-template-fallback { inset: 14px !important; }
+  .atlas-template-label { padding: 20px 18px 18px; }
+  .atlas-template-description { max-width: 27ch; }
+}

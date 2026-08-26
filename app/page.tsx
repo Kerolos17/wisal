@@ -97,9 +97,9 @@ function formatSegmentDate(value: string, locale: Locale) {
 const templates: PublicTemplate[] = [
   { code: "love-poem", name: "أناقة التحرير", enName: "Élan Editorial", tag: "تحريري فاخر", enTag: "Editorial luxury", category: "classic", color: "template-plum", openingStyle: "card", layoutStyle: "classic", art: "editorial", description: "قوس معماري وورق دافئ بصياغة مجلة فاخرة.", enDescription: "Architectural framing and warm paper with a luxury magazine rhythm.", previewImage: "/brand/templates/previews/elan-editorial.webp" },
   { code: "garden-night", name: "حُلم الحديقة", enName: "Garden Reverie", tag: "نباتي حالم", enTag: "Romantic botanical", category: "botanical", color: "template-sage", openingStyle: "envelope", layoutStyle: "story", art: "botanical", description: "زهور مائية تتحرك برقة قبل أن تكشف الحكاية.", enDescription: "Watercolour blooms drift softly before revealing the story.", previewImage: "/brand/templates/previews/garden-reverie.webp" },
-  { code: "moonlight", name: "قمر زجاجي", enName: "Glass Moon", tag: "فخامة عصرية", enTag: "Modern glass", category: "modern", color: "template-blue", openingStyle: "card", layoutStyle: "classic", art: "glass", description: "ضوء لؤلؤي وطبقات زجاجية شفافة بتفاصيل هادئة.", enDescription: "Pearl light and translucent layers with a calm, modern finish." },
-  { code: "golden-vows", name: "الوعد المُذهّب", enName: "Gilded Promise", tag: "ملكي", enTag: "Royal classic", category: "luxury", color: "template-gold", openingStyle: "envelope", layoutStyle: "classic", art: "royal", description: "ختم ملكي وإطار شامبانيا لحفل رسمي خالد.", enDescription: "A royal seal and champagne frame for timeless formal celebrations." },
-  { code: "white-story", name: "سُكون", enName: "Still", tag: "بسيط معاصر", enTag: "Modern minimal", category: "minimal", color: "template-ivory", openingStyle: "card", layoutStyle: "story", art: "minimal", description: "مساحات بيضاء وتفاصيل دقيقة تجعل الأسماء هي البطلة.", enDescription: "Quiet white space and precise details that let the names lead." },
+  { code: "moonlight", name: "قمر زجاجي", enName: "Glass Moon", tag: "فخامة عصرية", enTag: "Modern glass", category: "modern", color: "template-blue", openingStyle: "card", layoutStyle: "classic", art: "glass", description: "ضوء لؤلؤي وطبقات زجاجية شفافة بتفاصيل هادئة.", enDescription: "Pearl light and translucent layers with a calm, modern finish.", previewImage: "/brand/templates/arabic-glass-luxury.webp" },
+  { code: "golden-vows", name: "الوعد المُذهّب", enName: "Gilded Promise", tag: "ملكي", enTag: "Royal classic", category: "luxury", color: "template-gold", openingStyle: "envelope", layoutStyle: "classic", art: "royal", description: "ختم ملكي وإطار شامبانيا لحفل رسمي خالد.", enDescription: "A royal seal and champagne frame for timeless formal celebrations.", previewImage: "/brand/templates/classic-rose-frame.webp" },
+  { code: "white-story", name: "سُكون", enName: "Still", tag: "بسيط معاصر", enTag: "Modern minimal", category: "minimal", color: "template-ivory", openingStyle: "card", layoutStyle: "story", art: "minimal", description: "مساحات بيضاء وتفاصيل دقيقة تجعل الأسماء هي البطلة.", enDescription: "Quiet white space and precise details that let the names lead.", previewImage: "/brand/templates/editorial-arch.webp" },
   { code: "cinema-night", name: "وهج الغروب", enName: "Afterglow Première", tag: "سينمائي غامر", enTag: "Immersive cinematic", category: "cinematic", color: "template-noir", openingStyle: "curtain", layoutStyle: "cinematic", art: "cinematic", description: "غروب سينمائي وصورة غامرة مع كشف درامي محسوب.", enDescription: "A full-bleed sunset portrait with a measured cinematic reveal.", previewImage: "/brand/templates/previews/afterglow-premiere.webp" },
   { code: "rose-garden", name: "وردة حالمة", enName: "Blush Botanica", tag: "رومانسي", enTag: "Romantic", category: "botanical", color: "template-rose", openingStyle: "envelope", layoutStyle: "story", art: "botanical", description: "بتلات وردية تلتف حول الصورة والرسالة بنعومة.", enDescription: "Blush petals wrap softly around the portrait and message." },
   { code: "cathedral-light", name: "الميثاق الملكي", enName: "The Royal Chapel", tag: "رسمي كلاسيكي", enTag: "Formal classic", category: "classic", color: "template-pearl", openingStyle: "envelope", layoutStyle: "classic", art: "royal", description: "تكوين رسمي يليق بالمراسم والاحتفالات الكلاسيكية.", enDescription: "A formal composition shaped for ceremonies and classic celebrations." },
@@ -428,6 +428,12 @@ export default function Home({ initialView = "home", authenticated = false, acco
     }
   };
 
+  const chooseTemplateFromHome = async (code: string) => {
+    const nextIndex = publicTemplates.findIndex((template) => template.code === code);
+    if (nextIndex >= 0) setSelectedTemplate(nextIndex);
+    await openStudio();
+  };
+
   const choosePlan = (plan: PlanCode) => {
     setSelectedPlan(plan);
     if (!authenticated) {
@@ -474,7 +480,7 @@ export default function Home({ initialView = "home", authenticated = false, acco
         <button className={view === "dashboard" ? "active" : ""} onClick={() => authenticated ? go("dashboard") : router.push("/auth/sign-in?returnTo=%2Fworkspace")}><LayoutDashboard aria-hidden="true" />{locale === "ar" ? "اللوحة" : "Dashboard"}</button>
       </nav>
 
-      {view === "home" && <Landing locale={locale} plans={publicPlans} templates={publicTemplates} content={publicContent} onStart={() => void openStudio()} onGuest={() => go("guest")} onChoosePlan={choosePlan} />}
+      {view === "home" && <Landing locale={locale} plans={publicPlans} templates={publicTemplates} content={publicContent} onStart={() => void openStudio()} onGuest={() => go("guest")} onChoosePlan={choosePlan} onChooseTemplate={(code) => void chooseTemplateFromHome(code)} />}
       {view === "studio" && dataState === "loading" && <BuilderLoading locale={locale} />}
       {view === "studio" && dataState === "error" && <BuilderUnavailable locale={locale} message={dataError} onRetry={() => void loadEvents()} onCreate={() => setCreatingEvent(true)} />}
       {view === "studio" && dataState === "empty" && <BuilderUnavailable locale={locale} message={tr(locale, "لا توجد دعوة بعد. ابدأ بإضافة بيانات المناسبة الأساسية.", "There is no invitation yet. Start with the essential event details.")} onRetry={() => void loadEvents()} onCreate={() => setCreatingEvent(true)} />}
@@ -503,10 +509,10 @@ export default function Home({ initialView = "home", authenticated = false, acco
   );
 }
 
-function Landing({ locale, plans, templates, content, onStart, onGuest, onChoosePlan }: { locale: Locale; plans: PublicPlan[]; templates: PublicTemplate[]; content: PublicContent; onStart: () => void; onGuest: () => void; onChoosePlan: (plan: PlanCode) => void }) {
+function Landing({ locale, plans, templates, content, onStart, onGuest, onChoosePlan, onChooseTemplate }: { locale: Locale; plans: PublicPlan[]; templates: PublicTemplate[]; content: PublicContent; onStart: () => void; onGuest: () => void; onChoosePlan: (plan: PlanCode) => void; onChooseTemplate: (code: string) => void }) {
   const ar = locale === "ar";
   const copy = (key: string, fallbackAr: string, fallbackEn: string) => content[key]?.[ar ? "ar" : "en"] || (ar ? fallbackAr : fallbackEn);
-  const signatureTemplates = ["love-poem", "garden-night", "cinema-night"].map((code) => templates.find((template) => template.code === code)).filter(Boolean) as PublicTemplate[];
+  const showcaseTemplates = ["love-poem", "garden-night", "moonlight", "golden-vows", "white-story", "cinema-night"].map((code) => templates.find((template) => template.code === code) ?? atelierTemplates.find((template) => template.code === code)).filter(Boolean) as PublicTemplate[];
   return (
     <div className="atlas-home">
       <section className="atlas-hero">
@@ -546,13 +552,15 @@ function Landing({ locale, plans, templates, content, onStart, onGuest, onChoose
       <section className="atlas-section atlas-templates" id="templates">
         <header className="atlas-section-head">
           <h2>{ar ? "اختاروا المزاج الذي يشبهكم" : "Choose the mood that feels like you"}</h2>
-          <p>{ar ? "ثلاث بدايات منتقاة، وكل تفصيلة بعدها قابلة للتخصيص." : "Three curated starting points, with every detail ready to become yours."}</p>
+          <p>{ar ? "ستة عوالم منتقاة، لكل واحد منها إيقاع بصري واضح قبل أن تبدأوا التخصيص." : "Six authored worlds, each with a distinct visual rhythm before you make it yours."}</p>
         </header>
         <div className="atlas-template-grid">
-          {signatureTemplates.map((template, index) => (
-            <button className={`atlas-template atlas-template-${index + 1}`} key={template.name} onClick={onStart}>
-              <span className="atlas-template-media">{template.previewImage ? <Image src={template.previewImage} width={853} height={1844} alt={ar ? `معاينة قالب ${template.name}` : `${template.enName} template preview`} sizes="(max-width: 700px) 82vw, 28vw" /> : null}</span>
-              <span className="atlas-template-label"><span><b>{ar ? template.name : template.enName}</b><small>{ar ? template.tag : template.enTag}</small></span><i aria-hidden="true">{ar ? "←" : "→"}</i></span>
+          {showcaseTemplates.map((template, index) => (
+            <button className={`atlas-template atlas-template-${index + 1} atlas-template-${template.code}`} key={template.code} onClick={() => onChooseTemplate(template.code)} aria-label={ar ? `معاينة واختيار قالب ${template.name}` : `Preview and choose ${template.enName} template`}>
+              <span className={`atlas-template-media atlas-template-media-${template.code}`}>
+                {template.previewImage ? <Image src={template.previewImage} width={853} height={1844} alt={ar ? `معاينة قالب ${template.name}` : `${template.enName} template preview`} sizes="(max-width: 700px) 92vw, (max-width: 1100px) 45vw, 30vw" /> : <span className={`atlas-template-fallback mini-template template-concept-${template.code}`}><InvitationSpecimen template={template} brideName={ar ? "ليلى" : "Layla"} groomName={ar ? "كريم" : "Kareem"} date={ar ? "١٨ أكتوبر ٢٠٢٦" : "18 October 2026"} venue={ar ? "قصر النيل" : "Nile Palace"} city={ar ? "القاهرة" : "Cairo"} locale={locale} phone /></span>}
+              </span>
+              <span className="atlas-template-label"><span><b>{ar ? template.name : template.enName}</b><small>{ar ? template.tag : template.enTag}</small><small className="atlas-template-description">{ar ? template.description : template.enDescription}</small></span><span className="atlas-template-cta"><small>{ar ? "معاينة واختيار" : "Preview & choose"}</small><i aria-hidden="true">{ar ? "←" : "→"}</i></span></span>
             </button>
           ))}
         </div>

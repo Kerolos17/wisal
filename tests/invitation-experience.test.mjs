@@ -125,3 +125,22 @@ test("content composer persists section visibility and order into the guest invi
   assert.match(inviteSource, /className="countdown-card"/);
   assert.match(inviteSource, /sectionOrder\.map/);
 });
+
+test("homepage presents six authored previews with a clear template selection path", () => {
+  assert.match(pageSource, /const showcaseTemplates =/);
+  assert.match(pageSource, /showcaseTemplates\.map/);
+  assert.match(pageSource, /onChooseTemplate/);
+  for (const concept of ["love-poem", "garden-night", "moonlight", "golden-vows", "white-story", "cinema-night"]) {
+    assert.match(pageSource, new RegExp(`"${concept}"`));
+  }
+  assert.match(pageSource, /template\.description/);
+  assert.match(pageSource, /معاينة|Preview/);
+});
+
+test("invitation surfaces expose explicit readable tokens for dark and light sections", () => {
+  assert.match(stylesSource, /--atelier-dark:/);
+  assert.match(stylesSource, /--atelier-action-ink:/);
+  assert.match(stylesSource, /\.countdown-card\{background:var\(--atelier-dark\)/);
+  assert.match(stylesSource, /\.countdown-card[^}]*color:var\(--atelier-paper\)/);
+  assert.match(stylesSource, /\.invite-primary-action[^}]*:focus-visible/);
+});

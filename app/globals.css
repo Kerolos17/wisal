@@ -544,3 +544,31 @@
 [dir="rtl"] .launch-progress span{transform-origin:right center}
 @media(max-width:650px){.guest-actions button,.filters button,.list-actions button,.admin-panel button{min-height:44px}.dashboard-main :where(input,select,textarea),.admin-main :where(input,select,textarea),.app-shell :where(input,select,textarea){font-size:16px}}
 @media(prefers-reduced-motion:reduce){.launch-progress span{transition:none}}
+
+/* Invitation semantic surface system — every authored world owns the same roles. */
+.public-invite[class*="invite-concept-"]{--atelier-dark:#24171d;--atelier-action-ink:#fff4e9;--atelier-border:color-mix(in srgb,var(--atelier-oxblood) 22%,transparent);--atelier-focus:var(--atelier-gold);--atelier-background:var(--atelier-cream);--atelier-surface:var(--atelier-paper);--atelier-accent:var(--atelier-gold);--atelier-action:var(--atelier-oxblood);--atelier-action-hover:#4f1420;--atelier-success:#3d7758;--atelier-error:#a13f45}
+.invite-concept-love-poem{--atelier-dark:#392126;--atelier-action-ink:#fff8ef;--atelier-border:rgba(109,30,43,.24);--atelier-action:#6d1e2b;--atelier-action-hover:#4f1420}
+.invite-concept-garden-night{--atelier-dark:#2e4035;--atelier-action-ink:#fff9ef;--atelier-border:rgba(61,83,66,.28);--atelier-action:#6a202b;--atelier-action-hover:#4d1720}
+.invite-concept-moonlight{--atelier-dark:#0e1822;--atelier-action-ink:#f8f0e4;--atelier-border:rgba(229,183,124,.3);--atelier-action:#153447;--atelier-action-hover:#0c2534}
+.invite-concept-golden-vows{--atelier-dark:#32131e;--atelier-action-ink:#fff5e8;--atelier-border:rgba(201,155,88,.35);--atelier-action:#7c2435;--atelier-action-hover:#5c1828}
+.invite-concept-white-story{--atelier-dark:#242124;--atelier-action-ink:#fffdf8;--atelier-border:rgba(36,33,36,.24);--atelier-action:#571d28;--atelier-action-hover:#3e121c}
+.invite-concept-cinema-night{--atelier-dark:#120d11;--atelier-action-ink:#fff4e9;--atelier-border:rgba(214,154,109,.34);--atelier-action:#6a2330;--atelier-action-hover:#4c1723}
+.public-invite[class*="invite-concept-"] .invite-message,.public-invite[class*="invite-concept-"] .event-details article,.public-invite[class*="invite-concept-"] .rsvp-card,.public-invite[class*="invite-concept-"] .segment-rsvp-list>section{border-color:var(--atelier-border)}
+.public-invite[class*="invite-concept-"] .countdown-card{background:var(--atelier-dark);color:var(--atelier-paper);border-color:var(--atelier-border)}
+.public-invite[class*="invite-concept-"] .countdown-card h2,.public-invite[class*="invite-concept-"] .countdown-card strong{color:var(--atelier-paper)}
+.public-invite[class*="invite-concept-"] .countdown-card span{color:var(--atelier-gold)}
+.public-invite[class*="invite-concept-"] .countdown-card small{color:color-mix(in srgb,var(--atelier-paper) 78%,transparent)}
+.public-invite[class*="invite-concept-"] .invite-schedule,.public-invite[class*="invite-concept-"] .rsvp-card{color:var(--atelier-ink)}
+.public-invite[class*="invite-concept-"] .event-details article h3,.public-invite[class*="invite-concept-"] .event-details article strong{color:var(--atelier-oxblood)}
+.public-invite[class*="invite-concept-"] .event-details article a{color:var(--atelier-oxblood);text-underline-offset:4px}
+.public-invite[class*="invite-concept-"] .guest-form input,.public-invite[class*="invite-concept-"] .guest-form select{background:var(--atelier-paper);color:var(--atelier-ink);border-color:var(--atelier-border)}
+.public-invite[class*="invite-concept-"] .invite-primary-action,.public-invite[class*="invite-concept-"] .signature-rsvp{background:var(--atelier-action);color:var(--atelier-action-ink);border-color:var(--atelier-action)}
+.public-invite[class*="invite-concept-"] .invite-primary-action:hover,.public-invite[class*="invite-concept-"] .signature-rsvp:hover{background:var(--atelier-action-hover);color:var(--atelier-action-ink)}
+.public-invite[class*="invite-concept-"] .invite-primary-action:focus-visible,.public-invite[class*="invite-concept-"] .signature-rsvp:focus-visible{outline:3px solid var(--atelier-focus);outline-offset:4px}
+.public-invite[class*="invite-concept-"] .segment-rsvp-options button{background:var(--atelier-paper);color:var(--atelier-ink);border-color:var(--atelier-border)}
+.public-invite[class*="invite-concept-"] .segment-rsvp-options button:hover{border-color:var(--atelier-oxblood);color:var(--atelier-oxblood)}
+.public-invite[class*="invite-concept-"] .segment-rsvp-options button.selected{background:var(--atelier-action);color:var(--atelier-action-ink);border-color:var(--atelier-action)}
+.public-invite[class*="invite-concept-"] .invite-footer{background:var(--atelier-dark);color:var(--atelier-paper);border-color:var(--atelier-border)}
+.public-invite[class*="invite-concept-"] .invite-footer a{color:var(--atelier-paper)}
+.public-invite[class*="invite-concept-"] .rsvp-success>span{background:color-mix(in srgb,var(--atelier-success) 16%,var(--atelier-paper));color:var(--atelier-success)}
+.public-invite[class*="invite-concept-"] .form-error{background:color-mix(in srgb,var(--atelier-error) 9%,var(--atelier-paper));color:var(--atelier-error)!important;border-color:color-mix(in srgb,var(--atelier-error) 28%,transparent)}
