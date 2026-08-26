@@ -1,6 +1,6 @@
 ---
 name: Wisal Celestial Guest Atlas
-description: A bilingual wedding invitation and guest-control system mapped as a copper celestial instrument.
+description: A bilingual wedding invitation and guest-control system pairing a celestial product instrument with twelve authored celebration keepsakes.
 colors:
   observatory-black: "#120914"
   raised-plum: "#1a0d1d"
@@ -102,6 +102,8 @@ Wisal presents invitation craft and guest control as one composed instrument. Pl
 
 The world is editorial, nocturnal, and precise. It avoids the soft gradients, florals, pill-heavy controls, and interchangeable pastel cards of a generic wedding-template catalogue. Its drama comes from scale, sparse light, and working-instrument geometry rather than decoration.
 
+Inside that dependable product world, the public invitation is an **Invitation Keepsake Cabinet / خزانة المقتنيات الاحتفالية**: twelve authored artifacts rather than one shell with twelve colorways. Every concept owns its opening treatment, image crop, type composition, material palette, frame geometry, and mobile arrangement. The RSVP, schedule, countdown, privacy, and language controls remain structurally consistent, but inherit the selected keepsake's semantic background, paper, ink, muted, accent, and dark roles.
+
 **Key Characteristics:**
 
 - A near-black plum field with cold ivory type and copper used as a scarce navigational signal.
@@ -109,6 +111,8 @@ The world is editorial, nocturnal, and precise. It avoids the soft gradients, fl
 - Ruled rails and circular orbit marks that make guest status feel measured and live.
 - One pale invitation plate held inside the darker system as the principal luminous object.
 - Complete LTR and RTL composition, with Arabic display typography treated as a native mode.
+- Twelve visually distinct invitation artifacts connected by one reliable bilingual guest journey.
+- A shared six-role invitation palette contract that lets operational controls belong to each keepsake without changing their behavior.
 
 ## Colors
 
@@ -137,6 +141,12 @@ The palette behaves like a dark observatory: three close plum surfaces establish
 
 **The One Light Plate Rule.** Pale invitation paper belongs to the invitation artifact. The surrounding product interface remains dark so the crafted object keeps its authority.
 
+### Invitation Collection
+
+Each keepsake defines six local semantic roles—background, paper, ink, muted ink, accent, and dark contrast—rather than borrowing the atlas palette indiscriminately. Love Poem is warm editorial parchment; Garden Night is sage botanical paper; Moonlight is blue-black glass; Golden Vows is burgundy and gilt; White Story is strict monochrome; Cinema Night is nocturnal film; Rose Garden is blush botanical; Cathedral Light is stone, blue-grey, and antique gold; Desert Sunset is terracotta and sand; Velvet Night is black cherry and brass; Coastal Breeze is sea-glass and rust; Modern Monogram is ink-green and muted gold.
+
+**The Artifact Before Theme Rule.** A concept must change composition, material, and image treatment—not merely swap accent colors.
+
 ## Typography
 
 **Display Font:** Cormorant Garamond Variable (with Cormorant Garamond and serif fallbacks)  
@@ -157,6 +167,8 @@ The palette behaves like a dark observatory: three close plum surfaces establish
 
 **The Two Voices Rule.** Serif type carries ceremony and propositions; sans-serif type carries instructions, controls, evidence, prices, and state.
 
+Within the keepsake collection, the same two type families may change posture: centered and engraved, left- or right-aligned and editorial, cinematic at the lower edge, or deliberately sans-serif and minimal. Arabic keeps native shaping and leading in every composition; visual distinctness never comes from forcing Latin tracking onto Arabic.
+
 ## Layout
 
 The desktop hero is an asymmetrical two-column field: a compact copy column occupies roughly the left third while the astrolabe stage owns the larger right field. The invitation sits near the center of that instrument and the RSVP rail crosses its lower edge. A vertical copper rule quietly establishes the copy axis.
@@ -166,6 +178,8 @@ Sections use fluid side padding and an 84–150px vertical range. Ruled proof an
 At 1100px, the stage and complex grids compress. At 900px, navigation simplifies, hero columns stack, proof becomes three columns below its proposition, and the story becomes a single column. At 600px, the primary action becomes full width, sections reduce to 18px side gutters, proof and template grids become single-column, pricing loses its desktop featured inset, and the RSVP rail spans the instrument stage.
 
 **The Instrument Owns the Air Rule.** Do not center the hero into two equal cards. Preserve the imbalance between concise copy and the large working visual.
+
+Invitation openings and heroes fill the available viewport and compose around the artifact's image rather than a universal centered card. Desktop concepts may use split editorial fields, chapel arches, framed central plates, or bottom-weighted cinematic copy. At 700px and below, those arrangements intentionally recompose: split fields become vertical image-to-paper stories, cinematic crops protect faces and text, and operational content settles into a readable single column with 16px minimum side gutters.
 
 ## Elevation & Depth
 
@@ -180,6 +194,8 @@ The system is flat by default and uses tonal layering, thin rules, and overlap f
 
 **The Physical Object Rule.** If a surface is not an object or an overlay, separate it with tone and rules rather than a shadow.
 
+Keepsakes use depth according to their material: translucent blur for Moonlight, mounted paper shadow for editorial artifacts, image falloff for cinematic concepts, and tonal separation for White Story. Shared RSVP and schedule cards use one restrained ambient shadow tinted from the active concept's dark role.
+
 ## Shapes
 
 The form language is precise and instrument-like. Primary controls, invitation controls, overlays, and framed media use restrained 3–6px corners. True circles are reserved for orbit nodes, the final celestial rings, icons, and the scrollbar thumb. Long pill buttons do not belong to this marketing world; the rounded mobile quick-navigation dock is the deliberate app-shell exception, visually separating persistent product navigation from the atlas content.
@@ -187,6 +203,8 @@ The form language is precise and instrument-like. Primary controls, invitation c
 Borders are one-pixel copper or ivory rules. Media is clipped into quiet rectangular frames; large circular geometry sits behind content and never rounds the content container itself.
 
 **The Square Control Rule.** Calls to action and functional overlays use compact corners, not soft capsules.
+
+The invitation collection permits authored silhouettes where they carry meaning: garden and rose concepts use tall botanical arches, Cathedral Light uses a chapel arch, Modern Monogram uses clipped corners, and White Story uses ruled rectangles. These silhouettes belong to the keepsake art; interactive controls retain restrained 3–4px corners and clear focus outlines.
 
 ## Components
 
@@ -215,6 +233,18 @@ The signature response rail is a translucent raised-plum strip crossing the invi
 
 Journey steps sit on one ruled vertical path. Copper-outlined circular icons interrupt the line, while serif titles and muted explanatory copy create a measured sequence without conventional numbered cards.
 
+### Invitation Keepsake Collection
+
+Each of the twelve template codes resolves to one stable concept across the studio tile, phone preview, opening scene, and public hero. The compact studio specimen carries an edition label, monogram or intentional absence, invitation line, couple composition, date, place, and action rendered through the concept's local palette and silhouette. The public experience expands the same visual grammar to the full viewport rather than substituting a generic theme.
+
+### Guest Flow Controls
+
+Schedule rows, countdown, segment responses, party size, meal preference, privacy copy, and the primary RSVP action share one dependable structure. Their paper, ink, accent, selection, and focus colors resolve from the active keepsake. The selected response uses the concept's dark role; the primary action uses its accent role and always exposes a 2px focus outline with 4px offset.
+
+### Keepsake Reveal
+
+The signature entrance is a single 850ms clip, blur, and 26px vertical translation that resolves completely and then stops. It reveals the main invitation copy once; it does not loop or compete with RSVP interaction. Reduced-motion preference removes both this reveal and hover translation while preserving the final composition.
+
 ## Do's and Don'ts
 
 ### Do:
@@ -224,6 +254,8 @@ Journey steps sit on one ruled vertical path. Copper-outlined circular icons int
 - **Do** let one crafted invitation or artifact dominate a composition while operational proof crosses or frames it.
 - **Do** mirror composition and directional arrows for RTL, and switch Arabic display copy to Noto Naskh Arabic with its own leading.
 - **Do** honor reduced-motion and reduced-transparency preferences without weakening hierarchy.
+- **Do** preserve the selected template code from studio specimen through opening scene, public hero, and guest controls.
+- **Do** give each invitation a distinct responsive composition while keeping RSVP behavior and information order dependable.
 
 ### Don't:
 
@@ -232,3 +264,5 @@ Journey steps sit on one ruled vertical path. Copper-outlined circular icons int
 - **Don't** introduce pill-shaped primary controls or excessive corner rounding into the atlas world.
 - **Don't** add unverified testimonials, customer counts, conversion claims, or payment capability as visual proof.
 - **Don't** animate continuously. Entry motion should reveal hierarchy, settle, and disappear.
+- **Don't** collapse the twelve keepsakes into one universal card with palette swaps.
+- **Don't** let a decorative opening obscure the invitation title, open action, or Escape-to-skip path.

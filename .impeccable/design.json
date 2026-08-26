@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-25T16:29:43.0811438+03:00",
+  "generatedAt": "2026-08-26T13:29:12.1328788+03:00",
   "title": "Design System: Wisal Celestial Guest Atlas",
   "extensions": {
     "colorMeta": {
@@ -31,7 +31,7 @@
       { "name": "response-overlay", "value": "0 22px 54px rgba(5, 2, 7, .42)", "purpose": "Lifts live RSVP and proof overlays above media." }
     ],
     "motion": [
-      { "name": "reveal-ease", "value": "cubic-bezier(.16, 1, .3, 1)", "purpose": "Settled entrance motion for copy, instrument, invitation, rail, and template media." },
+      { "name": "reveal-ease", "value": "cubic-bezier(.16, 1, .3, 1)", "purpose": "Single settled reveal for atlas content and the keepsake hero's clip, blur, and 26px translation." },
       { "name": "navigation-ease", "value": "cubic-bezier(.2, .8, .2, 1)", "purpose": "Copper underline reveal in desktop navigation." },
       { "name": "state-fast", "value": ".22s ease", "purpose": "Primary button hover and press feedback." },
       { "name": "media-drift", "value": ".8s cubic-bezier(.16, 1, .3, 1)", "purpose": "Restrained template-image scale on hover." }
@@ -39,6 +39,7 @@
     "breakpoints": [
       { "name": "desktop-compact", "value": "1100px" },
       { "name": "tablet-stack", "value": "900px" },
+      { "name": "invitation-recompose", "value": "700px" },
       { "name": "mobile", "value": "600px" }
     ]
   },
@@ -88,21 +89,38 @@
       "description": "A ruled workflow step with a copper circular marker, serif title, and quiet operational copy.",
       "html": "<article class=\"ds-orbit-step\"><span class=\"ds-orbit-icon\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.4\" aria-hidden=\"true\"><path d=\"M4 5h16v14H4zM9 5v14M9 10h11\"/></svg></span><div><h3>Choose the template</h3><p>Begin with a design that suits the celebration.</p></div></article>",
       "css": ".ds-orbit-step { position: relative; width: 460px; min-height: 142px; display: grid; grid-template-columns: 60px 1fr; gap: 28px; padding: 12px 0 40px; color: #f6efe7; font-family: 'Manrope', 'Segoe UI', Arial, sans-serif; } .ds-orbit-step::before { content: ''; position: absolute; top: 54px; bottom: 0; left: 20px; width: 1px; background: rgba(215,146,97,.28); } .ds-orbit-icon { position: relative; z-index: 1; width: 42px; height: 42px; display: grid; place-items: center; border: 1px solid #d79261; border-radius: 50%; background: #1a0d1d; color: #efad76; } .ds-orbit-step h3 { margin: 2px 0 13px; font: 540 36px/1 'Cormorant Garamond', Georgia, serif; } .ds-orbit-step p { max-width: 360px; margin: 0; color: #b9aeb9; font-size: 13px; line-height: 1.8; }"
+    },
+    {
+      "name": "Love Poem Keepsake Specimen",
+      "kind": "card",
+      "description": "A representative authored specimen showing how one template owns its material, image treatment, composition, and action rather than receiving a palette swap.",
+      "html": "<article class=\"ds-keepsake\"><small>EDITION 01</small><i aria-hidden=\"true\"></i><p>WITH LOVE, WE INVITE YOU</p><h2>Layla <em>&amp;</em> Kareem</h2><time>18 · 10 · 2026</time><span>Nile Palace · Cairo</span><button>OPEN INVITATION</button></article>",
+      "css": ".ds-keepsake { position: relative; width: 280px; min-height: 390px; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; isolation: isolate; padding: 36px 24px; border-radius: 12px; background: #efe6d8 url('/brand/templates/editorial-background-v2.webp') center/cover no-repeat; color: #493522; text-align: center; font-family: 'Manrope', 'Segoe UI', Arial, sans-serif; box-shadow: 0 22px 58px rgba(52,39,25,.14); } .ds-keepsake::after { content: ''; position: absolute; inset: 12px 22px; z-index: -1; border: 1px solid rgba(116,76,35,.3); } .ds-keepsake small { position: absolute; top: 18px; left: 22px; color: #75624e; font-size: 8px; font-weight: 750; letter-spacing: .13em; } .ds-keepsake i { width: 48px; height: 1px; margin-bottom: 22px; background: #9a6c38; } .ds-keepsake p { margin: 0; color: #75624e; font-size: 9px; font-weight: 600; letter-spacing: .06em; } .ds-keepsake h2 { max-width: 95%; margin: 14px 0 16px; font: 500 38px/.95 'Cormorant Garamond', Georgia, serif; } .ds-keepsake h2 em { color: #9a6c38; font-weight: 500; } .ds-keepsake time { color: #9a6c38; font-size: 9px; font-weight: 700; letter-spacing: .1em; } .ds-keepsake span { margin-top: 20px; color: #75624e; font-size: 10px; } .ds-keepsake button { min-height: 42px; margin-top: 22px; padding: 0 20px; border: 1px solid #9a6c38; border-radius: 3px; background: transparent; color: #493522; font-size: 9px; font-weight: 750; letter-spacing: .06em; transition: transform .22s ease, background-color .22s ease; } .ds-keepsake button:hover { background: #9a6c38; color: #342719; transform: translateY(-2px); } .ds-keepsake button:focus-visible { outline: 2px solid #9a6c38; outline-offset: 4px; }"
+    },
+    {
+      "name": "Concept-Aware RSVP Choice",
+      "kind": "button",
+      "description": "The dependable guest response control expressed through the active keepsake's semantic paper, ink, accent, and dark roles.",
+      "html": "<div class=\"ds-guest-choice\" role=\"group\" aria-label=\"Reception response\"><button class=\"ds-selected\" aria-pressed=\"true\">Attending</button><button aria-pressed=\"false\">Maybe</button><button aria-pressed=\"false\">Decline</button></div>",
+      "css": ".ds-guest-choice { --ds-paper: #f8f2e8; --ds-ink: #473522; --ds-accent: #9a6b36; --ds-dark: #342719; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 360px; padding: 16px; border: 1px solid rgba(71,53,34,.13); border-radius: 4px; background: var(--ds-paper); box-shadow: 0 22px 58px rgba(52,39,25,.14); } .ds-guest-choice button { min-height: 44px; padding: 0 12px; border: 1px solid rgba(71,53,34,.18); border-radius: 3px; background: transparent; color: var(--ds-ink); font: 700 11px/1 'Manrope', 'Segoe UI', Arial, sans-serif; transition: transform .22s ease, background-color .22s ease; } .ds-guest-choice button:hover { border-color: var(--ds-accent); transform: translateY(-2px); } .ds-guest-choice button.ds-selected { border-color: var(--ds-dark); background: var(--ds-dark); color: var(--ds-paper); } .ds-guest-choice button:focus-visible { outline: 2px solid var(--ds-accent); outline-offset: 4px; }"
     }
   ],
   "narrative": {
     "northStar": "The Celestial Guest Atlas",
-    "overview": "Wisal presents invitation craft and guest control as one composed instrument. Plum-black observatory fields make the interface feel ceremonial without becoming ornamental; copper rules, orbit markers, and one luminous invitation plate turn operational RSVP information into part of the same visual story.\n\nThe world is editorial, nocturnal, and precise. It avoids the soft gradients, florals, pill-heavy controls, and interchangeable pastel cards of a generic wedding-template catalogue. Its drama comes from scale, sparse light, and working-instrument geometry rather than decoration.",
+    "overview": "Wisal presents invitation craft and guest control as one composed instrument. Plum-black observatory fields make the interface feel ceremonial without becoming ornamental; copper rules, orbit markers, and one luminous invitation plate turn operational RSVP information into part of the same visual story.\n\nThe world is editorial, nocturnal, and precise. It avoids the soft gradients, florals, pill-heavy controls, and interchangeable pastel cards of a generic wedding-template catalogue. Its drama comes from scale, sparse light, and working-instrument geometry rather than decoration.\n\nInside that dependable product world, the public invitation is an Invitation Keepsake Cabinet / خزانة المقتنيات الاحتفالية: twelve authored artifacts rather than one shell with twelve colorways. Every concept owns its opening treatment, image crop, type composition, material palette, frame geometry, and mobile arrangement. The RSVP, schedule, countdown, privacy, and language controls remain structurally consistent, but inherit the selected keepsake's semantic background, paper, ink, muted, accent, and dark roles.",
     "keyCharacteristics": [
       "A near-black plum field with cold ivory type and copper used as a scarce navigational signal.",
       "Large, low-leading serif headlines balanced by compact, highly legible interface labels.",
       "Ruled rails and circular orbit marks that make guest status feel measured and live.",
       "One pale invitation plate held inside the darker system as the principal luminous object.",
-      "Complete LTR and RTL composition, with Arabic display typography treated as a native mode."
+      "Complete LTR and RTL composition, with Arabic display typography treated as a native mode.",
+      "Twelve visually distinct invitation artifacts connected by one reliable bilingual guest journey.",
+      "A shared six-role invitation palette contract that lets operational controls belong to each keepsake without changing their behavior."
     ],
     "rules": [
       { "name": "The Copper Is an Instrument Rule", "body": "Copper indicates action, measurement, or a live state; it is never sprayed across large decorative surfaces.", "section": "colors" },
       { "name": "The One Light Plate Rule", "body": "Pale invitation paper belongs to the invitation artifact. The surrounding product interface remains dark so the crafted object keeps its authority.", "section": "colors" },
+      { "name": "The Artifact Before Theme Rule", "body": "A concept must change composition, material, and image treatment—not merely swap accent colors.", "section": "colors" },
       { "name": "The Two Voices Rule", "body": "Serif type carries ceremony and propositions; sans-serif type carries instructions, controls, evidence, prices, and state.", "section": "typography" },
       { "name": "The Instrument Owns the Air Rule", "body": "Do not center the hero into two equal cards. Preserve the imbalance between concise copy and the large working visual.", "section": "layout" },
       { "name": "The Physical Object Rule", "body": "If a surface is not an object or an overlay, separate it with tone and rules rather than a shadow.", "section": "elevation" },
@@ -113,14 +131,18 @@
       "Do use rules, axes, orbit marks, and asymmetric grids to organize dense information.",
       "Do let one crafted invitation or artifact dominate a composition while operational proof crosses or frames it.",
       "Do mirror composition and directional arrows for RTL, and switch Arabic display copy to Noto Naskh Arabic with its own leading.",
-      "Do honor reduced-motion and reduced-transparency preferences without weakening hierarchy."
+      "Do honor reduced-motion and reduced-transparency preferences without weakening hierarchy.",
+      "Do preserve the selected template code from studio specimen through opening scene, public hero, and guest controls.",
+      "Do give each invitation a distinct responsive composition while keeping RSVP behavior and information order dependable."
     ],
     "donts": [
       "Don't turn Wisal into a pastel wedding-template catalogue, floral mood board, or grid of interchangeable rounded cards.",
       "Don't use copper as a large background wash; its rarity is what makes action and measurement legible.",
       "Don't introduce pill-shaped primary controls or excessive corner rounding into the atlas world.",
       "Don't add unverified testimonials, customer counts, conversion claims, or payment capability as visual proof.",
-      "Don't animate continuously. Entry motion should reveal hierarchy, settle, and disappear."
+      "Don't animate continuously. Entry motion should reveal hierarchy, settle, and disappear.",
+      "Don't collapse the twelve keepsakes into one universal card with palette swaps.",
+      "Don't let a decorative opening obscure the invitation title, open action, or Escape-to-skip path."
     ]
   }
 }
