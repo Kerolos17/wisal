@@ -37,5 +37,20 @@ test("message composer calculates the actual audience across groups and event st
   assert.match(dashboardSource, /const getRecipientSummary = \(audience: MessageAudience, groupId: string \| null, segmentId: string \| null\)/);
   assert.match(dashboardSource, /openCompose\("pending", null, item\.segment\.id\)/);
   assert.match(dashboardSource, /getRecipientSummary=\{getRecipientSummary\}/);
-  assert.match(dashboardSource, /This reminder currently reaches/);
+  assert.match(dashboardSource, /Current audience:/);
+});
+
+test("saved messages become an explicit manual WhatsApp follow-up queue", () => {
+  assert.match(dashboardSource, /WhatsAppQueueModal/);
+  assert.match(dashboardSource, /Wisal never sends these messages automatically/);
+  assert.match(dashboardSource, /replaceAll\("\{name\}"/);
+  assert.match(dashboardSource, /replaceAll\("\{link\}"/);
+  assert.match(dashboardSource, /setCompletedIds/);
+});
+
+test("guest workflow separates unopened, opened-pending, and responded invitations", () => {
+  assert.match(dashboardSource, /follow-up-strip/);
+  assert.match(dashboardSource, /filter === "فتح ولم يرد"/);
+  assert.match(dashboardSource, /Not opened — send invitation/);
+  assert.match(dashboardSource, /Opened, no reply — follow up gently/);
 });
