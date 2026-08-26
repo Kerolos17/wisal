@@ -1,5 +1,5 @@
 import { createEvent, listEvents } from "@/lib/wisal-data";
-import { getCurrentOwnerEmail } from "@/lib/current-owner";
+import { getCurrentOwnerEmail, ownerApiError } from "@/lib/current-owner";
 
 export const dynamic = "force-dynamic";
 
@@ -7,8 +7,7 @@ export async function GET() {
   try {
     return Response.json({ events: await listEvents(await getCurrentOwnerEmail()) });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "تعذر تحميل المناسبات";
-    return Response.json({ error: message }, { status: 500 });
+    return ownerApiError(error, "تعذر تحميل المناسبات");
   }
 }
 
@@ -24,7 +23,6 @@ export async function POST(request: Request) {
     const event = await createEvent(await getCurrentOwnerEmail(), payload);
     return Response.json(event, { status: 201 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "تعذر إنشاء المناسبة";
-    return Response.json({ error: message }, { status: 500 });
+    return ownerApiError(error, "تعذر إنشاء المناسبة");
   }
 }

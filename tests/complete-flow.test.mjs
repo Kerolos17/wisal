@@ -8,6 +8,7 @@ const eventsRouteSource = await readFile(new URL("../app/api/events/route.ts", i
 const eventRouteSource = await readFile(new URL("../app/api/events/[id]/route.ts", import.meta.url), "utf8");
 const rsvpRouteSource = await readFile(new URL("../app/api/rsvp/route.ts", import.meta.url), "utf8");
 const dataSource = await readFile(new URL("../lib/wisal-data.ts", import.meta.url), "utf8");
+const ownerSource = await readFile(new URL("../lib/current-owner.ts", import.meta.url), "utf8");
 
 test("new event creation rejects impossible dates on client and server", () => {
   assert.match(pageSource, /Number\.isNaN\(new Date\(form\.eventDate\)\.getTime\(\)\)/);
@@ -37,4 +38,9 @@ test("public invitation handles deadline and server errors clearly", () => {
   assert.match(publicInviteSource, /result\?\.error \|\| t\.saveError/);
   assert.match(rsvpRouteSource, /expectedError \? 400 : 500/);
   assert.match(dataSource, /Date\.now\(\) > deadline\.getTime\(\)/);
+});
+
+test("event APIs return an authentication status instead of a server failure", () => {
+  assert.match(ownerSource, /message === "Authentication required" \? 401 : 500/);
+  assert.match(eventsRouteSource, /ownerApiError/);
 });
