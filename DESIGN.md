@@ -112,7 +112,7 @@ Inside that dependable product world, the public invitation is an **Invitation K
 - One pale invitation plate held inside the darker system as the principal luminous object.
 - Complete LTR and RTL composition, with Arabic display typography treated as a native mode.
 - Twelve visually distinct invitation artifacts connected by one reliable bilingual guest journey.
-- A shared six-role invitation palette contract that lets operational controls belong to each keepsake without changing their behavior.
+- A shared seven-role invitation palette contract that lets operational controls belong to each keepsake without changing their behavior.
 
 ## Colors
 
@@ -143,7 +143,7 @@ The palette behaves like a dark observatory: three close plum surfaces establish
 
 ### Invitation Collection
 
-Each keepsake defines six local semantic roles—background, paper, ink, muted ink, accent, and dark contrast—rather than borrowing the atlas palette indiscriminately. Love Poem is warm editorial parchment; Garden Night is sage botanical paper; Moonlight is blue-black glass; Golden Vows is burgundy and gilt; White Story is strict monochrome; Cinema Night is nocturnal film; Rose Garden is blush botanical; Cathedral Light is stone, blue-grey, and antique gold; Desert Sunset is terracotta and sand; Velvet Night is black cherry and brass; Coastal Breeze is sea-glass and rust; Modern Monogram is ink-green and muted gold.
+Each keepsake defines seven local semantic roles—background, paper, ink, muted ink, accent, dark contrast, and action text—rather than borrowing the atlas palette indiscriminately. The action-text role is chosen independently for each accent and must maintain at least 4.5:1 contrast. Love Poem is warm editorial parchment; Garden Night is sage botanical paper; Moonlight is blue-black glass; Golden Vows is burgundy and gilt; White Story is strict monochrome; Cinema Night is nocturnal film; Rose Garden is blush botanical; Cathedral Light is stone, blue-grey, and antique gold; Desert Sunset is terracotta and sand; Velvet Night is black cherry and brass; Coastal Breeze is sea-glass and rust; Modern Monogram is ink-green and muted gold.
 
 **The Artifact Before Theme Rule.** A concept must change composition, material, and image treatment—not merely swap accent colors.
 
@@ -240,6 +240,10 @@ Each of the twelve template codes resolves to one stable concept across the stud
 ### Guest Flow Controls
 
 Schedule rows, countdown, segment responses, party size, meal preference, privacy copy, and the primary RSVP action share one dependable structure. Their paper, ink, accent, selection, and focus colors resolve from the active keepsake. The selected response uses the concept's dark role; the primary action uses its accent role and always exposes a 2px focus outline with 4px offset.
+
+### Operational Surfaces
+
+Studio, event dashboard, and administration share one semantic token layer: canvas, surface, raised surface, ink, muted text, accent, soft accent, border, navigation, and elevation. These roles keep forms, panels, sidebars, and states visually consistent without borrowing colors from an individual invitation concept. Operational labels and metadata never render below 12px, touch controls reach at least 44px on mobile, and every interactive control exposes a visible three-pixel focus ring.
 
 ### Keepsake Reveal
 

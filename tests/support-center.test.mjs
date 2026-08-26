@@ -33,6 +33,7 @@ test("support staff can update tickets while users receive an automatic notifica
 });
 
 test("user and administration dashboards expose support, notifications, and reports", () => {
+  assert.match(page, /const AccountCenter = lazy\(\(\) => import\("\.\/account-center"\)\)/);
   assert.match(page, /<AccountCenter locale=\{locale\} mode="notifications"/);
   assert.match(page, /<AccountCenter locale=\{locale\} mode="support"/);
   assert.match(accountCenter, /Notification center/);

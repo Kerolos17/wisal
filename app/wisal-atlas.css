@@ -1190,3 +1190,13 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
     -webkit-backdrop-filter: none;
   }
 }
+
+.atlas-header-demo button,
+.atlas-invitation button {
+  min-height: 44px;
+}
+
+.atlas-footer a {
+  min-width: 44px;
+  min-height: 44px;
+}

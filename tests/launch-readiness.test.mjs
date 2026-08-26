@@ -15,6 +15,8 @@ test("dashboard gives event owners a concrete launch-readiness checklist", () =>
   assert.match(page, /Invitation launch readiness/);
   assert.match(page, /Locations & stages/);
   assert.match(styles, /\.launch-checks\{display:grid/);
+  assert.match(page, /transform: `scaleX\(\$\{launchScore \/ 100\}\)`/);
+  assert.doesNotMatch(styles, /transition:[^;}]*width/);
 });
 
 test("production metadata supports discovery without indexing private routes", () => {

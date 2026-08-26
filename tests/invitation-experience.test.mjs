@@ -91,6 +91,24 @@ test("every invitation resolves to its own authored concept", () => {
   assert.match(pageSource, /template-concept-\$\{template\.code\}/);
 });
 
+test("every invitation concept gives its primary action readable contrast", () => {
+  const concepts = ["love-poem", "garden-night", "moonlight", "golden-vows", "white-story", "cinema-night", "rose-garden", "cathedral-light", "desert-sunset", "velvet-night", "coastal-breeze", "modern-monogram"];
+  const luminance = (hex) => {
+    const value = hex.slice(1).length === 3 ? hex.slice(1).split("").map((char) => char + char).join("") : hex.slice(1);
+    const channels = [0, 2, 4].map((index) => Number.parseInt(value.slice(index, index + 2), 16) / 255).map((channel) => channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4);
+    return channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722;
+  };
+  for (const concept of concepts) {
+    const declaration = stylesSource.match(new RegExp(`\\.invite-concept-${concept}\\{([^}]+)\\}`))?.[1] ?? "";
+    const accent = declaration.match(/--ci-accent:(#[0-9a-f]{3,6})/i)?.[1];
+    const text = declaration.match(/--ci-action-text:(#[0-9a-f]{3,6})/i)?.[1];
+    assert.ok(accent && text, `${concept} must declare action colors`);
+    const ratio = (Math.max(luminance(accent), luminance(text)) + 0.05) / (Math.min(luminance(accent), luminance(text)) + 0.05);
+    assert.ok(ratio >= 4.5, `${concept} action contrast is ${ratio.toFixed(2)}:1`);
+  }
+  assert.match(stylesSource, /\.invite-primary-action[^}]+color:var\(--ci-action-text\)/);
+});
+
 test("English remains the platform default while Arabic is an explicit preference", async () => {
   const localeSource = await readFile(new URL("../app/use-wisal-locale.ts", import.meta.url), "utf8");
   assert.match(localeSource, /DEFAULT_LOCALE: Locale = "en"/);
