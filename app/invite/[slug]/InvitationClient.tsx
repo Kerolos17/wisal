@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import { CalendarDays, ChevronDown, Clock3, MapPin } from "lucide-react";
 import { useWisalLocale } from "@/app/use-wisal-locale";
+import { resolveInvitationConcept } from "@/lib/invitation-concepts";
 
 type InvitationData = {
   event: { id: string; brideName: string; groomName: string; eventDate: string; venue: string; city: string; mapUrl: string };
@@ -91,6 +92,7 @@ export default function InvitationClient({ data }: { data: InvitationData }) {
   const rsvpClosed = Boolean(deadline && !Number.isNaN(deadline.getTime()) && openedAt > deadline.getTime());
   const deadlineLabel = deadline && !Number.isNaN(deadline.getTime()) ? deadlineFormatter.format(deadline) : invitation.rsvpDeadline;
   const templateArt = publicTemplateArt[invitation.template] ?? "editorial";
+  const templateConcept = resolveInvitationConcept(invitation.template);
   const sectionOrder = Array.isArray(invitation.sectionOrder) && invitation.sectionOrder.length === 4 ? invitation.sectionOrder : ["message", "countdown", "schedule", "rsvp"];
   const secondsUntilEvent = Math.max(0, Math.floor((eventDate.getTime() - now) / 1000));
   const countdown = { days: Math.floor(secondsUntilEvent / 86400), hours: Math.floor((secondsUntilEvent % 86400) / 3600), minutes: Math.floor((secondsUntilEvent % 3600) / 60) };
@@ -200,7 +202,7 @@ export default function InvitationClient({ data }: { data: InvitationData }) {
 
   return (
     <>
-      {openingState !== "open" && <section dir={ar ? "rtl" : "ltr"} className={`invite-opening opening-mode-${invitation.openingStyle} opening-theme-${templateArt} ${openingState === "opening" ? "is-opening" : ""}`} aria-label={t.open}>
+      {openingState !== "open" && <section dir={ar ? "rtl" : "ltr"} className={`invite-opening opening-mode-${invitation.openingStyle} opening-theme-${templateArt} opening-concept-${templateConcept} ${openingState === "opening" ? "is-opening" : ""}`} aria-label={t.open}>
         <button className="invite-locale-control" onClick={() => setLocale(ar ? "en" : "ar")}>{ar ? "EN" : "عربي"}</button>
         <button className="opening-skip" type="button" onClick={() => setOpeningState("open")}>{ar ? "تخطي المقدمة" : "Skip intro"}</button>
         <div className="curtain-panel curtain-right" /><div className="curtain-panel curtain-left" />
@@ -209,9 +211,9 @@ export default function InvitationClient({ data }: { data: InvitationData }) {
         <div className="opening-card" aria-hidden="true"><small>{guest ? `${t.privateInvite} ${guest.name}` : t.special}</small><strong>{event.brideName} <i>&</i> {event.groomName}</strong><span>❦</span></div>
         <div className="opening-copy"><small>{guest ? `${t.welcome} ${guest.name}` : t.special}</small><h1>{event.brideName} <span>&</span> {event.groomName}</h1><p>{t.inside}</p><button className="opening-action" type="button" onClick={openInvitation}>{t.open} <span>{ar ? "←" : "→"}</span></button><em>{ar ? "تجربة قصيرة ومناسبة للجوال" : "A short, mobile-friendly experience"}</em></div>
       </section>}
-    <main ref={contentRef} tabIndex={-1} dir={ar ? "rtl" : "ltr"} lang={locale} className={`public-invite invite-${invitation.accentColor} guest-template-${templateArt} layout-${invitation.layoutStyle} ${openingState === "open" ? "invite-revealed" : ""}`}>
+    <main ref={contentRef} tabIndex={-1} dir={ar ? "rtl" : "ltr"} lang={locale} className={`public-invite invite-${invitation.accentColor} guest-template-${templateArt} invite-concept-${templateConcept} layout-${invitation.layoutStyle} ${openingState === "open" ? "invite-revealed" : ""}`}>
       <div className="invite-controls"><button onClick={() => setLocale(ar ? "en" : "ar")} aria-label={ar ? "Switch to English" : "التبديل إلى العربية"}>{ar ? "EN" : "عربي"}</button><button onClick={() => void toggleMusic()} aria-pressed={musicPlaying}><span>{musicPlaying ? "Ⅱ" : "♪"}</span>{musicPlaying ? t.musicOn : t.musicOff}</button></div>
-      {(["editorial", "botanical", "cinematic"] as TemplateArt[]).includes(templateArt) ? <section className={`signature-invite-hero signature-${templateArt} ${coverUrl ? "with-cover" : ""}`} style={coverUrl ? { "--guest-photo": `url(${coverUrl})` } as CSSProperties : undefined}>
+      {(["editorial", "botanical", "cinematic"] as TemplateArt[]).includes(templateArt) ? <section className={`signature-invite-hero signature-${templateArt} concept-${templateConcept} ${coverUrl ? "with-cover" : ""}`} style={coverUrl ? { "--guest-photo": `url(${coverUrl})` } as CSSProperties : undefined}>
         <div className="signature-copy">
           <Image className="signature-monogram" src="/brand/wisal-monogram-64.png" width={56} height={56} alt="" unoptimized />
           <small className="signature-kicker">{guest ? `${t.privateInvite} ${guest.name}` : ar ? "نحتفل بحبنا" : "We’re getting married"}</small>
@@ -226,7 +228,7 @@ export default function InvitationClient({ data }: { data: InvitationData }) {
           {invitation.rsvpEnabled && <button className="signature-rsvp" type="button" onClick={() => document.getElementById("invitation-rsvp")?.scrollIntoView({ behavior: "smooth" })}>{t.rsvp} <span>{ar ? "←" : "→"}</span></button>}
         </div>
         <button className="signature-scroll" type="button" aria-label={t.scroll} onClick={() => contentRef.current?.querySelector(".guest-content")?.scrollIntoView({ behavior: "smooth" })}><ChevronDown aria-hidden="true" /></button>
-      </section> : <section className={`guest-cover image-treatment-${templateArt} ${coverUrl ? "with-cover" : ""}`} style={coverUrl ? { "--guest-photo": `url(${coverUrl})` } as CSSProperties : undefined}>
+      </section> : <section className={`guest-cover image-treatment-${templateArt} concept-${templateConcept} ${coverUrl ? "with-cover" : ""}`} style={coverUrl ? { "--guest-photo": `url(${coverUrl})` } as CSSProperties : undefined}>
         <span className="guest-flower">❦</span><small>{guest ? `${t.privateInvite} ${guest.name}` : t.joy}</small><h1>{event.brideName} <b>&</b> {event.groomName}</h1><div className="guest-date"><span><b>{dateFormatter.format(eventDate)}</b><small>{timeFormatter.format(eventDate)}</small></span><i /><span><b>{event.venue}</b><small>{event.city}</small></span></div><div className="scroll-hint">{t.scroll}</div>
       </section>}
       <div className="guest-content">{sectionOrder.map((section) => sectionNodes[section as keyof typeof sectionNodes])}</div>
