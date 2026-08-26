@@ -1,6 +1,6 @@
 ---
 name: Wisal Celestial Guest Atlas
-description: A bilingual wedding invitation and guest-control system pairing a celestial product instrument with twelve authored celebration keepsakes.
+description: A bilingual wedding invitation and guest-control system pairing a celestial product instrument with six authored celebration keepsakes for the initial collection.
 colors:
   observatory-black: "#120914"
   raised-plum: "#1a0d1d"
@@ -102,7 +102,7 @@ Wisal presents invitation craft and guest control as one composed instrument. Pl
 
 The world is editorial, nocturnal, and precise. It avoids the soft gradients, florals, pill-heavy controls, and interchangeable pastel cards of a generic wedding-template catalogue. Its drama comes from scale, sparse light, and working-instrument geometry rather than decoration.
 
-Inside that dependable product world, the public invitation is an **Invitation Keepsake Cabinet / خزانة المقتنيات الاحتفالية**: twelve authored artifacts rather than one shell with twelve colorways. Every concept owns its opening treatment, image crop, type composition, material palette, frame geometry, and mobile arrangement. The RSVP, schedule, countdown, privacy, and language controls remain structurally consistent, but inherit the selected keepsake's semantic background, paper, ink, muted, accent, and dark roles.
+Inside that dependable product world, the public invitation is an **Invitation Keepsake Cabinet / خزانة المقتنيات الاحتفالية**: six authored artifacts in the initial collection rather than one shell with six colorways. Every concept owns its opening treatment, image crop, type composition, material palette, frame geometry, and mobile arrangement. The RSVP, schedule, countdown, privacy, and language controls remain structurally consistent, but inherit the selected keepsake's semantic background, paper, ink, muted, accent, and dark roles.
 
 **Key Characteristics:**
 
@@ -111,7 +111,7 @@ Inside that dependable product world, the public invitation is an **Invitation K
 - Ruled rails and circular orbit marks that make guest status feel measured and live.
 - One pale invitation plate held inside the darker system as the principal luminous object.
 - Complete LTR and RTL composition, with Arabic display typography treated as a native mode.
-- Twelve visually distinct invitation artifacts connected by one reliable bilingual guest journey.
+- Six visually distinct invitation artifacts connected by one reliable bilingual guest journey; the concept contract can expand later without changing guest-flow behavior.
 - A shared seven-role invitation palette contract that lets operational controls belong to each keepsake without changing their behavior.
 
 ## Colors
@@ -235,7 +235,7 @@ Journey steps sit on one ruled vertical path. Copper-outlined circular icons int
 
 ### Invitation Keepsake Collection
 
-Each of the twelve template codes resolves to one stable concept across the studio tile, phone preview, opening scene, and public hero. The compact studio specimen carries an edition label, monogram or intentional absence, invitation line, couple composition, date, place, and action rendered through the concept's local palette and silhouette. The public experience expands the same visual grammar to the full viewport rather than substituting a generic theme.
+Each of the six initial template codes resolves to one stable concept across the studio tile, phone preview, opening scene, and public hero. The compact studio specimen carries an edition label, monogram or intentional absence, invitation line, couple composition, date, place, and action rendered through the concept's local palette and silhouette. The public experience expands the same visual grammar to the full viewport rather than substituting a generic theme.
 
 ### Guest Flow Controls
 
@@ -268,5 +268,5 @@ The signature entrance is a single 850ms clip, blur, and 26px vertical translati
 - **Don't** introduce pill-shaped primary controls or excessive corner rounding into the atlas world.
 - **Don't** add unverified testimonials, customer counts, conversion claims, or payment capability as visual proof.
 - **Don't** animate continuously. Entry motion should reveal hierarchy, settle, and disappear.
-- **Don't** collapse the twelve keepsakes into one universal card with palette swaps.
+- **Don't** collapse the six initial keepsakes into one universal card with palette swaps.
 - **Don't** let a decorative opening obscure the invitation title, open action, or Escape-to-skip path.
