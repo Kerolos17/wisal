@@ -35,14 +35,19 @@ const contentSeed = [
   { key: "support_email", groupName: "support", valueAr: "support@wisal.app", valueEn: "support@wisal.app" },
 ];
 
-async function ensurePlatformData() {
+async function ensurePublicPlatformData() {
   const db = getDb();
-  const ownerEmail = getPlatformOwnerEmail();
   await Promise.all([
     db.insert(platformTemplates).values(templateSeed).onConflictDoNothing({ target: platformTemplates.code }),
     db.insert(platformPlans).values(planSeed).onConflictDoNothing({ target: platformPlans.code }),
     db.insert(platformContent).values(contentSeed).onConflictDoNothing({ target: platformContent.key }),
   ]);
+}
+
+async function ensurePlatformData() {
+  const db = getDb();
+  const ownerEmail = getPlatformOwnerEmail();
+  await ensurePublicPlatformData();
   await db.update(users).set({ role: "admin", updatedAt: new Date().toISOString() }).where(eq(users.email, ownerEmail));
 }
 
@@ -115,7 +120,7 @@ export async function updatePlatformContent(key: string, valueAr: string, valueE
 }
 
 export async function getPublicPlatformConfig() {
-  const db = getDb(); await ensurePlatformData();
+  const db = getDb(); await ensurePublicPlatformData();
   const [content, plans, templates] = await Promise.all([
     db.select({ key: platformContent.key, valueAr: platformContent.valueAr, valueEn: platformContent.valueEn }).from(platformContent),
     db.select({ code: platformPlans.code, nameAr: platformPlans.nameAr, nameEn: platformPlans.nameEn, priceEgp: platformPlans.priceEgp, guestLimit: platformPlans.guestLimit, featured: platformPlans.featured, featuresAr: platformPlans.featuresAr, featuresEn: platformPlans.featuresEn }).from(platformPlans).where(eq(platformPlans.active, true)).orderBy(asc(platformPlans.position)),

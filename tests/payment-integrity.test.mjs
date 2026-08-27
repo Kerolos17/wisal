@@ -45,4 +45,12 @@ describe("manual payment integrity contracts", () => {
     assert.match(checkout, /let activePaymentId = paymentId/);
     assert.match(status, /paymentId=\$\{encodeURIComponent\(payment\.id\)\}/);
   });
+
+  it("does not gate public platform content on the admin owner secret", () => {
+    const source = read("lib/admin-data.ts");
+    const publicConfig = source.slice(source.indexOf("export async function getPublicPlatformConfig"));
+    assert.match(source, /async function ensurePublicPlatformData/);
+    assert.match(publicConfig, /ensurePublicPlatformData\(\)/);
+    assert.doesNotMatch(publicConfig, /ensurePlatformData\(\)/);
+  });
 });
