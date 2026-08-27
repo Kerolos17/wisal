@@ -2,8 +2,7 @@ import { eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { users } from "@/db/schema";
 import type { PlatformIdentity } from "@/lib/auth/identity";
-
-const PLATFORM_OWNER_EMAIL = "kerolosmorkos1124@gmail.com";
+import { isPlatformOwner } from "@/lib/platform-owner";
 
 export async function ensureAccount(identity: PlatformIdentity) {
   const db = getDb();
@@ -13,6 +12,6 @@ export async function ensureAccount(identity: PlatformIdentity) {
     const [updated] = await db.update(users).set({ displayName: identity.displayName, updatedAt: new Date().toISOString() }).where(eq(users.id, existing.id)).returning();
     return { displayName: updated.displayName, email: updated.email, role: updated.role };
   }
-  const [created] = await db.insert(users).values({ email, displayName: identity.displayName, role: email === PLATFORM_OWNER_EMAIL ? "admin" : "couple" }).returning();
+  const [created] = await db.insert(users).values({ email, displayName: identity.displayName, role: isPlatformOwner(email) ? "admin" : "couple" }).returning();
   return { displayName: created.displayName, email: created.email, role: created.role };
 }
