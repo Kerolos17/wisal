@@ -22,7 +22,7 @@ const METHODS: Array<{ value: string; ar: string; en: string }> = [
   { value: "bank_transfer", ar: "تحويل بنكي", en: "Bank transfer" },
 ];
 
-export default function CheckoutClient({ plan }: { plan: CheckoutPlan }) {
+export default function CheckoutClient({ plan, initialPaymentId = null }: { plan: CheckoutPlan; initialPaymentId?: string | null }) {
   const [locale] = useWisalLocale();
   const router = useRouter();
   const L = (ar: string, en: string) => (locale === "ar" ? ar : en);
@@ -32,11 +32,11 @@ export default function CheckoutClient({ plan }: { plan: CheckoutPlan }) {
   const [payerPhone, setPayerPhone] = useState("");
   const [referenceNumber, setReferenceNumber] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("instapay");
-  const [amountPaid, setAmountPaid] = useState(String(plan.priceEgp));
+  const [amountPaid] = useState(String(plan.priceEgp));
   const [receipt, setReceipt] = useState<File | null>(null);
   const [state, setState] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
-  const [paymentId, setPaymentId] = useState<string | null>(null);
+  const [paymentId, setPaymentId] = useState<string | null>(initialPaymentId);
 
   const planName = locale === "ar" ? plan.nameAr : plan.nameEn;
 
@@ -49,15 +49,19 @@ export default function CheckoutClient({ plan }: { plan: CheckoutPlan }) {
     setState("submitting");
     setMessage("");
     try {
-      const createRes = await fetch("/api/payments", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ planCode: plan.code, idempotencyKey: idempotency.current }),
-      });
-      if (createRes.status === 401) { router.push(`/auth/sign-in?returnTo=${encodeURIComponent(`/checkout?plan=${plan.code}`)}`); return; }
-      if (!createRes.ok) { const data = await createRes.json().catch(() => ({})); throw new Error(data.error || L("تعذر بدء الطلب", "Could not start the request")); }
-      const { payment } = await createRes.json() as { payment: { id: string } };
-      setPaymentId(payment.id);
+      let activePaymentId = paymentId;
+      if (!activePaymentId) {
+        const createRes = await fetch("/api/payments", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ planCode: plan.code, idempotencyKey: idempotency.current }),
+        });
+        if (createRes.status === 401) { router.push(`/auth/sign-in?returnTo=${encodeURIComponent(`/checkout?plan=${plan.code}`)}`); return; }
+        if (!createRes.ok) { const data = await createRes.json().catch(() => ({})); throw new Error(data.error || L("تعذر بدء الطلب", "Could not start the request")); }
+        const created = await createRes.json() as { payment: { id: string } };
+        activePaymentId = created.payment.id;
+        setPaymentId(activePaymentId);
+      }
 
       const form = new FormData();
       form.append("receipt", receipt);
@@ -67,7 +71,7 @@ export default function CheckoutClient({ plan }: { plan: CheckoutPlan }) {
       form.append("payerName", payerName.trim());
       form.append("payerPhoneMasked", payerPhone.trim());
 
-      const submitRes = await fetch(`/api/payments/${payment.id}/submit`, { method: "PATCH", body: form });
+      const submitRes = await fetch(`/api/payments/${activePaymentId}/submit`, { method: "PATCH", body: form });
       if (!submitRes.ok) { const data = await submitRes.json().catch(() => ({})); throw new Error(data.error || L("تعذر إرسال الطلب", "Could not submit the request")); }
       setState("success");
     } catch (error) {
@@ -114,7 +118,8 @@ export default function CheckoutClient({ plan }: { plan: CheckoutPlan }) {
             </select>
           </label>
           <label>{L("المبلغ المدفوع (جنيه مصري)", "Amount paid (EGP)")}
-            <input type="number" min="0" value={amountPaid} onChange={(event) => setAmountPaid(event.target.value)} />
+            <input type="number" min="0" value={amountPaid} readOnly aria-describedby="checkout-amount-help" />
+            <small id="checkout-amount-help">{L("المبلغ ثابت حسب الباقة المختارة", "Amount is fixed to the selected plan")}</small>
           </label>
           <label>{L("اسم المودع", "Payer name")}
             <input value={payerName} onChange={(event) => setPayerName(event.target.value)} placeholder={L("الاسم على التحويل", "Name on the transfer")} />

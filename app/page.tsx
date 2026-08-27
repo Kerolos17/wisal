@@ -248,7 +248,7 @@ function Icon({ children }: { children: React.ReactNode }) {
   return <span className="icon" aria-hidden="true">{children}</span>;
 }
 
-type SubscriptionInfo = { planCode: string | null; status: string | null; expiresAt: string | null; latestPaymentStatus: string | null };
+type SubscriptionInfo = { planCode: string | null; status: string | null; expiresAt: string | null; latestPaymentId: string | null; latestPaymentPlanCode: string | null; latestPaymentStatus: string | null };
 
 function PlanCard({ locale, subscription, plans }: { locale: Locale; subscription: SubscriptionInfo; plans: PublicPlan[] }) {
   const ar = locale === "ar";
@@ -265,7 +265,7 @@ function PlanCard({ locale, subscription, plans }: { locale: Locale; subscriptio
           <b>{ar ? "طلب الدفع قيد المراجعة" : "Payment request under review"}</b>
           <p>{ar ? "سنفعّل باقتك بعد المراجعة. تابع الحالة من صفحة الدفع." : "Your plan activates after review. Track the status from checkout."}</p>
         </div>
-        <Link className="primary" href="/checkout">{ar ? "متابعة الدفع" : "Continue payment"}</Link>
+        <Link className="primary" href={`/checkout?plan=${encodeURIComponent(subscription.latestPaymentPlanCode ?? plan?.code ?? "elegant")}${subscription.latestPaymentId ? `&paymentId=${encodeURIComponent(subscription.latestPaymentId)}` : ""}`}>{ar ? "متابعة الدفع" : "Continue payment"}</Link>
       </section>
     );
   }
@@ -314,7 +314,7 @@ export default function Home({ initialView = "home", authenticated = false, acco
   const [publicContent, setPublicContent] = useState<PublicContent>({});
   const [publicTemplates, setPublicTemplates] = useState<PublicTemplate[]>(atelierTemplates);
   const [activePlanCode, setActivePlanCode] = useState<string | null>(null);
-  const [subscription, setSubscription] = useState<{ planCode: string | null; status: string | null; expiresAt: string | null; latestPaymentStatus: string | null } | null>(null);
+  const [subscription, setSubscription] = useState<SubscriptionInfo | null>(null);
   const [guestEditor, setGuestEditor] = useState<{ mode: "add" | "edit"; guest?: GuestRecord } | null>(null);
 
   const loadEvent = useCallback(async (eventId?: string, showLoading = true) => {
@@ -408,7 +408,7 @@ export default function Home({ initialView = "home", authenticated = false, acco
     void fetch("/api/me/subscription", { cache: "no-store" })
       .then(async (res) => {
         if (!res.ok || cancelled) return;
-        const data = await res.json() as { planCode: string | null; status: string | null; expiresAt: string | null; latestPaymentStatus: string | null };
+        const data = await res.json() as SubscriptionInfo;
         if (cancelled) return;
         setSubscription(data);
         setActivePlanCode(data.planCode ?? null);

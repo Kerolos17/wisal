@@ -10,10 +10,10 @@ export async function GET() {
   const identity = await getPlatformIdentity();
   if (!identity) return Response.json({ error: "Authentication required" }, { status: 401 });
   const [user] = await getDb().select({ id: users.id }).from(users).where(eq(users.email, identity.email)).limit(1);
-  if (!user) return Response.json({ planCode: null, status: null, expiresAt: null, latestPaymentStatus: null });
+  if (!user) return Response.json({ planCode: null, status: null, expiresAt: null, latestPaymentId: null, latestPaymentPlanCode: null, latestPaymentStatus: null });
   const sub = await getActiveSubscription(user.id);
   const [latestPayment] = await getDb()
-    .select({ status: paymentRequests.status })
+    .select({ id: paymentRequests.id, planCode: paymentRequests.planCode, status: paymentRequests.status })
     .from(paymentRequests)
     .where(eq(paymentRequests.userId, user.id))
     .orderBy(desc(paymentRequests.createdAt))
@@ -22,6 +22,8 @@ export async function GET() {
     planCode: sub?.planCode ?? null,
     status: sub?.status ?? null,
     expiresAt: sub?.expiresAt ?? null,
+    latestPaymentId: latestPayment?.id ?? null,
+    latestPaymentPlanCode: latestPayment?.planCode ?? null,
     latestPaymentStatus: latestPayment?.status ?? null,
   });
 }

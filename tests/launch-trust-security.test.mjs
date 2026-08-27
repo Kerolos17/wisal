@@ -33,7 +33,7 @@ test("bilingual trust pages explain privacy, terms, support, and payment status"
   assert.match(legal, /Privacy policy/);
   assert.match(legal, /شروط الاستخدام/);
   assert.match(legal, /Terms of use/);
-  assert.match(legal, /no real payments are collected/);
+  assert.match(legal, /Plans are paid manually using the transfer method shown at checkout/);
   assert.match(legal, /section%3Dsupport/);
   assert.match(page, /href="\/privacy"/);
   assert.match(page, /href="\/terms"/);

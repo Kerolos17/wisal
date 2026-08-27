@@ -11,7 +11,8 @@ type Payment = {
   status: PaymentStatus;
   planCode: string;
   updatedAt: string;
-  reviewNote: string | null;
+  rejectionReason: string | null;
+  infoRequestReason: string | null;
 } | null;
 
 const STATUS_COPY: Record<PaymentStatus, { titleAr: string; titleEn: string; bodyAr: string; bodyEn: string }> = {
@@ -108,11 +109,11 @@ export default function CheckoutStatusClient({ id }: { id: string }) {
         <span className={`checkout-icon ${isFinal ? (isApproved ? "" : "is-error") : "is-pending"}`}>{isApproved ? "✓" : isFinal ? "!" : "…"}</span>
         <h1>{L(copy.titleAr, copy.titleEn)}</h1>
         <p>{L(copy.bodyAr, copy.bodyEn)}</p>
-        {payment.reviewNote ? <p className="checkout-note">{L("ملاحظة المراجع: ", "Reviewer note: ")}{payment.reviewNote}</p> : null}
+        {(payment.rejectionReason || payment.infoRequestReason) ? <p className="checkout-note">{L("ملاحظة المراجع: ", "Reviewer note: ")}{payment.rejectionReason || payment.infoRequestReason}</p> : null}
         <div className="checkout-status-actions">
           {isApproved
             ? <Link className="primary" href="/workspace">{L("الذهاب إلى مناسبتي", "Go to my event")}</Link>
-            : <Link className="primary" href="/checkout">{L("العودة للدفع", "Back to checkout")}</Link>}
+            : <Link className="primary" href={`/checkout?plan=${encodeURIComponent(payment.planCode)}&paymentId=${encodeURIComponent(payment.id)}`}>{L("العودة للدفع", "Back to checkout")}</Link>}
           <Link href="/">{L("الرئيسية", "Home")}</Link>
         </div>
       </div>

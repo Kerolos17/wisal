@@ -10,6 +10,7 @@ type AdminPayment = {
   status: "draft" | "pending_review" | "approved" | "rejected" | "needs_info";
   planNameSnapshot: string | null;
   priceEgpSnapshot: number | null;
+  amountPaid: number | null;
   currency: string;
   guestLimitSnapshot: number | null;
   paymentMethod: string | null;
@@ -53,7 +54,7 @@ function PaymentCard({ locale, payment, busy, onAct }: {
       <header>
         <div>
           <b>{payment.planNameSnapshot || payment.planCode}</b>
-          <small>{money}{payment.guestLimitSnapshot ? ` · ${L(`حتى ${payment.guestLimitSnapshot} ضيف`, `up to ${payment.guestLimitSnapshot} guests`)}` : ""}</small>
+          <small>{L("المطلوب", "Expected")}: {money} · {L("المدفوع", "Paid")}: {payment.amountPaid ?? "—"} {payment.currency}{payment.guestLimitSnapshot ? ` · ${L(`حتى ${payment.guestLimitSnapshot} ضيف`, `up to ${payment.guestLimitSnapshot} guests`)}` : ""}</small>
         </div>
         <span className={`payment-status ${payment.status}`}>{statusLabel(locale, payment.status)}</span>
       </header>

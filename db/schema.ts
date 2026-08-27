@@ -291,6 +291,7 @@ export const userSubscriptions = pgTable("user_subscriptions", {
   updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).notNull().default(now),
 }, (table) => [
   index("user_subscriptions_user_status_idx").on(table.userId, table.status),
+  uniqueIndex("user_subscriptions_one_active_idx").on(table.userId).where(sql`${table.status} = 'active'`),
 ]);
 
 export const paymentAuditLogs = pgTable("payment_audit_logs", {
