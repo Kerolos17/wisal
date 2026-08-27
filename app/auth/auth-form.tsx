@@ -53,8 +53,9 @@ export default function AuthForm({ mode, returnTo, initialError = "" }: { mode: 
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ provider: "google", callbackURL: callbackURL.toString(), errorCallbackURL: errorURL.toString() }),
       });
-      const data = await response.json().catch(() => ({})) as { url?: string; message?: string; error?: { message?: string } };
-      if (!response.ok || !data.url) throw new Error(data.error?.message || data.message || L("تسجيل الدخول عبر Google غير متاح حاليًا.", "Google sign-in is not available right now."));
+      const data = await response.json().catch(() => ({})) as { url?: string; message?: string; error?: string | { message?: string } };
+      const providerError = typeof data.error === "string" ? data.error : data.error?.message;
+      if (!response.ok || !data.url) throw new Error(providerError === "Invalid callbackURL" ? L("تسجيل الدخول عبر Google غير مفعّل لرابط المعاينة هذا. افتح الرابط الإنتاجي أو اطلب من الإدارة إضافة نطاق المعاينة الموثوق.", "Google sign-in is not enabled for this preview URL. Open the production URL or ask an administrator to add the trusted preview domain.") : providerError || data.message || L("تسجيل الدخول عبر Google غير متاح حاليًا.", "Google sign-in is not available right now."));
       window.location.assign(data.url);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : L("تعذر بدء تسجيل الدخول.", "We could not start sign-in."));
