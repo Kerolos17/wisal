@@ -3,142 +3,68 @@
 import { useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Check, Clipboard, Copy, Landmark, WalletCards } from "lucide-react";
 import { useWisalLocale } from "../use-wisal-locale";
 
-type CheckoutPlan = {
-  code: string;
-  nameAr: string;
-  nameEn: string;
-  priceEgp: number;
-  guestLimit: number | null;
-  featuresAr: string[];
-  featuresEn: string[];
-};
+type CheckoutPlan = { code: string; nameAr: string; nameEn: string; priceEgp: number; guestLimit: number | null; featuresAr: string[]; featuresEn: string[] };
+type PaymentDestination = { id: string; method: string; labelAr: string; labelEn: string; recipientName: string; accountIdentifier: string; bankName: string; instructionsAr: string; instructionsEn: string };
 
-const METHODS: Array<{ value: string; ar: string; en: string }> = [
-  { value: "instapay", ar: "إنستا باي", en: "InstaPay" },
-  { value: "vodafone_cash", ar: "فودافون كاش", en: "Vodafone Cash" },
-  { value: "etisalat_cash", ar: "اتصالات كاش", en: "Etisalat Cash" },
-  { value: "bank_transfer", ar: "تحويل بنكي", en: "Bank transfer" },
-];
+const methodIcon = (method: string) => method === "bank_transfer" ? Landmark : WalletCards;
 
-export default function CheckoutClient({ plan, initialPaymentId = null }: { plan: CheckoutPlan; initialPaymentId?: string | null }) {
+export default function CheckoutClient({ plan, destinations, initialPaymentId = null }: { plan: CheckoutPlan; destinations: PaymentDestination[]; initialPaymentId?: string | null }) {
   const [locale] = useWisalLocale();
   const router = useRouter();
   const L = (ar: string, en: string) => (locale === "ar" ? ar : en);
   const idempotency = useRef(crypto.randomUUID());
-
   const [payerName, setPayerName] = useState("");
   const [payerPhone, setPayerPhone] = useState("");
   const [referenceNumber, setReferenceNumber] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("instapay");
-  const [amountPaid] = useState(String(plan.priceEgp));
+  const [paymentMethod, setPaymentMethod] = useState(destinations[0]?.method ?? "");
   const [receipt, setReceipt] = useState<File | null>(null);
   const [state, setState] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
   const [paymentId, setPaymentId] = useState<string | null>(initialPaymentId);
-
+  const [copied, setCopied] = useState(false);
+  const destination = destinations.find((item) => item.method === paymentMethod) ?? destinations[0];
   const planName = locale === "ar" ? plan.nameAr : plan.nameEn;
 
+  const copyDetails = async () => {
+    if (!destination || !navigator.clipboard) return;
+    await navigator.clipboard.writeText(destination.accountIdentifier);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1800);
+  };
+
   const submit = async () => {
+    if (!destination) { setMessage(L("لا توجد بيانات دفع مفعّلة حاليًا. تواصل مع الدعم.", "No payment destination is configured yet. Please contact support.")); setState("error"); return; }
     if (!receipt) { setMessage(L("ارفع صورة الإيصال أولًا", "Upload the receipt first")); setState("error"); return; }
     if (!payerName.trim()) { setMessage(L("أدخل اسم المودع", "Enter the payer name")); setState("error"); return; }
-    const amount = Number(amountPaid);
-    if (!Number.isFinite(amount) || amount < 0) { setMessage(L("المبلغ غير صالح", "Invalid amount")); setState("error"); return; }
-
-    setState("submitting");
-    setMessage("");
+    setState("submitting"); setMessage("");
     try {
       let activePaymentId = paymentId;
       if (!activePaymentId) {
-        const createRes = await fetch("/api/payments", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ planCode: plan.code, idempotencyKey: idempotency.current }),
-        });
+        const createRes = await fetch("/api/payments", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ planCode: plan.code, idempotencyKey: idempotency.current }) });
         if (createRes.status === 401) { router.push(`/auth/sign-in?returnTo=${encodeURIComponent(`/checkout?plan=${plan.code}`)}`); return; }
         if (!createRes.ok) { const data = await createRes.json().catch(() => ({})); throw new Error(data.error || L("تعذر بدء الطلب", "Could not start the request")); }
-        const created = await createRes.json() as { payment: { id: string } };
-        activePaymentId = created.payment.id;
-        setPaymentId(activePaymentId);
+        const created = await createRes.json() as { payment: { id: string } }; activePaymentId = created.payment.id; setPaymentId(activePaymentId);
       }
-
       const form = new FormData();
-      form.append("receipt", receipt);
-      form.append("paymentMethod", paymentMethod);
-      form.append("amountPaid", String(amount));
-      form.append("referenceNumber", referenceNumber.trim());
-      form.append("payerName", payerName.trim());
-      form.append("payerPhoneMasked", payerPhone.trim());
-
+      form.append("receipt", receipt); form.append("paymentMethod", destination.method); form.append("amountPaid", String(plan.priceEgp)); form.append("referenceNumber", referenceNumber.trim()); form.append("payerName", payerName.trim()); form.append("payerPhoneMasked", payerPhone.trim());
       const submitRes = await fetch(`/api/payments/${activePaymentId}/submit`, { method: "PATCH", body: form });
       if (!submitRes.ok) { const data = await submitRes.json().catch(() => ({})); throw new Error(data.error || L("تعذر إرسال الطلب", "Could not submit the request")); }
       setState("success");
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : L("حدث خطأ غير متوقع", "An unexpected error occurred"));
-      setState("error");
-    }
+    } catch (error) { setMessage(error instanceof Error ? error.message : L("حدث خطأ غير متوقع", "An unexpected error occurred")); setState("error"); }
   };
 
-  if (state === "success") {
-    return (
-      <section className="checkout-shell">
-        <div className="checkout-card success">
-          <span className="checkout-icon">✓</span>
-          <h1>{L("وصلنا طلب الدفع", "Payment request received")}</h1>
-          <p>{L("سنراجع الإيصال ونفعّل باقتك خلال وقت قصير. ستصلك رسالة عند التفعيل.", "We will review the receipt and activate your plan shortly. You will be notified when approved.")}</p>
-          {paymentId && <Link className="checkout-link" href={`/checkout/${paymentId}/status`}>{L("تتبّع حالة الطلب", "Track request status")}</Link>}
-          <button className="primary" onClick={() => router.push("/workspace")}>{L("الذهاب إلى مناسبتي", "Go to my event")}</button>
-        </div>
-      </section>
-    );
-  }
+  if (state === "success") return <section className="checkout-shell"><div className="checkout-card success"><span className="checkout-icon"><Check aria-hidden="true" /></span><h1>{L("وصلنا طلب الدفع", "Payment request received")}</h1><p>{L("سنراجع الإيصال ونفعّل باقتك خلال وقت قصير. يمكنك متابعة الحالة من الرابط التالي.", "We will review the receipt and activate your plan shortly. You can track the request from the link below.")}</p>{paymentId && <Link className="checkout-link" href={`/checkout/${paymentId}/status`}>{L("تتبّع حالة الطلب", "Track request status")}</Link>}<button className="primary" onClick={() => router.push("/workspace")}>{L("الذهاب إلى مناسبتي", "Go to my event")}</button></div></section>;
 
-  return (
-    <section className="checkout-shell">
-      <div className="checkout-card">
-        <header className="checkout-head">
-          <small>{L("إتمام الاشتراك", "Complete subscription")}</small>
-          <h1>{planName}</h1>
-          <b className="checkout-price">{plan.priceEgp} {L("جنيه مصري", "EGP")}</b>
-          <p className="checkout-sub">{plan.guestLimit ? L(`حتى ${plan.guestLimit} ضيفًا`, `Up to ${plan.guestLimit} guests`) : L("ضيوف بلا حد", "Unlimited guests")}</p>
-        </header>
-        <ul className="checkout-features">
-          {(locale === "ar" ? plan.featuresAr : plan.featuresEn).map((feature) => <li key={feature}>✓ {feature}</li>)}
-        </ul>
-        <ol className="checkout-steps">
-          <li>{L("ادفع المبلغ عبر طريقة الدفع المفضلة لديك.", "Pay the amount using your preferred payment method.")}</li>
-          <li>{L("ارفع صورة الإيصال مع بيانات التحويل.", "Upload a photo of the receipt with the transfer details.")}</li>
-          <li>{L("سيصل إشعار التفعيل بعد المراجعة.", "You will get an activation notice after review.")}</li>
-        </ol>
-        <div className="checkout-form">
-          <label>{L("طريقة الدفع", "Payment method")}
-            <select value={paymentMethod} onChange={(event) => setPaymentMethod(event.target.value)}>
-              {METHODS.map((method) => <option key={method.value} value={method.value}>{locale === "ar" ? method.ar : method.en}</option>)}
-            </select>
-          </label>
-          <label>{L("المبلغ المدفوع (جنيه مصري)", "Amount paid (EGP)")}
-            <input type="number" min="0" value={amountPaid} readOnly aria-describedby="checkout-amount-help" />
-            <small id="checkout-amount-help">{L("المبلغ ثابت حسب الباقة المختارة", "Amount is fixed to the selected plan")}</small>
-          </label>
-          <label>{L("اسم المودع", "Payer name")}
-            <input value={payerName} onChange={(event) => setPayerName(event.target.value)} placeholder={L("الاسم على التحويل", "Name on the transfer")} />
-          </label>
-          <label>{L("رقم الهاتف (اختياري)", "Phone (optional)")}
-            <input value={payerPhone} onChange={(event) => setPayerPhone(event.target.value)} placeholder="01xxxxxxxxx" />
-          </label>
-          <label>{L("رقم المرجع (اختياري)", "Reference number (optional)")}
-            <input value={referenceNumber} onChange={(event) => setReferenceNumber(event.target.value)} />
-          </label>
-          <label className="checkout-file">{L("صورة الإيصال", "Receipt image")}
-            <input type="file" accept="image/*,application/pdf" onChange={(event) => setReceipt(event.target.files?.[0] ?? null)} />
-          </label>
-        </div>
-        {state === "error" && <p className="checkout-error" role="alert">{message}</p>}
-        <button className="primary checkout-submit" disabled={state === "submitting"} onClick={() => void submit()}>
-          {state === "submitting" ? L("جارٍ الإرسال…", "Submitting…") : L("إرسال طلب الدفع", "Submit payment request")}
-        </button>
-      </div>
-    </section>
-  );
+  return <section className="checkout-shell"><div className="checkout-layout">
+    <aside className="checkout-plan"><p className="checkout-overline">{L("اشتراك وِصال", "Wisal subscription")}</p><h1>{planName}</h1><b className="checkout-price">{plan.priceEgp} {L("جنيه مصري", "EGP")}</b><p className="checkout-sub">{plan.guestLimit ? L(`حتى ${plan.guestLimit} ضيفًا`, `Up to ${plan.guestLimit} guests`) : L("ضيوف بلا حد", "Unlimited guests")}</p><ul className="checkout-features">{(locale === "ar" ? plan.featuresAr : plan.featuresEn).map((feature) => <li key={feature}><Check aria-hidden="true" />{feature}</li>)}</ul><p className="checkout-security"><Clipboard aria-hidden="true" />{L("الدفع يدوي وآمن. لا نخزن بيانات بطاقتك.", "Manual, secure transfer. We never collect card details.")}</p></aside>
+    <main className="checkout-card"><header className="checkout-head"><h2>{L("أرسل التحويل ثم أرفق إثباته", "Transfer, then attach your proof")}</h2><p>{L("اختر وسيلة التحويل التي تناسبك، وانسخ تفاصيل الاستلام بدقة قبل رفع الإيصال.", "Choose your transfer method, copy the receiving details, then upload your proof.")}</p></header>
+      {destinations.length ? <><fieldset className="checkout-methods"><legend>{L("وسيلة التحويل", "Transfer method")}</legend><div>{destinations.map((item) => { const Icon = methodIcon(item.method); const selected = item.method === destination?.method; return <button type="button" className={`checkout-method ${selected ? "selected" : ""}`} key={item.id} aria-pressed={selected} onClick={() => setPaymentMethod(item.method)}><Icon aria-hidden="true" /><span>{locale === "ar" ? item.labelAr : item.labelEn}</span></button>; })}</div></fieldset>
+        {destination && <section className="checkout-destination" aria-live="polite"><div className="checkout-destination-heading"><span>{L("بيانات الاستلام", "Receiving details")}</span><strong>{locale === "ar" ? destination.labelAr : destination.labelEn}</strong></div><dl><div><dt>{L("اسم المستفيد", "Recipient")}</dt><dd>{destination.recipientName}</dd></div>{destination.bankName && <div><dt>{L("البنك", "Bank")}</dt><dd>{destination.bankName}</dd></div>}<div className="checkout-account"><dt>{L("رقم الحساب أو المحفظة", "Account or wallet number")}</dt><dd><code dir="ltr">{destination.accountIdentifier}</code><button type="button" onClick={() => void copyDetails()} aria-label={L("نسخ بيانات التحويل", "Copy transfer details")}>{copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}{copied ? L("تم النسخ", "Copied") : L("نسخ", "Copy")}</button></dd></div></dl>{(locale === "ar" ? destination.instructionsAr : destination.instructionsEn) && <p>{locale === "ar" ? destination.instructionsAr : destination.instructionsEn}</p>}</section>}</> : <div className="checkout-empty" role="status"><h2>{L("بيانات التحويل غير مفعّلة", "Payment details are not configured")}</h2><p>{L("لن نطلب منك التحويل قبل أن يضيف فريق وِصال وسيلة دفع معتمدة.", "We will not ask you to transfer until Wisal adds an approved receiving method.")}</p></div>}
+      <div className="checkout-form"><label>{L("المبلغ المطلوب (جنيه مصري)", "Amount due (EGP)")}<input type="number" value={plan.priceEgp} readOnly aria-describedby="checkout-amount-help" /><small id="checkout-amount-help">{L("المبلغ ثابت حسب الباقة المختارة", "This amount is fixed for the selected plan")}</small></label><label>{L("اسم المودع", "Payer name")}<input value={payerName} onChange={(event) => setPayerName(event.target.value)} placeholder={L("الاسم الظاهر في التحويل", "Name shown on the transfer")} autoComplete="name" /></label><label>{L("رقم الهاتف (اختياري)", "Phone (optional)")}<input value={payerPhone} onChange={(event) => setPayerPhone(event.target.value)} placeholder="01xxxxxxxxx" inputMode="tel" /></label><label>{L("رقم المرجع (اختياري)", "Reference number (optional)")}<input value={referenceNumber} onChange={(event) => setReferenceNumber(event.target.value)} /></label><label className="checkout-file">{L("صورة الإيصال أو PDF", "Receipt image or PDF")}<input type="file" accept="image/jpeg,image/png,image/webp,application/pdf" onChange={(event) => setReceipt(event.target.files?.[0] ?? null)} /><small>{L("حتى 5 ميجابايت", "Up to 5 MB")}</small></label></div>
+      {state === "error" && <p className="checkout-error" role="alert">{message}</p>}<button className="primary checkout-submit" disabled={state === "submitting" || !destination} onClick={() => void submit()}>{state === "submitting" ? L("جارٍ الإرسال…", "Submitting…") : L("إرسال طلب المراجعة", "Send for review")}</button>
+    </main>
+  </div></section>;
 }

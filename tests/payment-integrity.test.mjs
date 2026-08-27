@@ -43,7 +43,38 @@ describe("manual payment integrity contracts", () => {
     assert.match(home, /paymentId=/);
     assert.match(checkout, /initialPaymentId/);
     assert.match(checkout, /let activePaymentId = paymentId/);
+    const checkoutPage = read("app/checkout/page.tsx");
+    assert.match(checkoutPage, /!planRow\.active && !existingPayment/);
+    assert.match(checkoutPage, /existingPayment\?\.priceEgpSnapshot/);
     assert.match(status, /paymentId=\$\{encodeURIComponent\(payment\.id\)\}/);
+  });
+
+  it("keeps customer-action payment states and reviewer feedback actionable", () => {
+    const home = read("app/page.tsx");
+    const status = read("app/checkout/[id]/status/status-client.tsx");
+    assert.match(status, /"cancelled"/);
+    assert.match(status, /payment\.rejectionReason \|\| payment\.infoRequestReason/);
+    assert.match(status, /plan=\$\{encodeURIComponent\(payment\.planCode\)\}/);
+    assert.match(home, /const needsCustomerAction = \["draft", "needs_info"\]/);
+    assert.match(home, /const awaitingReview = subscription\.latestPaymentStatus === "pending_review"/);
+  });
+
+  it("models configurable, authenticated payment destinations", () => {
+    const schema = read("db/schema.ts");
+    const migration = read("db/neon-migrations/0015_payment_destinations.sql");
+    const checkout = read("app/checkout/checkout-client.tsx");
+    const admin = read("app/admin-payments.tsx");
+    const destinationRoute = read("app/api/payment-destinations/route.ts");
+    const adminDestinationRoute = read("app/api/admin/payment-destinations/route.ts");
+    assert.match(schema, /paymentDestinations = pgTable\("payment_destinations"/);
+    assert.match(migration, /CREATE TABLE IF NOT EXISTS public\.payment_destinations/);
+    assert.match(migration, /orange_cash/);
+    assert.match(destinationRoute, /getPlatformIdentity/);
+    assert.match(destinationRoute, /listActivePaymentDestinations/);
+    assert.match(adminDestinationRoute, /forbiddenUnless\("users\.manage"\)/);
+    assert.match(checkout, /destinations/);
+    assert.match(checkout, /Copy transfer details/);
+    assert.match(admin, /Payment receiving details/);
   });
 
   it("does not gate public platform content on the admin owner secret", () => {

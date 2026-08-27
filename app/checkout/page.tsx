@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getPlatformIdentity } from "@/lib/auth/identity";
 import { getOwnPaymentRequest } from "@/lib/payments";
+import { listActivePaymentDestinations } from "@/lib/payment-destinations";
 import { getDb } from "@/db";
 import { platformPlans } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -24,7 +25,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   if (!planCode) redirect("/");
 
   const [planRow] = await getDb().select().from(platformPlans).where(eq(platformPlans.code, planCode)).limit(1);
-  if (!planRow || !planRow.active) {
+  if (!planRow || (!planRow.active && !existingPayment)) {
     return (
       <section className="checkout-shell">
         <div className="checkout-card">
@@ -38,13 +39,14 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
 
   const plan = {
     code: planRow.code,
-    nameAr: planRow.nameAr,
+    nameAr: existingPayment?.planNameSnapshot ?? planRow.nameAr,
     nameEn: planRow.nameEn,
-    priceEgp: planRow.priceEgp,
-    guestLimit: planRow.guestLimit,
+    priceEgp: existingPayment?.priceEgpSnapshot ?? planRow.priceEgp,
+    guestLimit: existingPayment?.guestLimitSnapshot ?? planRow.guestLimit,
     featuresAr: planRow.featuresAr,
     featuresEn: planRow.featuresEn,
   };
 
-  return <CheckoutClient plan={plan} initialPaymentId={existingPayment?.id ?? null} />;
+  const destinations = await listActivePaymentDestinations();
+  return <CheckoutClient plan={plan} destinations={destinations} initialPaymentId={existingPayment?.id ?? null} />;
 }

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useWisalLocale } from "../../../use-wisal-locale";
 
-type PaymentStatus = "draft" | "pending_review" | "approved" | "rejected" | "needs_info";
+type PaymentStatus = "draft" | "pending_review" | "approved" | "rejected" | "needs_info" | "cancelled";
 
 type Payment = {
   id: string;
@@ -46,6 +46,12 @@ const STATUS_COPY: Record<PaymentStatus, { titleAr: string; titleEn: string; bod
     bodyAr: "طلب المراجع معلومات إضافية. راجع الملاحظة وأعد إرسال الإيصال.",
     bodyEn: "The reviewer requested more information. Review the note and resubmit your receipt.",
   },
+  cancelled: {
+    titleAr: "تم إلغاء الطلب",
+    titleEn: "Request cancelled",
+    bodyAr: "لن تتم مراجعة هذا الطلب. يمكنك بدء طلب دفع جديد عند الحاجة.",
+    bodyEn: "This request will not be reviewed. You can start a new payment request when you are ready.",
+  },
 };
 
 export default function CheckoutStatusClient({ id }: { id: string }) {
@@ -60,16 +66,19 @@ export default function CheckoutStatusClient({ id }: { id: string }) {
     const load = async () => {
       try {
         const res = await fetch(`/api/payments/${id}`, { cache: "no-store" });
-        if (!res.ok) { setError(tr("تعذر تحميل حالة الطلب", "Could not load the request status")); return; }
+        if (!res.ok) throw new Error("status request failed");
         const data = await res.json() as { payment: Payment };
         if (!active) return;
         setPayment(data.payment);
         setError("");
-        if (data.payment && (data.payment.status === "pending_review" || data.payment.status === "draft" || data.payment.status === "needs_info")) {
+        if (data.payment && data.payment.status === "pending_review") {
           window.setTimeout(load, 5000);
         }
       } catch {
-        if (active) setError(tr("تعذر تحميل حالة الطلب", "Could not load the request status"));
+        if (active) {
+          setError(tr("تعذر تحميل حالة الطلب. سنحاول مرة أخرى تلقائيًا.", "Could not load the request status. We will retry automatically."));
+          window.setTimeout(load, 5000);
+        }
       }
     };
     void load();
@@ -101,7 +110,11 @@ export default function CheckoutStatusClient({ id }: { id: string }) {
 
   const copy = STATUS_COPY[payment.status];
   const isApproved = payment.status === "approved";
-  const isFinal = payment.status === "approved" || payment.status === "rejected";
+  const isFinal = payment.status === "approved" || payment.status === "rejected" || payment.status === "cancelled";
+  const canResume = payment.status === "draft" || payment.status === "needs_info";
+  const checkoutHref = canResume
+    ? `/checkout?plan=${encodeURIComponent(payment.planCode)}&paymentId=${encodeURIComponent(payment.id)}`
+    : `/checkout?plan=${encodeURIComponent(payment.planCode)}`;
 
   return (
     <section className="checkout-shell">
@@ -113,7 +126,7 @@ export default function CheckoutStatusClient({ id }: { id: string }) {
         <div className="checkout-status-actions">
           {isApproved
             ? <Link className="primary" href="/workspace">{L("الذهاب إلى مناسبتي", "Go to my event")}</Link>
-            : <Link className="primary" href={`/checkout?plan=${encodeURIComponent(payment.planCode)}&paymentId=${encodeURIComponent(payment.id)}`}>{L("العودة للدفع", "Back to checkout")}</Link>}
+            : <Link className="primary" href={checkoutHref}>{payment.status === "cancelled" || payment.status === "rejected" ? L("بدء طلب جديد", "Start a new request") : L("العودة للدفع", "Back to checkout")}</Link>}
           <Link href="/">{L("الرئيسية", "Home")}</Link>
         </div>
       </div>

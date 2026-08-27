@@ -7,7 +7,7 @@ type Locale = "ar" | "en";
 type AdminPayment = {
   id: string;
   planCode: string;
-  status: "draft" | "pending_review" | "approved" | "rejected" | "needs_info";
+  status: "draft" | "pending_review" | "approved" | "rejected" | "needs_info" | "cancelled";
   planNameSnapshot: string | null;
   priceEgpSnapshot: number | null;
   amountPaid: number | null;
@@ -32,6 +32,7 @@ const statusLabel = (locale: Locale, status: AdminPayment["status"]) => {
     approved: ["معتمد", "Approved"],
     rejected: ["مرفوض", "Rejected"],
     needs_info: ["معلومات مطلوبة", "Info requested"],
+    cancelled: ["ملغي", "Cancelled"],
   };
   const [ar, en] = map[status];
   return locale === "ar" ? ar : en;
@@ -91,7 +92,27 @@ function PaymentCard({ locale, payment, busy, onAct }: {
   );
 }
 
-export default function AdminPayments({ locale }: { locale: Locale }) {
+type PaymentDestination = { method: "instapay" | "vodafone_cash" | "orange_cash" | "etisalat_cash" | "bank_transfer"; labelAr: string; labelEn: string; recipientName: string; accountIdentifier: string; bankName: string; instructionsAr: string; instructionsEn: string; active: boolean; position: number };
+
+const destinationDefaults: PaymentDestination[] = [
+  { method: "instapay", labelAr: "إنستا باي", labelEn: "InstaPay", recipientName: "", accountIdentifier: "", bankName: "", instructionsAr: "", instructionsEn: "", active: false, position: 1 },
+  { method: "vodafone_cash", labelAr: "فودافون كاش", labelEn: "Vodafone Cash", recipientName: "", accountIdentifier: "", bankName: "", instructionsAr: "", instructionsEn: "", active: false, position: 2 },
+  { method: "orange_cash", labelAr: "أورانج كاش", labelEn: "Orange Cash", recipientName: "", accountIdentifier: "", bankName: "", instructionsAr: "", instructionsEn: "", active: false, position: 3 },
+  { method: "etisalat_cash", labelAr: "اتصالات كاش", labelEn: "Etisalat Cash", recipientName: "", accountIdentifier: "", bankName: "", instructionsAr: "", instructionsEn: "", active: false, position: 4 },
+  { method: "bank_transfer", labelAr: "تحويل بنكي", labelEn: "Bank transfer", recipientName: "", accountIdentifier: "", bankName: "", instructionsAr: "", instructionsEn: "", active: false, position: 5 },
+];
+
+function PaymentDestinationsPanel({ locale }: { locale: Locale }) {
+  const L = (ar: string, en: string) => (locale === "ar" ? ar : en);
+  const [destinations, setDestinations] = useState<PaymentDestination[]>(destinationDefaults);
+  const [state, setState] = useState<"loading" | "idle" | "saving" | "saved" | "error">("loading");
+  const update = (method: PaymentDestination["method"], key: keyof PaymentDestination, value: string | boolean) => setDestinations((items) => items.map((item) => item.method === method ? { ...item, [key]: value } : item));
+  useEffect(() => { void fetch("/api/admin/payment-destinations", { cache: "no-store" }).then(async (response) => { if (!response.ok) throw new Error(); const data = await response.json() as { destinations: PaymentDestination[] }; setDestinations(destinationDefaults.map((item) => ({ ...item, ...(data.destinations.find((saved) => saved.method === item.method) ?? {}) }))); setState("idle"); }).catch(() => setState("error")); }, []);
+  const save = async () => { setState("saving"); const response = await fetch("/api/admin/payment-destinations", { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ destinations }) }); setState(response.ok ? "saved" : "error"); };
+  return <section className="admin-payment-destinations"><div className="admin-panel-title"><div><h2>{L("بيانات استقبال الدفع", "Payment receiving details")}</h2><p>{L("تظهر هذه البيانات فقط للعميل المسجل داخل صفحة الدفع. لا تضف أي رقم تجريبي.", "These details appear only to signed-in customers at checkout. Never enter sample numbers.")}</p></div><button className="admin-save" disabled={state === "saving"} onClick={() => void save()}>{state === "saving" ? L("جارٍ الحفظ…", "Saving…") : L("حفظ البيانات", "Save details")}</button></div>{state === "error" && <p className="admin-notice">{L("تعذر تحميل أو حفظ بيانات الاستلام.", "Could not load or save receiving details.")}</p>}<div className="admin-destination-list">{destinations.map((item) => <article key={item.method}><header><b>{locale === "ar" ? item.labelAr : item.labelEn}</b><label><input type="checkbox" checked={item.active} onChange={(event) => update(item.method, "active", event.target.checked)} />{L("مفعّلة", "Active")}</label></header><div><label>{L("اسم المستفيد", "Recipient")}<input value={item.recipientName} onChange={(event) => update(item.method, "recipientName", event.target.value)} /></label><label>{L("رقم الحساب أو المحفظة", "Account or wallet number")}<input dir="ltr" value={item.accountIdentifier} onChange={(event) => update(item.method, "accountIdentifier", event.target.value)} /></label><label>{L("البنك (إن وجد)", "Bank (if applicable)")}<input value={item.bankName} onChange={(event) => update(item.method, "bankName", event.target.value)} /></label><label>{L("تعليمات بالعربية", "Arabic instructions")}<input value={item.instructionsAr} onChange={(event) => update(item.method, "instructionsAr", event.target.value)} /></label><label>{L("English instructions", "English instructions")}<input value={item.instructionsEn} onChange={(event) => update(item.method, "instructionsEn", event.target.value)} /></label></div></article>)}</div>{state === "saved" && <p className="admin-payment-saved">{L("تم حفظ بيانات الاستلام.", "Receiving details saved.")}</p>}</section>;
+}
+
+export default function AdminPayments({ locale, onReviewed }: { locale: Locale; onReviewed?: () => void }) {
   const L = (ar: string, en: string) => (locale === "ar" ? ar : en);
   const [payments, setPayments] = useState<AdminPayment[] | null>(null);
   const [error, setError] = useState("");
@@ -131,6 +152,7 @@ export default function AdminPayments({ locale }: { locale: Locale }) {
     if (response.ok) {
       const data = await response.json() as { payment: AdminPayment };
       setPayments((prev) => (prev ? prev.map((item) => (item.id === id ? data.payment : item)) : prev));
+      onReviewed?.();
     } else {
       const data = await response.json().catch(() => ({})) as { error?: string };
       setError(data.error || L("تعذر تنفيذ الإجراء", "Could not perform action"));
@@ -160,6 +182,7 @@ export default function AdminPayments({ locale }: { locale: Locale }) {
       ) : (
         <p className="admin-empty">{L("لا توجد طلبات دفع بعد.", "No payment requests yet.")}</p>
       )}
+      <PaymentDestinationsPanel locale={locale} />
     </section>
   );
 }

@@ -1,6 +1,7 @@
 import { getPlatformIdentity } from "@/lib/auth/identity";
 import { getOwnPaymentRequest, submitPaymentRequest, paymentErrorStatus } from "@/lib/payments";
 import { MAX_RECEIPT_BYTES, storeReceipt } from "@/lib/payment-storage";
+import { listActivePaymentDestinations } from "@/lib/payment-destinations";
 
 export const dynamic = "force-dynamic";
 
@@ -24,8 +25,12 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
     if (!(file instanceof File)) return Response.json({ error: "Receipt file is required" }, { status: 400 });
     if (file.size > MAX_RECEIPT_BYTES) return Response.json({ error: "Receipt file is too large" }, { status: 413 });
-    if (typeof paymentMethod !== "string" || !["instapay", "vodafone_cash", "etisalat_cash", "bank_transfer"].includes(paymentMethod)) {
+    if (typeof paymentMethod !== "string" || !["instapay", "vodafone_cash", "orange_cash", "etisalat_cash", "bank_transfer"].includes(paymentMethod)) {
       return Response.json({ error: "Valid payment method is required" }, { status: 400 });
+    }
+    const activeDestinations = await listActivePaymentDestinations();
+    if (!activeDestinations.some((destination) => destination.method === paymentMethod)) {
+      return Response.json({ error: "Selected payment method is unavailable" }, { status: 400 });
     }
     const amount = Number(amountPaid);
     if (!Number.isInteger(amount) || amount < 0) return Response.json({ error: "Valid amount is required" }, { status: 400 });
