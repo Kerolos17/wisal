@@ -24,6 +24,7 @@ describe("manual payment integrity contracts", () => {
     assert.match(source, /status_version = \$\{expectedVersion\}/);
     assert.match(source, /payment\.amountPaid|request\.amountPaid/);
     assert.match(source, /payment\.approved/);
+    assert.match(source, /\$\{startsAt\}::timestamptz \+ \(claimed\.duration_days_snapshot \* interval '1 day'\)/);
   });
 
   it("prevents multiple active subscriptions at the database boundary", () => {

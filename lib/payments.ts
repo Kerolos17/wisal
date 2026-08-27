@@ -241,7 +241,7 @@ export async function approvePaymentRequest(identity: PlatformIdentity, id: stri
         FOR UPDATE
       ), extended AS (
         UPDATE public.user_subscriptions AS us
-        SET expires_at = GREATEST(us.expires_at, ${startsAt}) + (claimed.duration_days_snapshot * interval '1 day'),
+        SET expires_at = GREATEST(us.expires_at, ${startsAt}::timestamptz) + (claimed.duration_days_snapshot * interval '1 day'),
             updated_at = ${startsAt}, payment_request_id = claimed.id
         FROM claimed
         WHERE us.id = (SELECT active.id FROM active WHERE active.plan_code = claimed.plan_code LIMIT 1)
@@ -255,7 +255,7 @@ export async function approvePaymentRequest(identity: PlatformIdentity, id: stri
       ), created AS (
         INSERT INTO public.user_subscriptions (user_id, plan_code, status, starts_at, expires_at, payment_request_id)
         SELECT claimed.user_id, claimed.plan_code, 'active', ${startsAt},
-               ${startsAt} + (claimed.duration_days_snapshot * interval '1 day'), claimed.id
+               ${startsAt}::timestamptz + (claimed.duration_days_snapshot * interval '1 day'), claimed.id
         FROM claimed
         WHERE NOT EXISTS (SELECT 1 FROM active WHERE active.plan_code = claimed.plan_code)
         RETURNING id
