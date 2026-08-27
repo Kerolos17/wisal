@@ -47,3 +47,9 @@ next-env.d.ts
 .impeccable/
 graphify-out/
 .pnpm-store/
+
+# auto-generated / reference artifacts (not source)
+AGENTS.md
+CLAUDE.md
+OPENCODE-FULL-PRODUCT-AUDIT.md
+OPENCODE-FULL-PRODUCT-AUDIT-REVIEWED.md
