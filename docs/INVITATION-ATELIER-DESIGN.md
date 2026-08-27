@@ -15,6 +15,12 @@ The six launch worlds keep the same guest-flow contract while changing material,
 | Minimal / White Story | uncoated white paper and ruled geometry | quiet monochrome stack | precise dark action |
 | Cinematic / Cinema Night | evening film still and velvet black | bottom-weighted hero | coral light against a dark field |
 
+## Ceremony Cabinet refinement
+
+The public gallery is now a **live cabinet**, not a set of generic purchase cards. Selecting one of the six specimens swaps a large, real template preview in place. The customer can judge the material, crop, copy posture, and mood before choosing “Start with this design”; the choice is only then passed into the studio. This keeps browsing exploratory and does not imply that a user has already subscribed.
+
+The envelope scene is deliberately authored as a five-layer object: ground shadow, printed envelope body, inner liner, letter stock, and a stamped seal. One action drives the sequence: the seal recedes, the flap hinges open in 3D, and the letter rises. It has a single, obvious open control and a separate skip route, instead of relying on decorative animation or an ambiguous tap target. Concept-specific liner and stock colors make the same interaction belong to each visual world without copying a reference pattern.
+
 ## Guest flow
 
 1. The opening scene identifies the guest and the couple, with an explicit open action and an Escape/Skip path.

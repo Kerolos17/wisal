@@ -139,6 +139,17 @@ test("homepage presents six authored previews with a clear template selection pa
   assert.match(atlasStylesSource, /\.atlas-section\s*\{[^}]*scroll-margin-top:\s*92px/);
 });
 
+test("homepage previews a selected invitation before passing its template into the studio", () => {
+  assert.match(pageSource, /const \[previewTemplateCode, setPreviewTemplateCode\] = useState\("love-poem"\)/);
+  assert.match(pageSource, /const previewTemplate = showcaseTemplates\.find/);
+  assert.match(pageSource, /className={`atlas-template-stage atlas-template-stage-\$\{previewTemplate\.code\}`}/);
+  assert.match(pageSource, /onClick=\{\(\) => onChooseTemplate\(previewTemplate\.code\)\}/);
+  assert.match(pageSource, /onClick=\{\(\) => setPreviewTemplateCode\(template\.code\)\}/);
+  assert.match(pageSource, /aria-pressed=\{previewTemplate\?\.code === template\.code\}/);
+  assert.match(atlasStylesSource, /\.atlas-template-stage\s*\{/);
+  assert.match(atlasStylesSource, /\.atlas-template\.is-previewing\s*\{/);
+});
+
 test("invitation surfaces expose explicit readable tokens for dark and light sections", () => {
   assert.match(stylesSource, /--atelier-dark:/);
   assert.match(stylesSource, /--atelier-action-ink:/);
@@ -159,4 +170,14 @@ test("invitation utility actions support save-the-date and sharing without new b
   assert.match(inviteSource, /setUtilityFeedback\("shared"\)/);
   assert.match(inviteSource, /className="invitation-utilities"/);
   assert.match(stylesSource, /\.invitation-utilities button\{[^}]*min-height:44px/);
+});
+
+test("envelope opening is assembled as a readable physical artifact with a reduced-motion fallback", () => {
+  for (const layer of ["envelope-shadow", "envelope-liner", "envelope-letter", "envelope-flap", "envelope-seal"]) assert.match(inviteSource, new RegExp(`className="${layer}"`));
+  assert.match(stylesSource, /\.opening-mode-envelope \.opening-envelope\{[^}]*perspective:1100px/);
+  assert.match(stylesSource, /\.opening-mode-envelope\.is-opening \.envelope-flap\{[^}]*rotateX\(176deg\)/);
+  assert.match(stylesSource, /\.opening-mode-envelope\.is-opening \.envelope-letter\{[^}]*translate3d/);
+  assert.match(stylesSource, /@media\(prefers-reduced-motion:reduce\)\{\.opening-envelope/);
+  assert.match(inviteSource, /<CalendarPlus aria-hidden="true" \/>/);
+  assert.match(inviteSource, /<Share2 aria-hidden="true" \/>/);
 });

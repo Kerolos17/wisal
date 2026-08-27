@@ -513,6 +513,8 @@ function Landing({ locale, plans, templates, content, onStart, onGuest, onChoose
   const ar = locale === "ar";
   const copy = (key: string, fallbackAr: string, fallbackEn: string) => content[key]?.[ar ? "ar" : "en"] || (ar ? fallbackAr : fallbackEn);
   const showcaseTemplates = ["love-poem", "garden-night", "moonlight", "golden-vows", "white-story", "cinema-night"].map((code) => templates.find((template) => template.code === code) ?? atelierTemplates.find((template) => template.code === code)).filter(Boolean) as PublicTemplate[];
+  const [previewTemplateCode, setPreviewTemplateCode] = useState("love-poem");
+  const previewTemplate = showcaseTemplates.find((template) => template.code === previewTemplateCode) ?? showcaseTemplates[0];
   return (
     <div className="atlas-home">
       <section className="atlas-hero">
@@ -552,15 +554,27 @@ function Landing({ locale, plans, templates, content, onStart, onGuest, onChoose
       <section className="atlas-section atlas-templates" id="templates">
         <header className="atlas-section-head">
           <h2>{ar ? "اختاروا المزاج الذي يشبهكم" : "Choose the mood that feels like you"}</h2>
-          <p>{ar ? "ستة عوالم منتقاة، لكل واحد منها إيقاع بصري واضح قبل أن تبدأوا التخصيص." : "Six authored worlds, each with a distinct visual rhythm before you make it yours."}</p>
+          <p>{ar ? "اختبروا كل عالم كدعوة حقيقية أولًا، ثم انتقلوا للتخصيص عندما تجدون الإيقاع الذي يشبهكم." : "Experience each world as a real invitation first, then move into customisation when you find the rhythm that feels like you."}</p>
         </header>
+        {previewTemplate && <article className={`atlas-template-stage atlas-template-stage-${previewTemplate.code}`} aria-live="polite">
+          <div className="atlas-template-stage-copy">
+            <small>{ar ? "معاينة الدعوة" : "Invitation preview"}</small>
+            <h3>{ar ? previewTemplate.name : previewTemplate.enName}</h3>
+            <p>{ar ? previewTemplate.description : previewTemplate.enDescription}</p>
+            <span>{ar ? previewTemplate.tag : previewTemplate.enTag}</span>
+            <button className="atlas-primary" type="button" onClick={() => onChooseTemplate(previewTemplate.code)}>{ar ? "ابدأوا بهذا التصميم" : "Start with this design"} <b aria-hidden="true">{ar ? "←" : "→"}</b></button>
+          </div>
+          <div className={`atlas-template-stage-art template-concept-${previewTemplate.code}`}>
+            {previewTemplate.previewImage ? <Image src={previewTemplate.previewImage} fill alt={ar ? `معاينة كبيرة لقالب ${previewTemplate.name}` : `Large preview of ${previewTemplate.enName}`} sizes="(max-width: 760px) 92vw, 48vw" /> : <InvitationSpecimen template={previewTemplate} brideName={ar ? "ليلى" : "Layla"} groomName={ar ? "كريم" : "Kareem"} date={ar ? "١٨ أكتوبر ٢٠٢٦" : "18 October 2026"} venue={ar ? "قصر النيل" : "Nile Palace"} city={ar ? "القاهرة" : "Cairo"} locale={locale} phone />}
+          </div>
+        </article>}
         <div className="atlas-template-grid">
           {showcaseTemplates.map((template, index) => (
-            <button className={`atlas-template atlas-template-${index + 1} atlas-template-${template.code}`} key={template.code} onClick={() => onChooseTemplate(template.code)} aria-label={ar ? `معاينة واختيار قالب ${template.name}` : `Preview and choose ${template.enName} template`}>
+            <button type="button" className={`atlas-template atlas-template-${index + 1} atlas-template-${template.code} ${previewTemplate?.code === template.code ? "is-previewing" : ""}`} key={template.code} onClick={() => setPreviewTemplateCode(template.code)} aria-pressed={previewTemplate?.code === template.code} aria-label={ar ? `معاينة قالب ${template.name}` : `Preview ${template.enName} template`}>
               <span className={`atlas-template-media atlas-template-media-${template.code}`}>
                 {template.previewImage ? <Image src={template.previewImage} width={853} height={1844} alt={ar ? `معاينة قالب ${template.name}` : `${template.enName} template preview`} sizes="(max-width: 700px) 92vw, (max-width: 1100px) 45vw, 30vw" /> : <span className={`atlas-template-fallback mini-template template-concept-${template.code}`}><InvitationSpecimen template={template} brideName={ar ? "ليلى" : "Layla"} groomName={ar ? "كريم" : "Kareem"} date={ar ? "١٨ أكتوبر ٢٠٢٦" : "18 October 2026"} venue={ar ? "قصر النيل" : "Nile Palace"} city={ar ? "القاهرة" : "Cairo"} locale={locale} phone /></span>}
               </span>
-              <span className="atlas-template-label"><span><b>{ar ? template.name : template.enName}</b><small>{ar ? template.tag : template.enTag}</small><small className="atlas-template-description">{ar ? template.description : template.enDescription}</small></span><span className="atlas-template-cta"><small>{ar ? "معاينة واختيار" : "Preview & choose"}</small><i aria-hidden="true">{ar ? "←" : "→"}</i></span></span>
+              <span className="atlas-template-label"><span><b>{ar ? template.name : template.enName}</b><small>{ar ? template.tag : template.enTag}</small><small className="atlas-template-description">{ar ? template.description : template.enDescription}</small></span><span className="atlas-template-cta"><small>{previewTemplate?.code === template.code ? (ar ? "تتم المعاينة الآن" : "Previewing now") : (ar ? "شاهدوا الدعوة" : "View invitation")}</small><i aria-hidden="true">{ar ? "←" : "→"}</i></span></span>
             </button>
           ))}
         </div>

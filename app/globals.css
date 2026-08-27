@@ -586,3 +586,34 @@
 .public-invite[class*="invite-concept-"] .invite-footer a{color:var(--atelier-paper)}
 .public-invite[class*="invite-concept-"] .rsvp-success>span{background:color-mix(in srgb,var(--atelier-success) 16%,var(--atelier-paper));color:var(--atelier-success)}
 .public-invite[class*="invite-concept-"] .form-error{background:color-mix(in srgb,var(--atelier-error) 9%,var(--atelier-paper));color:var(--atelier-error)!important;border-color:color-mix(in srgb,var(--atelier-error) 28%,transparent)}
+
+/* A printed object, rather than a flat illustration: the seal releases a lined envelope and a letter rises from it. */
+.opening-mode-envelope .opening-envelope{perspective:1100px;transform-style:preserve-3d;overflow:visible;background:linear-gradient(145deg,#f2dfd0,#d7b4a8);box-shadow:0 34px 68px rgba(8,4,10,.34)}
+.opening-envelope .envelope-shadow{position:absolute;inset:9% 7% -13%;z-index:-1;border-radius:48%;background:rgba(9,4,10,.42);filter:blur(19px);transform:translateZ(-30px)}
+.opening-envelope .envelope-liner{position:absolute;inset:1px;z-index:1;clip-path:polygon(0 0,50% 62%,100% 0,100% 100%,0 100%);background:linear-gradient(135deg,#c98978,#f2d6bf 48%,#b9736e);opacity:.82}
+.opening-envelope .envelope-letter{left:7%;right:7%;top:15%;height:204px;padding:20px 28px;background:linear-gradient(120deg,#fffdf8,#f4e7da);border:1px solid rgba(92,52,75,.18);box-shadow:0 12px 22px rgba(55,29,38,.2);color:#342126;font-family:var(--font-display),Georgia,serif;transform:translateZ(24px);transition:transform .78s cubic-bezier(.16,.82,.24,1),box-shadow .45s ease;will-change:transform}
+.envelope-letter small{font:700 9px/1 var(--font-ui);letter-spacing:.16em;text-transform:uppercase;color:#8b5a51}
+.envelope-letter strong{display:flex;flex-direction:column;align-items:center;font:500 clamp(23px,4vw,31px)/.92 var(--font-display),Georgia,serif;letter-spacing:-.025em}
+.envelope-letter i{margin:6px 0;font-size:15px;color:#9f6957}
+.envelope-letter b{display:block;width:68%;margin-top:15px;border-top:1px solid rgba(110,67,68,.26)}
+.opening-envelope .envelope-flap{z-index:4;backface-visibility:hidden;background:linear-gradient(145deg,#f4dfd2,#d6afa3);box-shadow:inset 0 -1px rgba(255,255,255,.55);transform:translateZ(42px);transition:transform .74s cubic-bezier(.16,.82,.24,1)}
+.opening-envelope .envelope-seal{z-index:5;transform:translateZ(58px);box-shadow:0 6px 13px rgba(30,12,21,.35);transition:opacity .25s ease,transform .5s cubic-bezier(.2,.8,.2,1)}
+.opening-mode-envelope.is-opening .envelope-flap{transform:translateZ(42px) rotateX(176deg)}
+.opening-mode-envelope.is-opening .envelope-letter{transform:translate3d(0,-174px,66px) rotateX(2deg);box-shadow:0 28px 36px rgba(18,8,15,.26)}
+.opening-mode-envelope.is-opening .envelope-seal{opacity:0;transform:translateZ(58px) scale(.55)}
+.opening-concept-garden-night .opening-envelope{background:linear-gradient(145deg,#f1e3d3,#b99f7c)}
+.opening-concept-garden-night .envelope-liner{background:linear-gradient(135deg,#5a6e59,#d6cfab 48%,#536a5c)}
+.opening-concept-moonlight .opening-envelope{background:linear-gradient(145deg,#e6e4df,#a8bbc2)}
+.opening-concept-moonlight .envelope-liner{background:linear-gradient(135deg,#183444,#dbe6e5 48%,#28505f)}
+.opening-concept-golden-vows .opening-envelope{background:linear-gradient(145deg,#f3e2bd,#b9894f)}
+.opening-concept-golden-vows .envelope-liner{background:linear-gradient(135deg,#6e2330,#e9d19a 48%,#7d2638)}
+.opening-concept-white-story .opening-envelope{background:linear-gradient(145deg,#fffdf8,#dfdad1)}
+.opening-concept-white-story .envelope-liner{background:linear-gradient(135deg,#c8beb0,#fffaf1 48%,#c4b6a8)}
+.opening-concept-cinema-night .opening-envelope{background:linear-gradient(145deg,#4a2632,#160d14)}
+.opening-concept-cinema-night .envelope-liner{background:linear-gradient(135deg,#6a2330,#e0ad87 48%,#401824)}
+.opening-concept-cinema-night .envelope-letter{color:#3a2028;background:linear-gradient(120deg,#fffaf6,#f2dfd2)}
+.invitation-utilities button{display:inline-flex;align-items:center;justify-content:center;gap:7px;line-height:1.1}
+.invitation-utilities button svg{width:15px;height:15px;stroke-width:1.7}
+.invitation-utilities button:active{transform:scale(.97,.99)}
+@media(max-width:650px){.opening-envelope .envelope-letter{top:13%;height:173px;padding:16px 20px}.envelope-letter strong{font-size:24px}.opening-mode-envelope.is-opening .envelope-letter{transform:translate3d(0,-140px,60px) rotateX(2deg)}}
+@media(prefers-reduced-motion:reduce){.opening-envelope .envelope-flap,.opening-envelope .envelope-letter,.opening-envelope .envelope-seal{transition:none}.opening-mode-envelope.is-opening .envelope-letter{transform:none}.opening-mode-envelope.is-opening .envelope-flap,.opening-mode-envelope.is-opening .envelope-seal{opacity:0}}
