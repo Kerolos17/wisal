@@ -665,7 +665,7 @@ function Landing({ locale, plans, templates, content, onStart, onGuest, onChoose
         </article>}
         <div className="atlas-template-grid">
           {showcaseTemplates.map((template, index) => (
-            <button type="button" className={`atlas-template atlas-template-${index + 1} atlas-template-${template.code} ${previewTemplate?.code === template.code ? "is-previewing" : ""}`} key={template.code} onClick={() => setPreviewTemplateCode(template.code)} aria-pressed={previewTemplate?.code === template.code} aria-label={ar ? `معاينة قالب ${template.name}` : `Preview ${template.enName} template`}>
+            <button type="button" className={`atlas-template atlas-template-${index + 1} atlas-template-${template.code} ${previewTemplate?.code === template.code ? "is-previewing" : ""}`} key={template.code} onClick={() => setPreviewTemplateCode(template.code)} aria-pressed={previewTemplate?.code === template.code} aria-label={ar ? `${template.name} — معاينة القالب` : `${template.enName} — Preview template`}>
               <span className={`atlas-template-media atlas-template-media-${template.code}`}>
                 {template.previewImage ? <Image src={template.previewImage} width={853} height={1844} alt={ar ? `معاينة قالب ${template.name}` : `${template.enName} template preview`} sizes="(max-width: 700px) 92vw, (max-width: 1100px) 45vw, 30vw" /> : <span className={`atlas-template-fallback mini-template template-concept-${template.code}`}><InvitationSpecimen template={template} brideName={ar ? "ليلى" : "Layla"} groomName={ar ? "كريم" : "Kareem"} date={ar ? "١٨ أكتوبر ٢٠٢٦" : "18 October 2026"} venue={ar ? "قصر النيل" : "Nile Palace"} city={ar ? "القاهرة" : "Cairo"} locale={locale} phone /></span>}
               </span>
