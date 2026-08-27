@@ -551,6 +551,18 @@ function Landing({ locale, plans, templates, content, onStart, onGuest, onChoose
         <div><strong>{ar ? "ردود لحظية" : "Live replies"}</strong><small>{ar ? "في لوحة واحدة" : "In one focused dashboard"}</small></div>
       </section>
 
+      <section className="atlas-advantage" aria-label={ar ? "ما يميز وِصال كمنصة" : "What makes Wisal different as a platform"}>
+        <div className="atlas-advantage-copy">
+          <h2>{ar ? "فخامة الدعوة، بسرعة منصة ذاتية" : "The craft of a luxury invite, with the speed of self-service"}</h2>
+          <p>{ar ? "بدل انتظار تنفيذ يدوي، يبدأ العميل من قالب حقيقي، يراجع التجربة بصريًا، ثم يكمل التفاصيل والضيوف من نفس المكان." : "Instead of waiting on manual production, couples start from a real template, preview the experience, then finish details and guests in one place."}</p>
+        </div>
+        <div className="atlas-advantage-grid">
+          <article><span>{ar ? "اختيار" : "Choose"}</span><b>{ar ? "معاينة قبل الاشتراك" : "Preview before signing in"}</b><p>{ar ? "كل بطاقة في المعرض تعرض هوية الدعوة نفسها، لا لونًا عامًا." : "Every gallery card shows the invitation world itself, not a generic colour tile."}</p></article>
+          <article><span>{ar ? "تخصيص" : "Edit"}</span><b>{ar ? "استوديو واحد للتفاصيل" : "One studio for the essentials"}</b><p>{ar ? "الأسماء، الموعد، الصورة، ترتيب الأقسام وتجربة الفتح كلها في مسار واضح." : "Names, date, image, section order, and the opening moment stay in one clear flow."}</p></article>
+          <article><span>{ar ? "متابعة" : "Track"}</span><b>{ar ? "الردود داخل الدعوة" : "RSVP inside the invitation"}</b><p>{ar ? "الضيف يرد من نفس الرابط، وصاحب المناسبة يرى الفتح والردود في لوحة واحدة." : "Guests answer in the same link, while the host sees opens and replies in one dashboard."}</p></article>
+        </div>
+      </section>
+
       <section className="atlas-section atlas-templates" id="templates">
         <header className="atlas-section-head">
           <h2>{ar ? "اختاروا المزاج الذي يشبهكم" : "Choose the mood that feels like you"}</h2>
@@ -562,6 +574,11 @@ function Landing({ locale, plans, templates, content, onStart, onGuest, onChoose
             <h3>{ar ? previewTemplate.name : previewTemplate.enName}</h3>
             <p>{ar ? previewTemplate.description : previewTemplate.enDescription}</p>
             <span>{ar ? previewTemplate.tag : previewTemplate.enTag}</span>
+            <div className="atlas-template-path" aria-label={ar ? "رحلة هذا القالب" : "This template journey"}>
+              <span>{ar ? "فتح" : "Open"}</span>
+              <span>{ar ? "تفاصيل" : "Details"}</span>
+              <span>{ar ? "رد" : "RSVP"}</span>
+            </div>
             <button className="atlas-primary" type="button" onClick={() => onChooseTemplate(previewTemplate.code)}>{ar ? "ابدأوا بهذا التصميم" : "Start with this design"} <b aria-hidden="true">{ar ? "←" : "→"}</b></button>
           </div>
           <div className={`atlas-template-stage-art template-concept-${previewTemplate.code}`}>

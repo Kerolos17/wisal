@@ -13,6 +13,9 @@ colors:
   ivory-rule: "rgba(246, 239, 231, .12)"
   invitation-paper: "#eee4da"
   invitation-ink: "#28162a"
+  ceremony-surface: "color-mix(in srgb, {colors.invitation-paper} 86%, {colors.observatory-black})"
+  ceremony-field: "rgba(255, 250, 244, .82)"
+  ceremony-shadow: "0 24px 70px rgba(52, 28, 31, .10)"
 typography:
   display:
     fontFamily: "Cormorant Garamond Variable, Cormorant Garamond, serif"
@@ -146,6 +149,22 @@ The palette behaves like a dark observatory: three close plum surfaces establish
 Each keepsake defines seven local semantic roles—background, paper, ink, muted ink, accent, dark contrast, and action text—rather than borrowing the atlas palette indiscriminately. The action-text role is chosen independently for each accent and must maintain at least 4.5:1 contrast. Love Poem is warm editorial parchment; Garden Night is sage botanical paper; Moonlight is blue-black glass; Golden Vows is burgundy and gilt; White Story is strict monochrome; Cinema Night is nocturnal film; Rose Garden is blush botanical; Cathedral Light is stone, blue-grey, and antique gold; Desert Sunset is terracotta and sand; Velvet Night is black cherry and brass; Coastal Breeze is sea-glass and rust; Modern Monogram is ink-green and muted gold.
 
 **The Artifact Before Theme Rule.** A concept must change composition, material, and image treatment—not merely swap accent colors.
+
+### Ceremony Room Semantics
+
+The post-hero invitation journey is governed by a stable semantic contract so every section reads as one authored artifact:
+
+- **paper/background:** the body field that sits behind message, countdown, schedule, RSVP, and footer.
+- **ink/heading:** the highest-contrast text color for names, section titles, labels, and form copy.
+- **muted text:** secondary explanatory copy and metadata; never used for required form labels.
+- **accent:** small ceremonial signals, numerals, rules, and secondary links.
+- **border:** one-pixel paper or copper rules that frame without creating heavy cards.
+- **surface:** mounted sections such as message, schedule rows, RSVP panels, and footer plate.
+- **action/action hover:** the RSVP button and selected response states, paired with a separate action-ink role.
+- **focus ring:** visible keyboard focus derived from the active accent.
+- **success/error:** status copy and submission feedback only; they should never become the dominant palette.
+
+The countdown uses its own readable subset—countdown-surface, countdown-ink, countdown-muted, countdown-number, and countdown-chip—so light concepts do not inherit a black slab and dark concepts do not place dark type on dark surfaces. Inputs use a field token separate from cards to keep RSVP affordances obvious on every concept.
 
 ## Typography
 

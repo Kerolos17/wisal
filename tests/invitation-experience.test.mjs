@@ -143,18 +143,33 @@ test("homepage previews a selected invitation before passing its template into t
   assert.match(pageSource, /const \[previewTemplateCode, setPreviewTemplateCode\] = useState\("love-poem"\)/);
   assert.match(pageSource, /const previewTemplate = showcaseTemplates\.find/);
   assert.match(pageSource, /className={`atlas-template-stage atlas-template-stage-\$\{previewTemplate\.code\}`}/);
+  assert.match(pageSource, /className="atlas-template-path"/);
   assert.match(pageSource, /onClick=\{\(\) => onChooseTemplate\(previewTemplate\.code\)\}/);
   assert.match(pageSource, /onClick=\{\(\) => setPreviewTemplateCode\(template\.code\)\}/);
   assert.match(pageSource, /aria-pressed=\{previewTemplate\?\.code === template\.code\}/);
   assert.match(atlasStylesSource, /\.atlas-template-stage\s*\{/);
+  assert.match(atlasStylesSource, /\.atlas-template-path\s*\{/);
   assert.match(atlasStylesSource, /\.atlas-template\.is-previewing\s*\{/);
 });
 
-test("invitation surfaces expose explicit readable tokens for dark and light sections", () => {
+test("homepage turns competitor research into a truthful self-service positioning band", () => {
+  assert.match(pageSource, /className="atlas-advantage"/);
+  assert.match(pageSource, /Preview before signing in/);
+  assert.match(pageSource, /One studio for the essentials/);
+  assert.match(pageSource, /RSVP inside the invitation/);
+  assert.match(atlasStylesSource, /\.atlas-advantage\s*\{/);
+  assert.match(atlasStylesSource, /\.atlas-advantage-grid\s*\{/);
+});
+
+test("invitation surfaces expose explicit readable tokens for all ceremony sections", () => {
   assert.match(stylesSource, /--atelier-dark:/);
   assert.match(stylesSource, /--atelier-action-ink:/);
-  assert.match(stylesSource, /\.countdown-card\{background:var\(--atelier-dark\)/);
-  assert.match(stylesSource, /\.countdown-card[^}]*color:var\(--atelier-paper\)/);
+  assert.match(stylesSource, /--atelier-countdown-surface:/);
+  assert.match(stylesSource, /--atelier-countdown-ink:/);
+  assert.match(stylesSource, /--atelier-field:/);
+  assert.match(stylesSource, /\.public-invite\[class\*="invite-concept-"\] \.countdown-card\s*\{[^}]*background:[^}]*var\(--atelier-countdown-surface\)/s);
+  assert.match(stylesSource, /\.public-invite\[class\*="invite-concept-"\] \.countdown-card\s*\{[^}]*color:\s*var\(--atelier-countdown-ink\)/s);
+  assert.match(stylesSource, /\.public-invite\[class\*="invite-concept-"\] \.guest-form input,\s*\.public-invite\[class\*="invite-concept-"\] \.guest-form select\s*\{[^}]*background:\s*var\(--atelier-field\)/s);
   assert.match(stylesSource, /\.invite-primary-action[^}]*:focus-visible/);
 });
 

@@ -617,3 +617,263 @@
 .invitation-utilities button:active{transform:scale(.97,.99)}
 @media(max-width:650px){.opening-envelope .envelope-letter{top:13%;height:173px;padding:16px 20px}.envelope-letter strong{font-size:24px}.opening-mode-envelope.is-opening .envelope-letter{transform:translate3d(0,-140px,60px) rotateX(2deg)}}
 @media(prefers-reduced-motion:reduce){.opening-envelope .envelope-flap,.opening-envelope .envelope-letter,.opening-envelope .envelope-seal{transition:none}.opening-mode-envelope.is-opening .envelope-letter{transform:none}.opening-mode-envelope.is-opening .envelope-flap,.opening-mode-envelope.is-opening .envelope-seal{opacity:0}}
+
+/* Ceremony room correction: downstream invitation sections inherit the hero world instead of dropping into a generic dark block. */
+.public-invite[class*="invite-concept-"] {
+  --atelier-countdown-surface: color-mix(in srgb, var(--atelier-paper) 86%, var(--atelier-background));
+  --atelier-countdown-ink: var(--atelier-ink);
+  --atelier-countdown-muted: var(--atelier-muted);
+  --atelier-countdown-number: var(--atelier-action);
+  --atelier-countdown-chip: color-mix(in srgb, var(--atelier-action) 8%, var(--atelier-paper));
+  --atelier-field: color-mix(in srgb, var(--atelier-paper) 94%, white);
+  --atelier-soft-shadow: 0 24px 58px color-mix(in srgb, var(--atelier-action) 13%, transparent);
+}
+.invite-concept-moonlight,
+.invite-concept-cinema-night {
+  --atelier-countdown-surface: color-mix(in srgb, var(--atelier-paper) 82%, var(--atelier-dark));
+  --atelier-countdown-ink: var(--atelier-ink);
+  --atelier-countdown-muted: var(--atelier-muted);
+  --atelier-countdown-number: var(--atelier-gold);
+  --atelier-countdown-chip: color-mix(in srgb, var(--atelier-gold) 10%, var(--atelier-paper));
+  --atelier-field: color-mix(in srgb, var(--atelier-paper) 92%, var(--atelier-dark));
+  --atelier-soft-shadow: 0 24px 58px rgba(0, 0, 0, .22);
+}
+.public-invite[class*="invite-concept-"] .guest-content {
+  width: min(100%, 1080px);
+  max-width: none;
+  display: grid;
+  gap: clamp(34px, 5vw, 58px);
+  padding: clamp(62px, 8vw, 110px) clamp(16px, 4vw, 34px);
+}
+.public-invite[class*="invite-concept-"] .invite-message,
+.public-invite[class*="invite-concept-"] .countdown-card,
+.public-invite[class*="invite-concept-"] .event-details article,
+.public-invite[class*="invite-concept-"] .rsvp-card,
+.public-invite[class*="invite-concept-"] .segment-rsvp-list>section {
+  border-radius: 3px;
+  box-shadow: var(--atelier-soft-shadow);
+}
+.public-invite[class*="invite-concept-"] .invite-message {
+  width: min(100%, 820px);
+  margin: 0 auto;
+  padding: clamp(28px, 5vw, 50px);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--atelier-paper) 96%, white), var(--atelier-paper));
+  color: var(--atelier-ink);
+}
+.public-invite[class*="invite-concept-"] .invite-message p {
+  color: var(--atelier-muted);
+  font-size: clamp(15px, 1.6vw, 18px);
+}
+.public-invite[class*="invite-concept-"] .countdown-card {
+  width: min(100%, 820px);
+  margin: 0 auto;
+  padding: clamp(26px, 5vw, 48px);
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--atelier-countdown-surface) 96%, white), var(--atelier-countdown-surface));
+  color: var(--atelier-countdown-ink);
+  border: 1px solid var(--atelier-border);
+}
+.public-invite[class*="invite-concept-"] .countdown-card::before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border: 1px solid color-mix(in srgb, var(--atelier-accent) 22%, transparent);
+  pointer-events: none;
+}
+.public-invite[class*="invite-concept-"] .countdown-card .eyebrow {
+  justify-content: center;
+  color: var(--atelier-countdown-number);
+}
+.public-invite[class*="invite-concept-"] .countdown-card h2 {
+  position: relative;
+  z-index: 1;
+  margin: 12px 0 24px;
+  color: var(--atelier-countdown-ink);
+  font-size: clamp(28px, 4vw, 42px);
+}
+.public-invite[class*="invite-concept-"] .countdown-card>div {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(8px, 2vw, 14px);
+}
+.public-invite[class*="invite-concept-"] .countdown-card>div span {
+  min-height: 102px;
+  justify-content: center;
+  border-color: color-mix(in srgb, var(--atelier-accent) 28%, transparent);
+  border-radius: 3px;
+  background: var(--atelier-countdown-chip);
+}
+.public-invite[class*="invite-concept-"] .countdown-card b {
+  color: var(--atelier-countdown-number);
+  font-size: clamp(31px, 4.4vw, 46px);
+}
+.public-invite[class*="invite-concept-"] .countdown-card small {
+  color: var(--atelier-countdown-muted);
+  font-weight: 800;
+}
+.public-invite[class*="invite-concept-"] .invite-schedule {
+  width: min(100%, 920px);
+  margin: 0 auto;
+}
+.public-invite[class*="invite-concept-"] .invite-schedule>.eyebrow {
+  color: var(--atelier-action);
+}
+.public-invite[class*="invite-concept-"] .invite-schedule>h2 {
+  max-width: 15ch;
+  margin: 12px auto 10px;
+  color: var(--atelier-action);
+  font-size: clamp(36px, 5vw, 58px);
+  line-height: 1.02;
+  text-align: center;
+}
+.public-invite[class*="invite-concept-"] .invite-schedule>p {
+  max-width: 52ch;
+  margin: 0 auto 34px;
+  color: var(--atelier-muted);
+  text-align: center;
+}
+.public-invite[class*="invite-concept-"] .event-details {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+.public-invite[class*="invite-concept-"] .event-details article {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(14px, 3vw, 24px);
+  padding: clamp(18px, 3vw, 28px);
+  background: var(--atelier-paper);
+  color: var(--atelier-ink);
+}
+.public-invite[class*="invite-concept-"] .segment-number,
+.public-invite[class*="invite-concept-"] .segment-rsvp-heading>span {
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--atelier-action) 30%, transparent);
+  background: color-mix(in srgb, var(--atelier-action) 7%, var(--atelier-paper));
+  color: var(--atelier-action);
+  font-weight: 850;
+}
+.public-invite[class*="invite-concept-"] .event-details article a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--atelier-action);
+  font-weight: 800;
+  text-decoration-thickness: 1px;
+}
+.public-invite[class*="invite-concept-"] .rsvp-card {
+  width: min(100%, 820px);
+  margin: 0 auto;
+  padding: clamp(28px, 5vw, 54px);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--atelier-paper) 98%, white), var(--atelier-paper));
+}
+.public-invite[class*="invite-concept-"] .rsvp-card>p {
+  color: var(--atelier-muted);
+}
+.public-invite[class*="invite-concept-"] .rsvp-progress {
+  margin: 24px 0;
+  padding: 16px 18px;
+  border: 1px solid var(--atelier-border);
+  background: color-mix(in srgb, var(--atelier-action) 6%, var(--atelier-paper));
+  color: var(--atelier-ink);
+}
+.public-invite[class*="invite-concept-"] .rsvp-progress span {
+  color: var(--atelier-action);
+}
+.public-invite[class*="invite-concept-"] .segment-rsvp-list {
+  display: grid;
+  gap: 12px;
+}
+.public-invite[class*="invite-concept-"] .segment-rsvp-list>section {
+  padding: clamp(16px, 3vw, 22px);
+  background: var(--atelier-field);
+}
+.public-invite[class*="invite-concept-"] .segment-rsvp-options {
+  gap: 8px;
+}
+.public-invite[class*="invite-concept-"] .segment-rsvp-options button {
+  min-height: 44px;
+  transition: border-color .22s cubic-bezier(.2, .8, .2, 1), color .22s cubic-bezier(.2, .8, .2, 1), background-color .22s cubic-bezier(.2, .8, .2, 1), transform .22s cubic-bezier(.2, .8, .2, 1);
+}
+.public-invite[class*="invite-concept-"] .segment-rsvp-options button:active {
+  transform: scale(.98);
+}
+.public-invite[class*="invite-concept-"] .guest-form {
+  grid-template-columns: minmax(0, 2fr) minmax(180px, 1fr);
+  gap: 14px;
+  margin-top: 24px;
+  text-align: start;
+}
+.public-invite[class*="invite-concept-"] .guest-form label {
+  color: var(--atelier-muted);
+}
+.public-invite[class*="invite-concept-"] .guest-form input,
+.public-invite[class*="invite-concept-"] .guest-form select {
+  min-height: 50px;
+  background: var(--atelier-field);
+}
+.public-invite[class*="invite-concept-"] .guest-form input::placeholder {
+  color: color-mix(in srgb, var(--atelier-muted) 72%, transparent);
+  opacity: 1;
+}
+.public-invite[class*="invite-concept-"] .invite-primary-action {
+  min-height: 56px;
+  margin-top: 8px;
+  border-radius: 3px;
+  transition: background-color .22s cubic-bezier(.2, .8, .2, 1), transform .22s cubic-bezier(.2, .8, .2, 1);
+}
+.public-invite[class*="invite-concept-"] .invite-primary-action:active {
+  transform: scale(.99);
+}
+.public-invite[class*="invite-concept-"] .privacy-note {
+  color: var(--atelier-muted);
+}
+.public-invite[class*="invite-concept-"] .invite-footer {
+  min-height: 118px;
+  margin-top: 0;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--atelier-dark) 92%, var(--atelier-action)), var(--atelier-dark));
+}
+.public-invite[class*="invite-concept-"] .invite-footer span {
+  color: color-mix(in srgb, var(--atelier-paper) 82%, transparent);
+}
+@media(max-width:700px) {
+  .public-invite[class*="invite-concept-"] .guest-content {
+    gap: 28px;
+    padding: 44px 16px 72px;
+  }
+  .public-invite[class*="invite-concept-"] .countdown-card>div {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .public-invite[class*="invite-concept-"] .countdown-card>div span {
+    min-height: 86px;
+    padding-inline: 4px;
+  }
+  .public-invite[class*="invite-concept-"] .event-details article {
+    grid-template-columns: 44px minmax(0, 1fr);
+  }
+  .public-invite[class*="invite-concept-"] .event-details article a {
+    grid-column: 2;
+    justify-self: start;
+  }
+  .public-invite[class*="invite-concept-"] .guest-form {
+    grid-template-columns: 1fr;
+  }
+}
+@media(prefers-reduced-motion:reduce) {
+  .public-invite[class*="invite-concept-"] .segment-rsvp-options button,
+  .public-invite[class*="invite-concept-"] .invite-primary-action {
+    transition: none;
+  }
+}

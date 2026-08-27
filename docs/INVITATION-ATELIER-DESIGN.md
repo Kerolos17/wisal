@@ -21,6 +21,18 @@ The public gallery is now a **live cabinet**, not a set of generic purchase card
 
 The envelope scene is deliberately authored as a five-layer object: ground shadow, printed envelope body, inner liner, letter stock, and a stamped seal. One action drives the sequence: the seal recedes, the flap hinges open in 3D, and the letter rises. It has a single, obvious open control and a separate skip route, instead of relying on decorative animation or an ambiguous tap target. Concept-specific liner and stock colors make the same interaction belong to each visual world without copying a reference pattern.
 
+## Platform positioning refinement
+
+The home page now makes the product difference explicit without claiming unfinished payment or automation features. Competitor research showed that premium digital invitations often sell the memorable envelope reveal, music, and RSVP, while many still route couples into a manual production conversation. Wisal's public page therefore positions the current product as a self-service invitation studio: preview a real invitation world, edit the essential details, publish the guest link, then follow opens and RSVPs from the dashboard.
+
+The template gallery includes a three-part journey cue for the selected world: open, details, RSVP. This turns each preview into a small product demonstration rather than a static art card.
+
+## Ceremony room correction
+
+The post-hero guest journey uses a shared ceremony-room token layer. The countdown is no longer a universal dark slab on light concepts; it resolves through `--atelier-countdown-surface`, `--atelier-countdown-ink`, `--atelier-countdown-muted`, `--atelier-countdown-number`, and `--atelier-countdown-chip`. Light worlds read like mounted paper timepieces, while dark worlds use raised nocturnal surfaces with explicit high-contrast ink.
+
+Schedule rows, RSVP sections, fields, progress, success/error states, and footer chrome now inherit the same action, field, border, and soft-shadow roles. This keeps the operational parts of the invitation connected to the hero and prevents low-contrast text over mismatched backgrounds.
+
 ## Guest flow
 
 1. The opening scene identifies the guest and the couple, with an explicit open action and an Escape/Skip path.

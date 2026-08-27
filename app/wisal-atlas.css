@@ -1252,6 +1252,24 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
 .atlas-template-stage-copy > span { margin-bottom: 26px; }
 .atlas-template-stage-copy .atlas-primary { margin-top: 0; }
 .atlas-template-stage-copy .atlas-primary b { margin-inline-start: 8px; font: inherit; }
+.atlas-template-path {
+  width: min(100%, 390px);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin: 4px 0 24px;
+  border: 1px solid rgba(239, 173, 118, .28);
+  background: rgba(239, 173, 118, .2);
+}
+.atlas-template-path span {
+  min-height: 42px;
+  display: grid;
+  place-items: center;
+  background: rgba(18, 9, 20, .64);
+  color: rgba(255, 247, 238, .88);
+  font: 740 10px/1 var(--font-ui);
+  letter-spacing: .08em;
+}
 .atlas-template-stage-art {
   position: relative;
   min-height: 510px;
@@ -1278,6 +1296,14 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
 .atlas-template-stage-white-story .atlas-template-stage-copy p { color: #655c5b; }
 .atlas-template-stage-white-story .atlas-template-stage-copy > small,
 .atlas-template-stage-white-story .atlas-template-stage-copy > span { color: #7c3a42; }
+.atlas-template-stage-white-story .atlas-template-path {
+  border-color: rgba(87, 29, 40, .22);
+  background: rgba(87, 29, 40, .13);
+}
+.atlas-template-stage-white-story .atlas-template-path span {
+  background: rgba(255, 253, 248, .86);
+  color: #571d28;
+}
 .atlas-template-stage-white-story .atlas-template-stage-art::after { background: linear-gradient(90deg, rgba(255, 253, 248, .32), transparent 42%); }
 .atlas-template-grid {
   max-width: 1240px;
@@ -1413,6 +1439,7 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
   .atlas-template-stage-copy { min-height: 335px; padding: 34px 24px 30px; }
   .atlas-template-stage-copy h3 { font-size: clamp(42px, 12vw, 58px); }
   .atlas-template-stage-copy p { font-size: 13px; }
+  .atlas-template-path { margin-bottom: 20px; }
   .atlas-template-stage-art { min-height: 410px; }
   .atlas-template-stage-art > img { object-position: center 24%; }
   .atlas-template-grid {
@@ -1426,4 +1453,98 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
   .atlas-template-fallback { inset: 14px !important; }
   .atlas-template-label { padding: 20px 18px 18px; }
   .atlas-template-description { max-width: 27ch; }
+}
+
+/* Self-service advantage band: turns competitor research into a truthful Wisal promise. */
+.atlas-advantage {
+  display: grid;
+  grid-template-columns: minmax(280px, .82fr) minmax(0, 1.18fr);
+  gap: clamp(28px, 5vw, 72px);
+  align-items: start;
+  padding: clamp(76px, 9vw, 136px) clamp(22px, 7vw, 104px);
+  border-top: 1px solid var(--atlas-line-soft);
+  border-bottom: 1px solid var(--atlas-line-soft);
+  background:
+    linear-gradient(90deg, rgba(215, 146, 97, .08), transparent 38%),
+    var(--atlas-ground-raised);
+}
+.atlas-advantage-copy {
+  position: sticky;
+  top: 112px;
+}
+.atlas-advantage-copy h2 {
+  max-width: 12ch;
+  margin: 0;
+  color: var(--atlas-ivory);
+  font: 520 clamp(42px, 5vw, 72px)/.94 var(--font-display), Georgia, serif;
+  letter-spacing: -.032em;
+}
+[dir="rtl"] .atlas-advantage-copy h2 {
+  max-width: 13ch;
+  font-family: "Noto Naskh Arabic", serif;
+  line-height: 1.08;
+  letter-spacing: 0;
+}
+.atlas-advantage-copy p {
+  max-width: 48ch;
+  margin: 24px 0 0;
+  color: var(--atlas-muted);
+  font-size: 14px;
+  line-height: 1.85;
+}
+.atlas-advantage-grid {
+  display: grid;
+  gap: 1px;
+  border: 1px solid var(--atlas-line);
+  background: var(--atlas-line);
+}
+.atlas-advantage-grid article {
+  min-height: 190px;
+  display: grid;
+  align-content: end;
+  gap: 10px;
+  padding: clamp(24px, 4vw, 42px);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, .035), rgba(255, 255, 255, 0)),
+    var(--atlas-ground);
+}
+.atlas-advantage-grid article:nth-child(2) {
+  background:
+    linear-gradient(145deg, rgba(215, 146, 97, .08), rgba(255, 255, 255, 0)),
+    #160b19;
+}
+.atlas-advantage-grid span {
+  color: var(--atlas-copper-bright);
+  font-size: 11px;
+  font-weight: 800;
+}
+.atlas-advantage-grid b {
+  max-width: 22ch;
+  color: var(--atlas-ivory);
+  font: 520 clamp(25px, 2.4vw, 36px)/1 var(--font-display), Georgia, serif;
+  letter-spacing: -.02em;
+}
+[dir="rtl"] .atlas-advantage-grid b {
+  font-family: "Noto Naskh Arabic", serif;
+  line-height: 1.18;
+  letter-spacing: 0;
+}
+.atlas-advantage-grid p {
+  max-width: 48ch;
+  margin: 0;
+  color: rgba(246, 239, 231, .72);
+  font-size: 13px;
+  line-height: 1.75;
+}
+@media (max-width: 860px) {
+  .atlas-advantage {
+    grid-template-columns: 1fr;
+    padding-inline: 22px;
+  }
+  .atlas-advantage-copy {
+    position: static;
+  }
+  .atlas-advantage-copy h2 {
+    max-width: 14ch;
+  }
 }
