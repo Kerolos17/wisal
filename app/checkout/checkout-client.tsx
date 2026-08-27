@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useWisalLocale } from "../use-wisal-locale";
 
@@ -35,6 +36,7 @@ export default function CheckoutClient({ plan }: { plan: CheckoutPlan }) {
   const [receipt, setReceipt] = useState<File | null>(null);
   const [state, setState] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
+  const [paymentId, setPaymentId] = useState<string | null>(null);
 
   const planName = locale === "ar" ? plan.nameAr : plan.nameEn;
 
@@ -55,6 +57,7 @@ export default function CheckoutClient({ plan }: { plan: CheckoutPlan }) {
       if (createRes.status === 401) { router.push(`/auth/sign-in?returnTo=${encodeURIComponent(`/checkout?plan=${plan.code}`)}`); return; }
       if (!createRes.ok) { const data = await createRes.json().catch(() => ({})); throw new Error(data.error || L("تعذر بدء الطلب", "Could not start the request")); }
       const { payment } = await createRes.json() as { payment: { id: string } };
+      setPaymentId(payment.id);
 
       const form = new FormData();
       form.append("receipt", receipt);
@@ -80,6 +83,7 @@ export default function CheckoutClient({ plan }: { plan: CheckoutPlan }) {
           <span className="checkout-icon">✓</span>
           <h1>{L("وصلنا طلب الدفع", "Payment request received")}</h1>
           <p>{L("سنراجع الإيصال ونفعّل باقتك خلال وقت قصير. ستصلك رسالة عند التفعيل.", "We will review the receipt and activate your plan shortly. You will be notified when approved.")}</p>
+          {paymentId && <Link className="checkout-link" href={`/checkout/${paymentId}/status`}>{L("تتبّع حالة الطلب", "Track request status")}</Link>}
           <button className="primary" onClick={() => router.push("/workspace")}>{L("الذهاب إلى مناسبتي", "Go to my event")}</button>
         </div>
       </section>

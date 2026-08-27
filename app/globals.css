@@ -933,3 +933,23 @@
 .studio-templates>button[data-locked="true"] .mini-template:after{content:"🔒";position:absolute;inset:0;display:grid;place-items:center;font-size:1.6rem;background:rgba(30,18,27,.4);border-radius:inherit}
 .template-upgrade-notice{font-size:12px;color:var(--muted);background:#fbf6f3;border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:0 0 4px}
 .template-upgrade-notice a{color:var(--rose-dark);font-weight:700;text-decoration:none;white-space:nowrap}
+
+.checkout-link{display:inline-block;margin:4px 0 14px;color:var(--rose-dark);font-weight:700;font-size:13px;text-decoration:none}
+.checkout-note{font-size:13px;color:var(--muted);background:#fbf6f3;border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:0 0 12px;text-align:start}
+.checkout-icon.is-pending{background:#f3eef9;color:#6b5bb0}
+.checkout-icon.is-error{background:#f6e4e0;color:#b14a3e}
+.checkout-status-actions{display:flex;flex-direction:column;gap:10px;align-items:center}
+.checkout-status-actions a:not(.primary){color:var(--muted);font-size:13px;text-decoration:none}
+
+/* Admin pending badge */
+.admin-badge{margin-inline-start:auto;background:#b14a3e;color:#fff;border-radius:999px;font-size:10px;font-weight:700;min-width:18px;height:18px;display:inline-grid;place-items:center;padding:0 5px}
+
+/* Workspace plan card */
+.plan-card{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:20px;padding:18px 22px;margin:0 0 18px;box-shadow:var(--shadow)}
+.plan-card small{display:block;font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--muted)}
+.plan-card b{font-family:Georgia,serif;font-size:20px;color:var(--plum);display:block;margin:4px 0}
+.plan-card p{font-size:12.5px;color:var(--muted);margin:0}
+.plan-card .primary{margin:0}
+.plan-card-pending{border-color:#d9cdf0;background:linear-gradient(160deg,#fbf8ff,#fffdfa)}
+.plan-card-active{border-color:#cfe6d4}
+.plan-card-free a.primary{text-decoration:none}

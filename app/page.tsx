@@ -3,6 +3,7 @@
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import { Bell, CircleCheckBig, CircleDashed, Eye, Headphones, History, House, LayoutDashboard, LayoutTemplate, ListChecks, MessageSquareText, Palette, Quote, Rocket, Send, Settings, UsersRound } from "lucide-react";
 import { type Locale, useWisalLocale } from "./use-wisal-locale";
 import { isPremiumTemplateCode } from "@/lib/template-entitlements";
@@ -247,6 +248,50 @@ function Icon({ children }: { children: React.ReactNode }) {
   return <span className="icon" aria-hidden="true">{children}</span>;
 }
 
+type SubscriptionInfo = { planCode: string | null; status: string | null; expiresAt: string | null; latestPaymentStatus: string | null };
+
+function PlanCard({ locale, subscription, plans }: { locale: Locale; subscription: SubscriptionInfo; plans: PublicPlan[] }) {
+  const ar = locale === "ar";
+  const plan = plans.find((item) => item.code === subscription.planCode);
+  const planName = plan ? (ar ? plan.nameAr : plan.nameEn) : (ar ? "البداية" : "Starter");
+  const isPaidActive = !!subscription.planCode && subscription.planCode !== "starter" && subscription.status === "active";
+  const pending = ["draft", "pending_review", "needs_info"].includes(subscription.latestPaymentStatus ?? "");
+
+  if (pending) {
+    return (
+      <section className="plan-card plan-card-pending">
+        <div>
+          <small>{ar ? "حالة الدفع" : "Payment status"}</small>
+          <b>{ar ? "طلب الدفع قيد المراجعة" : "Payment request under review"}</b>
+          <p>{ar ? "سنفعّل باقتك بعد المراجعة. تابع الحالة من صفحة الدفع." : "Your plan activates after review. Track the status from checkout."}</p>
+        </div>
+        <Link className="primary" href="/checkout">{ar ? "متابعة الدفع" : "Continue payment"}</Link>
+      </section>
+    );
+  }
+  if (isPaidActive) {
+    return (
+      <section className="plan-card plan-card-active">
+        <div>
+          <small>{ar ? "باقتك النشطة" : "Your active plan"}</small>
+          <b>{planName}</b>
+          {subscription.expiresAt ? <p>{ar ? `سارية حتى ${new Date(subscription.expiresAt).toLocaleDateString("ar-EG")}` : `Active until ${new Date(subscription.expiresAt).toLocaleDateString("en-GB")}`}</p> : null}
+        </div>
+      </section>
+    );
+  }
+  return (
+    <section className="plan-card plan-card-free">
+      <div>
+        <small>{ar ? "باقتك الحالية" : "Your current plan"}</small>
+        <b>{planName}</b>
+        <p>{ar ? "ترقية باقتك تفتح قوالبًا مميزة وضيوفًا أكثر." : "Upgrade your plan to unlock premium templates and more guests."}</p>
+      </div>
+      <Link className="primary" href="/checkout?plan=elegant">{ar ? "أكمل الدفع" : "Complete payment"}</Link>
+    </section>
+  );
+}
+
 type AccountSummary = { displayName: string; email: string; role?: string };
 
 export default function Home({ initialView = "home", authenticated = false, account = null, isOwner = false }: { initialView?: View; authenticated?: boolean; account?: AccountSummary | null; isOwner?: boolean } = {}) {
@@ -269,6 +314,7 @@ export default function Home({ initialView = "home", authenticated = false, acco
   const [publicContent, setPublicContent] = useState<PublicContent>({});
   const [publicTemplates, setPublicTemplates] = useState<PublicTemplate[]>(atelierTemplates);
   const [activePlanCode, setActivePlanCode] = useState<string | null>(null);
+  const [subscription, setSubscription] = useState<{ planCode: string | null; status: string | null; expiresAt: string | null; latestPaymentStatus: string | null } | null>(null);
   const [guestEditor, setGuestEditor] = useState<{ mode: "add" | "edit"; guest?: GuestRecord } | null>(null);
 
   const loadEvent = useCallback(async (eventId?: string, showLoading = true) => {
@@ -362,8 +408,10 @@ export default function Home({ initialView = "home", authenticated = false, acco
     void fetch("/api/me/subscription", { cache: "no-store" })
       .then(async (res) => {
         if (!res.ok || cancelled) return;
-        const data = await res.json() as { planCode: string | null };
-        if (!cancelled) setActivePlanCode(data.planCode ?? null);
+        const data = await res.json() as { planCode: string | null; status: string | null; expiresAt: string | null; latestPaymentStatus: string | null };
+        if (cancelled) return;
+        setSubscription(data);
+        setActivePlanCode(data.planCode ?? null);
       })
       .catch(() => {});
     return () => {
@@ -531,7 +579,7 @@ export default function Home({ initialView = "home", authenticated = false, acco
         />
       )}
       {view === "guest" && <Guest locale={locale} rsvp={rsvp} setRsvp={setRsvp} eventData={eventData} onSubmitted={async () => { await loadEvent(currentEventId); go("dashboard"); }} />}
-      {view === "dashboard" && <Dashboard locale={locale} filter={filter} setFilter={setFilter} eventData={eventData} eventList={eventList} currentEventId={currentEventId} onChooseEvent={chooseEvent} onCreate={() => setCreatingEvent(true)} onEdit={() => void openStudio()} onAddGuest={() => setGuestEditor({ mode: "add" })} onEditGuest={(guest) => setGuestEditor({ mode: "edit", guest })} onDataUpdated={setEventData} profileName={profileName} />}
+      {view === "dashboard" && <>{authenticated && subscription ? <PlanCard locale={locale} subscription={subscription} plans={publicPlans} /> : null}<Dashboard locale={locale} filter={filter} setFilter={setFilter} eventData={eventData} eventList={eventList} currentEventId={currentEventId} onChooseEvent={chooseEvent} onCreate={() => setCreatingEvent(true)} onEdit={() => void openStudio()} onAddGuest={() => setGuestEditor({ mode: "add" })} onEditGuest={(guest) => setGuestEditor({ mode: "edit", guest })} onDataUpdated={setEventData} profileName={profileName} /></>}
       {view === "admin" && <Suspense fallback={<BuilderLoading locale={locale} />}><AdminDashboard locale={locale} isOwner={isOwner} onOpenEvent={(id) => { void chooseEvent(id).then(() => go("dashboard")); }} /></Suspense>}
       {creatingEvent && <CreateEventModal locale={locale} plan={selectedPlan} onClose={() => setCreatingEvent(false)} onCreate={createEvent} />}
       {guestEditor && <GuestModal locale={locale} mode={guestEditor.mode} guest={guestEditor.guest} onClose={() => setGuestEditor(null)} onSave={saveGuest} onDelete={removeGuest} />}
