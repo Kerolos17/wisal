@@ -2,8 +2,8 @@ import { asc, count, desc, eq, sql } from "drizzle-orm";
 import { getDb } from "@/db";
 import { adminAuditLogs, events, guests, invitations, platformContent, platformPlans, platformTemplates, users } from "@/db/schema";
 import { countOpenSupportTickets, listAdminSupportTickets } from "@/lib/support-data";
+import { getPlatformOwnerEmail, isPlatformOwner } from "@/lib/platform-owner";
 
-const OWNER_EMAIL = "kerolosmorkos1124@gmail.com";
 const allowedRoles = ["admin", "support", "content_manager", "couple"] as const;
 export type PlatformRole = typeof allowedRoles[number];
 
@@ -37,17 +37,19 @@ const contentSeed = [
 
 async function ensurePlatformData() {
   const db = getDb();
+  const ownerEmail = getPlatformOwnerEmail();
   await Promise.all([
     db.insert(platformTemplates).values(templateSeed).onConflictDoNothing({ target: platformTemplates.code }),
     db.insert(platformPlans).values(planSeed).onConflictDoNothing({ target: platformPlans.code }),
     db.insert(platformContent).values(contentSeed).onConflictDoNothing({ target: platformContent.key }),
   ]);
-  await db.update(users).set({ role: "admin", updatedAt: new Date().toISOString() }).where(eq(users.email, OWNER_EMAIL));
+  await db.update(users).set({ role: "admin", updatedAt: new Date().toISOString() }).where(eq(users.email, ownerEmail));
 }
 
 async function ownerId() {
   const db = getDb();
-  const [owner] = await db.select({ id: users.id }).from(users).where(eq(users.email, OWNER_EMAIL)).limit(1);
+  const ownerEmail = getPlatformOwnerEmail();
+  const [owner] = await db.select({ id: users.id }).from(users).where(eq(users.email, ownerEmail)).limit(1);
   return owner?.id ?? null;
 }
 
@@ -65,7 +67,7 @@ export async function getAdminOverview() {
   const [guestCount] = await db.select({ value: count() }).from(guests);
   const [openCount] = await db.select({ value: count() }).from(guests).where(sql`${guests.openedAt} is not null`);
   const [responseCount] = await db.select({ value: count() }).from(guests).where(sql`${guests.respondedAt} is not null`);
-  const userRows = await db.select({ id: users.id, email: users.email, displayName: users.displayName, role: users.role, locale: users.locale, createdAt: users.createdAt }).from(users).orderBy(desc(users.createdAt)).limit(100);
+  const userRows = (await db.select({ id: users.id, email: users.email, displayName: users.displayName, role: users.role, locale: users.locale, createdAt: users.createdAt }).from(users).orderBy(desc(users.createdAt)).limit(100)).map((row) => ({ ...row, roleLocked: isPlatformOwner(row.email) }));
   const eventRows = await db.select({ id: events.id, title: events.title, slug: events.slug, status: events.status, eventDate: events.eventDate, city: events.city, ownerName: users.displayName, template: invitations.template, updatedAt: events.updatedAt }).from(events).leftJoin(users, eq(events.ownerId, users.id)).leftJoin(invitations, eq(invitations.eventId, events.id)).orderBy(desc(events.updatedAt)).limit(100);
   const [templateRows, planRows, contentRows, auditRows, supportRows, openSupport] = await Promise.all([
     db.select().from(platformTemplates).orderBy(asc(platformTemplates.createdAt)),
@@ -90,7 +92,7 @@ export async function updateUserRole(id: string, role: string) {
   const db = getDb();
   const [target] = await db.select({ email: users.email }).from(users).where(eq(users.id, id)).limit(1);
   if (!target) return null;
-  if (target.email === OWNER_EMAIL && role !== "admin") throw new Error("The platform owner must remain an admin");
+  if (isPlatformOwner(target.email) && role !== "admin") throw new Error("The platform owner must remain an admin");
   const [updated] = await db.update(users).set({ role, updatedAt: new Date().toISOString() }).where(eq(users.id, id)).returning();
   if (updated) await audit("user.role_updated", "user", id, { role });
   return updated ?? null;

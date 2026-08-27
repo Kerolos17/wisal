@@ -248,7 +248,7 @@ function Icon({ children }: { children: React.ReactNode }) {
 
 type AccountSummary = { displayName: string; email: string; role?: string };
 
-export default function Home({ initialView = "home", authenticated = false, account = null }: { initialView?: View; authenticated?: boolean; account?: AccountSummary | null } = {}) {
+export default function Home({ initialView = "home", authenticated = false, account = null, isOwner = false }: { initialView?: View; authenticated?: boolean; account?: AccountSummary | null; isOwner?: boolean } = {}) {
   const router = useRouter();
   const [locale, setLocale] = useWisalLocale();
   const [view, setView] = useState<View>(initialView);
@@ -502,7 +502,7 @@ export default function Home({ initialView = "home", authenticated = false, acco
       )}
       {view === "guest" && <Guest locale={locale} rsvp={rsvp} setRsvp={setRsvp} eventData={eventData} onSubmitted={async () => { await loadEvent(currentEventId); go("dashboard"); }} />}
       {view === "dashboard" && <Dashboard locale={locale} filter={filter} setFilter={setFilter} eventData={eventData} eventList={eventList} currentEventId={currentEventId} onChooseEvent={chooseEvent} onCreate={() => setCreatingEvent(true)} onEdit={() => void openStudio()} onAddGuest={() => setGuestEditor({ mode: "add" })} onEditGuest={(guest) => setGuestEditor({ mode: "edit", guest })} onDataUpdated={setEventData} profileName={profileName} />}
-      {view === "admin" && <Suspense fallback={<BuilderLoading locale={locale} />}><AdminDashboard locale={locale} onOpenEvent={(id) => { void chooseEvent(id).then(() => go("dashboard")); }} /></Suspense>}
+      {view === "admin" && <Suspense fallback={<BuilderLoading locale={locale} />}><AdminDashboard locale={locale} isOwner={isOwner} onOpenEvent={(id) => { void chooseEvent(id).then(() => go("dashboard")); }} /></Suspense>}
       {creatingEvent && <CreateEventModal locale={locale} plan={selectedPlan} onClose={() => setCreatingEvent(false)} onCreate={createEvent} />}
       {guestEditor && <GuestModal locale={locale} mode={guestEditor.mode} guest={guestEditor.guest} onClose={() => setGuestEditor(null)} onSave={saveGuest} onDelete={removeGuest} />}
     </main>

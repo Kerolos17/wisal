@@ -42,7 +42,7 @@ test("roles, plans and bilingual content are durable and audited", () => {
 });
 
 test("the owner account cannot lose administration access", () => {
-  assert.match(adminDataSource, /target\.email === OWNER_EMAIL && role !== "admin"/);
+  assert.match(adminDataSource, /isPlatformOwner\(target\.email\) && role !== "admin"/);
   assert.match(adminDataSource, /The platform owner must remain an admin/);
 });
 
@@ -80,7 +80,7 @@ test("workspace and administration are sign-in gated server routes", () => {
 test("authenticated identities receive durable Neon accounts", () => {
   assert.match(accountDataSource, /ensureAccount/);
   assert.match(accountDataSource, /where\(eq\(users\.email, email\)\)/);
-  assert.match(accountDataSource, /role: email === PLATFORM_OWNER_EMAIL \? "admin" : "couple"/);
+  assert.match(accountDataSource, /isPlatformOwner\(email\) \? "admin" : "couple"/);
 });
 
 test("admin overview is backed by platform records", () => {
@@ -89,6 +89,11 @@ test("admin overview is backed by platform records", () => {
   assert.match(adminDataSource, /from\(events\)/);
   assert.match(adminDataSource, /from\(guests\)/);
   assert.match(adminDataSource, /leftJoin\(invitations/);
+});
+
+test("admin overview returns roleLocked per user, not viewer-based owner check", () => {
+  assert.match(adminDataSource, /roleLocked: isPlatformOwner\(row\.email\)/);
+  assert.doesNotMatch(adminSource, /isPlatformOwner/);
 });
 
 test("template availability is durable and owner-controlled", () => {
