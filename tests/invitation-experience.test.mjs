@@ -5,6 +5,7 @@ import test from "node:test";
 const pageSource = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
 const inviteSource = await readFile(new URL("../app/invite/[slug]/InvitationClient.tsx", import.meta.url), "utf8");
 const stylesSource = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+const atlasStylesSource = await readFile(new URL("../app/wisal-atlas.css", import.meta.url), "utf8");
 const schemaSource = await readFile(new URL("../db/schema.ts", import.meta.url), "utf8");
 const dataSource = await readFile(new URL("../lib/wisal-data.ts", import.meta.url), "utf8");
 const eventRouteSource = await readFile(new URL("../app/api/events/[id]/route.ts", import.meta.url), "utf8");
@@ -135,6 +136,7 @@ test("homepage presents six authored previews with a clear template selection pa
   }
   assert.match(pageSource, /template\.description/);
   assert.match(pageSource, /معاينة|Preview/);
+  assert.match(atlasStylesSource, /\.atlas-section\s*\{[^}]*scroll-margin-top:\s*92px/);
 });
 
 test("invitation surfaces expose explicit readable tokens for dark and light sections", () => {
