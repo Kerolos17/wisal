@@ -29,6 +29,13 @@ test("platform owner can open a bilingual administration workspace", () => {
   assert.match(adminSource, /Administration audit log/);
 });
 
+test("admin plan management describes the live manual-payment workflow", () => {
+  assert.match(adminSource, /الدفع اليدوي مفعّل/);
+  assert.match(adminSource, /Manual payment is active/);
+  assert.doesNotMatch(adminSource, /اربط الدفع لاحقًا/);
+  assert.doesNotMatch(adminSource, /connect payments later/);
+});
+
 test("roles, plans and bilingual content are durable and audited", () => {
   assert.match(schemaSource, /platformPlans = pgTable\("platform_plans"/);
   assert.match(schemaSource, /platformContent = pgTable\("platform_content"/);
