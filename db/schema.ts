@@ -231,7 +231,27 @@ export const messages = pgTable("messages", {
 // --- Phase 1: Manual payment domain ---
 
 export const paymentStatus = ["draft", "pending_review", "needs_info", "rejected", "approved", "cancelled"] as const;
-export const paymentMethod = ["instapay", "vodafone_cash", "etisalat_cash", "bank_transfer"] as const;
+export const paymentMethod = ["instapay", "vodafone_cash", "orange_cash", "etisalat_cash", "bank_transfer"] as const;
+
+export const paymentDestinationMethod = ["instapay", "vodafone_cash", "orange_cash", "etisalat_cash", "bank_transfer"] as const;
+
+export const paymentDestinations = pgTable("payment_destinations", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  method: text("method", { enum: paymentDestinationMethod }).notNull().unique(),
+  labelAr: text("label_ar").notNull(),
+  labelEn: text("label_en").notNull(),
+  recipientName: text("recipient_name").notNull(),
+  accountIdentifier: text("account_identifier").notNull(),
+  bankName: text("bank_name").notNull().default(""),
+  instructionsAr: text("instructions_ar").notNull().default(""),
+  instructionsEn: text("instructions_en").notNull().default(""),
+  paymentUrl: text("payment_url").notNull().default(""),
+  qrKey: text("qr_key"),
+  active: boolean("active").notNull().default(true),
+  position: integer("position").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).notNull().default(now),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).notNull().default(now),
+}, (table) => [index("payment_destinations_active_position_idx").on(table.active, table.position)]);
 
 export const paymentRequests = pgTable("payment_requests", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -291,6 +311,7 @@ export const userSubscriptions = pgTable("user_subscriptions", {
   updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).notNull().default(now),
 }, (table) => [
   index("user_subscriptions_user_status_idx").on(table.userId, table.status),
+  uniqueIndex("user_subscriptions_one_active_idx").on(table.userId).where(sql`${table.status} = 'active'`),
 ]);
 
 export const paymentAuditLogs = pgTable("payment_audit_logs", {

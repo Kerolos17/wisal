@@ -1,6 +1,6 @@
 import { asc, count, desc, eq, sql } from "drizzle-orm";
 import { getDb } from "@/db";
-import { adminAuditLogs, events, guests, invitations, platformContent, platformPlans, platformTemplates, users } from "@/db/schema";
+import { adminAuditLogs, events, guests, invitations, paymentRequests, platformContent, platformPlans, platformTemplates, users } from "@/db/schema";
 import { countOpenSupportTickets, listAdminSupportTickets } from "@/lib/support-data";
 import { getPlatformOwnerEmail, isPlatformOwner } from "@/lib/platform-owner";
 
@@ -35,14 +35,19 @@ const contentSeed = [
   { key: "support_email", groupName: "support", valueAr: "support@wisal.app", valueEn: "support@wisal.app" },
 ];
 
-async function ensurePlatformData() {
+async function ensurePublicPlatformData() {
   const db = getDb();
-  const ownerEmail = getPlatformOwnerEmail();
   await Promise.all([
     db.insert(platformTemplates).values(templateSeed).onConflictDoNothing({ target: platformTemplates.code }),
     db.insert(platformPlans).values(planSeed).onConflictDoNothing({ target: platformPlans.code }),
     db.insert(platformContent).values(contentSeed).onConflictDoNothing({ target: platformContent.key }),
   ]);
+}
+
+async function ensurePlatformData() {
+  const db = getDb();
+  const ownerEmail = getPlatformOwnerEmail();
+  await ensurePublicPlatformData();
   await db.update(users).set({ role: "admin", updatedAt: new Date().toISOString() }).where(eq(users.email, ownerEmail));
 }
 
@@ -67,6 +72,7 @@ export async function getAdminOverview() {
   const [guestCount] = await db.select({ value: count() }).from(guests);
   const [openCount] = await db.select({ value: count() }).from(guests).where(sql`${guests.openedAt} is not null`);
   const [responseCount] = await db.select({ value: count() }).from(guests).where(sql`${guests.respondedAt} is not null`);
+  const [pendingPayments] = await db.select({ value: count() }).from(paymentRequests).where(eq(paymentRequests.status, "pending_review"));
   const userRows = (await db.select({ id: users.id, email: users.email, displayName: users.displayName, role: users.role, locale: users.locale, createdAt: users.createdAt }).from(users).orderBy(desc(users.createdAt)).limit(100)).map((row) => ({ ...row, roleLocked: isPlatformOwner(row.email) }));
   const eventRows = await db.select({ id: events.id, title: events.title, slug: events.slug, status: events.status, eventDate: events.eventDate, city: events.city, ownerName: users.displayName, template: invitations.template, updatedAt: events.updatedAt }).from(events).leftJoin(users, eq(events.ownerId, users.id)).leftJoin(invitations, eq(invitations.eventId, events.id)).orderBy(desc(events.updatedAt)).limit(100);
   const [templateRows, planRows, contentRows, auditRows, supportRows, openSupport] = await Promise.all([
@@ -77,7 +83,7 @@ export async function getAdminOverview() {
     listAdminSupportTickets(),
     countOpenSupportTickets(),
   ]);
-  return { stats: { users: Number(userCount.value), events: Number(eventCount.value), published: Number(publishedCount.value), guests: Number(guestCount.value), opened: Number(openCount.value), responded: Number(responseCount.value), supportOpen: openSupport }, users: userRows, events: eventRows, templates: templateRows, plans: planRows, content: contentRows, audit: auditRows, support: supportRows };
+  return { stats: { users: Number(userCount.value), events: Number(eventCount.value), published: Number(publishedCount.value), guests: Number(guestCount.value), opened: Number(openCount.value), responded: Number(responseCount.value), supportOpen: openSupport, paymentsPending: Number(pendingPayments.value) }, users: userRows, events: eventRows, templates: templateRows, plans: planRows, content: contentRows, audit: auditRows, support: supportRows };
 }
 
 export async function updatePlatformTemplate(code: string, active: boolean) {
@@ -114,7 +120,7 @@ export async function updatePlatformContent(key: string, valueAr: string, valueE
 }
 
 export async function getPublicPlatformConfig() {
-  const db = getDb(); await ensurePlatformData();
+  const db = getDb(); await ensurePublicPlatformData();
   const [content, plans, templates] = await Promise.all([
     db.select({ key: platformContent.key, valueAr: platformContent.valueAr, valueEn: platformContent.valueEn }).from(platformContent),
     db.select({ code: platformPlans.code, nameAr: platformPlans.nameAr, nameEn: platformPlans.nameEn, priceEgp: platformPlans.priceEgp, guestLimit: platformPlans.guestLimit, featured: platformPlans.featured, featuresAr: platformPlans.featuresAr, featuresEn: platformPlans.featuresEn }).from(platformPlans).where(eq(platformPlans.active, true)).orderBy(asc(platformPlans.position)),

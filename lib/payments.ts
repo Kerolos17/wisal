@@ -1,5 +1,5 @@
 import { and, desc, eq, sql } from "drizzle-orm";
-import { getDb } from "@/db";
+import { getDb, getSql } from "@/db";
 import { paymentAuditLogs, paymentRequests, platformPlans, userSubscriptions, users } from "@/db/schema";
 import type { PlatformIdentity } from "@/lib/auth/identity";
 
@@ -37,7 +37,9 @@ export function paymentErrorStatus(error: unknown): number {
     message === "Plan duration is not configured" ||
     message === "Payment request is not in a submittable state" ||
     message === "Payment request cannot be cancelled" ||
-    message === "User account not found"
+    message === "User account not found" ||
+    message === "Payment amount is invalid" ||
+    message === "Payment amount does not match plan price"
   ) return 400;
   if (message.endsWith("not found")) return 404;
   return 500;
@@ -75,9 +77,12 @@ export async function createPaymentRequest(identity: PlatformIdentity, input: { 
   if (!plan.durationDays) throw new Error("Plan duration is not configured");
 
   // Prevent duplicate idempotency key
-  const [existingKey] = await db.select({ id: paymentRequests.id }).from(paymentRequests).where(eq(paymentRequests.idempotencyKey, input.idempotencyKey)).limit(1);
+  const [existingKey] = await db.select().from(paymentRequests).where(eq(paymentRequests.idempotencyKey, input.idempotencyKey)).limit(1);
   if (existingKey) {
-    throw Object.assign(new Error("A payment request with this idempotency key already exists"), { code: "CONFLICT" });
+    if (existingKey.userId !== user.id || existingKey.planCode !== plan.code) {
+      throw Object.assign(new Error("A payment request with this idempotency key already exists"), { code: "CONFLICT" });
+    }
+    return serializePayment(existingKey);
   }
 
   const [created] = await db.insert(paymentRequests).values({
@@ -88,7 +93,15 @@ export async function createPaymentRequest(identity: PlatformIdentity, input: { 
     guestLimitSnapshot: plan.guestLimit,
     durationDaysSnapshot: plan.durationDays,
     idempotencyKey: input.idempotencyKey,
-  }).returning();
+  }).onConflictDoNothing({ target: paymentRequests.idempotencyKey }).returning();
+
+  // A concurrent retry can win the unique-key race after the read above.
+  // Resolve that race to the same request instead of returning a 500.
+  if (!created) {
+    const [raced] = await db.select().from(paymentRequests).where(eq(paymentRequests.idempotencyKey, input.idempotencyKey)).limit(1);
+    if (raced && raced.userId === user.id && raced.planCode === plan.code) return serializePayment(raced);
+    throw Object.assign(new Error("A payment request with this idempotency key already exists"), { code: "CONFLICT" });
+  }
 
   await audit(user.id, "payment.created", created.id, user.id, { planCode: plan.code });
   return serializePayment(created);
@@ -116,6 +129,9 @@ export async function submitPaymentRequest(
     .limit(1);
   if (pending) throw Object.assign(new Error("A payment request is already under review"), { code: "CONFLICT" });
 
+  if (!Number.isInteger(details.amountPaid) || details.amountPaid < 0) throw new Error("Payment amount is invalid");
+  if (details.amountPaid !== request.priceEgpSnapshot) throw new Error("Payment amount does not match plan price");
+
   const [updated] = await db.update(paymentRequests)
     .set({
       status: "pending_review",
@@ -129,10 +145,11 @@ export async function submitPaymentRequest(
       referenceNumber: details.referenceNumber,
       payerName: details.payerName,
       payerPhoneMasked: details.payerPhoneMasked,
+      infoRequestReason: null,
       statusVersion: sql`${paymentRequests.statusVersion} + 1`,
       updatedAt: nowIso(),
     })
-    .where(and(eq(paymentRequests.id, id), eq(paymentRequests.status, "draft")))
+    .where(and(eq(paymentRequests.id, id), eq(paymentRequests.status, request.status), eq(paymentRequests.statusVersion, request.statusVersion)))
     .returning();
 
   if (!updated) throw new Error("Payment request is not in a submittable state");
@@ -155,8 +172,9 @@ export async function cancelPaymentRequest(identity: PlatformIdentity, id: strin
 
   const [updated] = await db.update(paymentRequests)
     .set({ status: "cancelled", statusVersion: sql`${paymentRequests.statusVersion} + 1`, updatedAt: nowIso() })
-    .where(eq(paymentRequests.id, id))
+    .where(and(eq(paymentRequests.id, id), eq(paymentRequests.status, request.status), eq(paymentRequests.statusVersion, request.statusVersion)))
     .returning();
+  if (!updated) throw Object.assign(new Error("Another process changed this payment request"), { code: "CONFLICT" });
   await audit(user.id, "payment.cancelled", updated.id, user.id);
   return serializePayment(updated);
 }
@@ -189,11 +207,6 @@ export async function approvePaymentRequest(identity: PlatformIdentity, id: stri
   const admin = await requireUser(identity);
   if (!isAdmin(admin.role)) throw new Error("Forbidden");
 
-  // Note: neon-http / neon WebSocket drivers do not support transactions, so we
-  // cannot wrap the paymentRequest transition and the subscription mutation in one
-  // transaction. Instead we atomically "claim" the pending_review -> approved
-  // transition using a statusVersion-guarded UPDATE. Only the winning admin
-  // proceeds to mutate the subscription, which prevents double-activation.
   const [request] = await db.select().from(paymentRequests).where(eq(paymentRequests.id, id)).limit(1);
   if (!request) throw new Error("Payment request not found");
   if (request.status !== "pending_review") throw new Error("Payment request is not pending review");
@@ -202,56 +215,70 @@ export async function approvePaymentRequest(identity: PlatformIdentity, id: stri
   const [plan] = await db.select().from(platformPlans).where(eq(platformPlans.code, request.planCode)).limit(1);
   if (!plan || !plan.active) throw new Error("Referenced plan is unavailable");
   if (plan.priceEgp !== request.priceEgpSnapshot) throw new Error("Plan price has changed since request");
+  if (request.amountPaid !== request.priceEgpSnapshot) throw new Error("Payment amount does not match plan price");
 
   const startsAt = nowIso();
-
-  const [claimed] = await db.update(paymentRequests)
-    .set({ status: "approved", reviewedBy: admin.id, reviewedAt: startsAt, statusVersion: sql`${paymentRequests.statusVersion} + 1`, updatedAt: startsAt })
-    .where(and(eq(paymentRequests.id, id), eq(paymentRequests.status, "pending_review"), eq(paymentRequests.statusVersion, expectedVersion)))
-    .returning();
-  if (!claimed) throw Object.assign(new Error("Another admin reviewed this request"), { code: "CONFLICT" });
-
-  const expiresAtIso = new Date(Date.now() + (request.durationDaysSnapshot || 365) * 24 * 60 * 60 * 1000).toISOString();
-  const [active] = await db.select().from(userSubscriptions)
-    .where(and(eq(userSubscriptions.userId, request.userId), eq(userSubscriptions.status, "active")))
-    .limit(1);
-
-  if (!active) {
-    await db.insert(userSubscriptions).values({
-      userId: request.userId,
-      planCode: request.planCode,
-      status: "active",
-      startsAt,
-      expiresAt: expiresAtIso,
-      paymentRequestId: request.id,
-    });
-  } else if (active.planCode === request.planCode) {
-    const currentExpiry = new Date(active.expiresAt).getTime();
-    const baseExpiry = Math.max(Date.now(), currentExpiry);
-    const newExpiry = new Date(baseExpiry + request.durationDaysSnapshot * 24 * 60 * 60 * 1000).toISOString();
-    await db.update(userSubscriptions).set({ expiresAt: newExpiry, updatedAt: startsAt, paymentRequestId: request.id })
-      .where(eq(userSubscriptions.id, active.id));
-  } else {
-    await db.update(userSubscriptions).set({ status: "cancelled", updatedAt: startsAt }).where(eq(userSubscriptions.id, active.id));
-    await db.insert(userSubscriptions).values({
-      userId: request.userId,
-      planCode: request.planCode,
-      status: "active",
-      startsAt,
-      expiresAt: expiresAtIso,
-      paymentRequestId: request.id,
-    });
+  const sqlClient = getSql();
+  const [auditRows] = await sqlClient.transaction([
+    sqlClient`
+      WITH claimed AS (
+        UPDATE public.payment_requests AS pr
+        SET status = 'approved', reviewed_by = ${admin.id}, reviewed_at = ${startsAt},
+            status_version = pr.status_version + 1, updated_at = ${startsAt}
+        FROM public.platform_plans AS pp
+        WHERE pr.id = ${id}
+          AND pr.status = 'pending_review'
+          AND pr.status_version = ${expectedVersion}
+          AND pp.code = pr.plan_code
+          AND pp.active = true
+          AND pp.price_egp = pr.price_egp_snapshot
+        RETURNING pr.id, pr.user_id, pr.plan_code, pr.duration_days_snapshot
+      ), active AS (
+        SELECT us.id, us.user_id, us.plan_code, us.expires_at
+        FROM public.user_subscriptions AS us
+        JOIN claimed ON claimed.user_id = us.user_id
+        WHERE us.status = 'active'
+        FOR UPDATE
+      ), extended AS (
+        UPDATE public.user_subscriptions AS us
+        SET expires_at = GREATEST(us.expires_at, ${startsAt}::timestamptz) + (claimed.duration_days_snapshot * interval '1 day'),
+            updated_at = ${startsAt}, payment_request_id = claimed.id
+        FROM claimed
+        WHERE us.id = (SELECT active.id FROM active WHERE active.plan_code = claimed.plan_code LIMIT 1)
+        RETURNING us.id
+      ), cancelled AS (
+        UPDATE public.user_subscriptions AS us
+        SET status = 'cancelled', updated_at = ${startsAt}
+        FROM claimed
+        WHERE us.id IN (SELECT active.id FROM active WHERE active.plan_code <> claimed.plan_code)
+        RETURNING us.id
+      ), created AS (
+        INSERT INTO public.user_subscriptions (user_id, plan_code, status, starts_at, expires_at, payment_request_id)
+        SELECT claimed.user_id, claimed.plan_code, 'active', ${startsAt},
+               ${startsAt}::timestamptz + (claimed.duration_days_snapshot * interval '1 day'), claimed.id
+        FROM claimed
+        WHERE NOT EXISTS (SELECT 1 FROM active WHERE active.plan_code = claimed.plan_code)
+        RETURNING id
+      )
+      INSERT INTO public.payment_audit_logs (actor_user_id, action, payment_request_id, user_id, metadata)
+      SELECT ${admin.id}, 'payment.approved', claimed.id, claimed.user_id,
+             jsonb_build_object('planCode', claimed.plan_code)
+      FROM claimed
+      RETURNING id
+    `,
+  ]);
+  if (!Array.isArray(auditRows) || auditRows.length === 0) {
+    throw Object.assign(new Error("Another admin reviewed this request"), { code: "CONFLICT" });
   }
 
-  await db.insert(paymentAuditLogs).values({
-    actorUserId: admin.id,
-    action: "payment.approved",
-    paymentRequestId: request.id,
-    userId: request.userId,
-    metadata: { planCode: request.planCode },
+  return serializePayment({
+    ...request,
+    status: "approved",
+    reviewedBy: admin.id,
+    reviewedAt: startsAt,
+    statusVersion: expectedVersion + 1,
+    updatedAt: startsAt,
   });
-
-  return serializePayment(claimed);
 }
 
 // --- Admin: reject ---

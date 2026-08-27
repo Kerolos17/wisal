@@ -12,8 +12,8 @@ const privacySections = [
     icon: Database,
     arTitle: "البيانات التي نجمعها",
     enTitle: "Data we collect",
-    arBody: "نجمع بيانات الحساب، وتفاصيل المناسبة، وقائمة الضيوف، وردود الحضور، والملفات التي تضيفونها لتقديم الخدمة. لا نطلب بيانات دفع في المرحلة الحالية.",
-    enBody: "We collect account details, event information, guest lists, RSVP responses, and files you add to provide the service. We do not request payment data at this stage.",
+    arBody: "نجمع بيانات الحساب، وتفاصيل المناسبة، وقائمة الضيوف، وردود الحضور، والملفات وبيانات التحويل التي تضيفونها لتقديم الخدمة. نستخدم بيانات الدفع اليدوي لمراجعة الطلب وتفعيل الباقة فقط.",
+    enBody: "We collect account details, event information, guest lists, RSVP responses, files, and transfer details you provide to deliver the service. Manual payment details are used only to review requests and activate plans.",
   },
   {
     icon: ShieldCheck,
@@ -64,8 +64,8 @@ const termsSections = [
     icon: FileText,
     arTitle: "الخطط والدفع",
     enTitle: "Plans and payments",
-    arBody: "الأسعار المعروضة حاليًا للتخطيط والاختبار فقط، ولا يتم تحصيل مدفوعات حقيقية. ستُنشر شروط الأسعار والإلغاء والاسترداد قبل تفعيل بوابة الدفع.",
-    enBody: "Current prices are shown for planning and testing only, and no real payments are collected. Pricing, cancellation, and refund terms will be published before payment activation.",
+    arBody: "تُدفع الخطط يدويًا عبر وسيلة التحويل الموضحة في صفحة الدفع، ثم يرفع صاحب الحساب الإيصال للمراجعة. لا تُفعّل الباقة إلا بعد اعتماد الطلب، وتُعرض أي شروط إلغاء أو استرداد قبل الإرسال.",
+    enBody: "Plans are paid manually using the transfer method shown at checkout. The account owner uploads a receipt for review, and the plan is activated only after approval. Any cancellation or refund terms are shown before submission.",
   },
 ];
 

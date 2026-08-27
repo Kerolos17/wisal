@@ -40,6 +40,7 @@ test("auth return paths reject protocol-relative and cross-origin redirects", ()
 test("authentication UI supports Arabic, English, email, and Google", () => {
   assert.match(authForm, /useWisalLocale\(\)/);
   assert.match(authForm, /sign-in\/social/);
+  assert.match(authForm, /Invalid callbackURL/);
   assert.match(authForm, /new URL\("\/auth\/callback", window\.location\.origin\)/);
   assert.match(authForm, /errorCallbackURL/);
   assert.match(authCallback, /safeReturnPath/);

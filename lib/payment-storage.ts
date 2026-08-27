@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { getBucket } from "@/lib/wisal-storage";
 
 const ALLOWED_MIME = new Set(["image/jpeg", "image/png", "image/webp", "application/pdf"]);
-const MAX_BYTES = 5 * 1024 * 1024; // 5 MB
+export const MAX_RECEIPT_BYTES = 5 * 1024 * 1024; // 5 MB
 
 function receiptKeyFor(userId: string, id: string, ext: string) {
   return `receipts/${userId}/${id}.${ext}`;
@@ -22,7 +22,7 @@ export async function storeReceipt(userId: string, id: string, buffer: Buffer, m
   const ext = extFromMime(mime);
   if (!ext) throw new Error("Invalid receipt file type");
   if (!ALLOWED_MIME.has(mime)) throw new Error("Invalid receipt file type");
-  if (buffer.byteLength > MAX_BYTES) throw new Error("Receipt file is too large");
+  if (buffer.byteLength > MAX_RECEIPT_BYTES) throw new Error("Receipt file is too large");
 
   // Content inspection: verify magic bytes match the declared MIME
   if (!verifyMagicBytes(buffer, mime)) throw new Error("Receipt content does not match its type");

@@ -1,6 +1,6 @@
 # Wisal Phase 1 — Payment Integration Architecture
 
-> Status: Draft (architectural plan — no code yet)
+> Status: Implemented and verified
 > Owner: platform team
 > Depends on: Phase 0A (done), `lib/payments.ts` + 10 API routes + `db/neon-migrations/0012_payment_domain.sql` (done by Hermes)
 > Blocks: Any production beta that charges real money
@@ -17,10 +17,10 @@
 | API routes | ✅ | 10 routes (customer + admin), all with auth + `forbiddenUnless` |
 | Receipt 403 | ✅ | `app/api/media/[...key]/route.ts` lines 9-12 (SEC-R04) |
 | Tests | ✅ | `tests/payments.test.ts` (happy path + edge cases) |
-| **App integration** | ❌ | `getActiveSubscription()` is never called; `guestLimit` never enforced; plans are display-only (homepage line 636: "payment stays paused") |
-| **UI** | ❌ | No checkout page, no receipt upload, no payment status, no admin review queue |
+| **App integration** | ✅ | Active subscriptions enforce guest limits and paid-template access; existing invitations remain unaffected. |
+| **UI** | ✅ | Checkout, receipt upload, payment tracking, customer plan card, and admin review queue are live. |
 
-**Conclusion:** the payment backend is a complete, tested black box. The application does not use it. Plan selection (`choosePlan` in `app/page.tsx:437`) only stores intent in `selectedPlan` and passes it to `CreateEventModal` (line 506) which ignores it. `createEvent` (`lib/wisal-data.ts:163`) accepts no plan and enforces no limit.
+**Conclusion:** the payment system is integrated end-to-end. Paid plan selection opens checkout; receipt submission creates a reviewable request; approval activates the subscription; and server-side entitlements enforce guest limits and premium-template access.
 
 ## 2. Architectural decisions
 
