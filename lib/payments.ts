@@ -21,6 +21,28 @@ function isAdmin(role: string | undefined) {
   return role === "admin";
 }
 
+/**
+ * Maps a thrown payment error to the correct HTTP status so callers receive
+ * 403/404/409/400 semantics instead of a blanket 500.
+ */
+export function paymentErrorStatus(error: unknown): number {
+  const code = (error as { code?: string } | null)?.code;
+  if (code === "CONFLICT") return 409;
+  if (code === "FORBIDDEN") return 403;
+  const message = error instanceof Error ? error.message : "";
+  if (message === "Forbidden" || message === "Referenced plan is unavailable" || message === "Plan price has changed since request") return 403;
+  if (
+    message === "Plan not found" ||
+    message === "Plan is not available" ||
+    message === "Plan duration is not configured" ||
+    message === "Payment request is not in a submittable state" ||
+    message === "Payment request cannot be cancelled" ||
+    message === "User account not found"
+  ) return 400;
+  if (message.endsWith("not found")) return 404;
+  return 500;
+}
+
 // --- Audit ---
 
 async function audit(actorUserId: string | null, action: string, paymentRequestId: string | null, userId: string | null, metadata: Record<string, unknown> = {}) {
@@ -86,7 +108,7 @@ export async function submitPaymentRequest(
   const [request] = await db.select().from(paymentRequests).where(eq(paymentRequests.id, id)).limit(1);
   if (!request) throw new Error("Payment request not found");
   if (request.userId !== user.id) throw new Error("Forbidden");
-  if (request.status !== "draft") throw new Error("Payment request is not in a submittable state");
+  if (request.status !== "draft" && request.status !== "needs_info") throw new Error("Payment request is not in a submittable state");
 
   // Only one pending_review per user (partial unique index also enforces this)
   const [pending] = await db.select({ id: paymentRequests.id }).from(paymentRequests)
@@ -167,9 +189,11 @@ export async function approvePaymentRequest(identity: PlatformIdentity, id: stri
   const admin = await requireUser(identity);
   if (!isAdmin(admin.role)) throw new Error("Forbidden");
 
-  // Note: neon-http / neon WebSocket drivers do not support transactions.
-  // We perform the steps sequentially and rely on the status_version optimistic
-  // concurrency check to prevent double-approval.
+  // Note: neon-http / neon WebSocket drivers do not support transactions, so we
+  // cannot wrap the paymentRequest transition and the subscription mutation in one
+  // transaction. Instead we atomically "claim" the pending_review -> approved
+  // transition using a statusVersion-guarded UPDATE. Only the winning admin
+  // proceeds to mutate the subscription, which prevents double-activation.
   const [request] = await db.select().from(paymentRequests).where(eq(paymentRequests.id, id)).limit(1);
   if (!request) throw new Error("Payment request not found");
   if (request.status !== "pending_review") throw new Error("Payment request is not pending review");
@@ -180,8 +204,14 @@ export async function approvePaymentRequest(identity: PlatformIdentity, id: stri
   if (plan.priceEgp !== request.priceEgpSnapshot) throw new Error("Plan price has changed since request");
 
   const startsAt = nowIso();
-  const expiresAtIso = new Date(Date.now() + (request.durationDaysSnapshot || 365) * 24 * 60 * 60 * 1000).toISOString();
 
+  const [claimed] = await db.update(paymentRequests)
+    .set({ status: "approved", reviewedBy: admin.id, reviewedAt: startsAt, statusVersion: sql`${paymentRequests.statusVersion} + 1`, updatedAt: startsAt })
+    .where(and(eq(paymentRequests.id, id), eq(paymentRequests.status, "pending_review"), eq(paymentRequests.statusVersion, expectedVersion)))
+    .returning();
+  if (!claimed) throw Object.assign(new Error("Another admin reviewed this request"), { code: "CONFLICT" });
+
+  const expiresAtIso = new Date(Date.now() + (request.durationDaysSnapshot || 365) * 24 * 60 * 60 * 1000).toISOString();
   const [active] = await db.select().from(userSubscriptions)
     .where(and(eq(userSubscriptions.userId, request.userId), eq(userSubscriptions.status, "active")))
     .limit(1);
@@ -213,11 +243,6 @@ export async function approvePaymentRequest(identity: PlatformIdentity, id: stri
     });
   }
 
-  const [updated] = await db.update(paymentRequests)
-    .set({ status: "approved", reviewedBy: admin.id, reviewedAt: startsAt, statusVersion: sql`${paymentRequests.statusVersion} + 1`, updatedAt: startsAt })
-    .where(eq(paymentRequests.id, id))
-    .returning();
-
   await db.insert(paymentAuditLogs).values({
     actorUserId: admin.id,
     action: "payment.approved",
@@ -226,7 +251,7 @@ export async function approvePaymentRequest(identity: PlatformIdentity, id: stri
     metadata: { planCode: request.planCode },
   });
 
-  return serializePayment(updated);
+  return serializePayment(claimed);
 }
 
 // --- Admin: reject ---
@@ -243,8 +268,9 @@ export async function rejectPaymentRequest(identity: PlatformIdentity, id: strin
 
   const [updated] = await db.update(paymentRequests)
     .set({ status: "rejected", rejectionReason: reason, reviewedBy: admin.id, reviewedAt: nowIso(), statusVersion: sql`${paymentRequests.statusVersion} + 1`, updatedAt: nowIso() })
-    .where(eq(paymentRequests.id, id))
+    .where(and(eq(paymentRequests.id, id), eq(paymentRequests.statusVersion, expectedVersion)))
     .returning();
+  if (!updated) throw Object.assign(new Error("Another admin reviewed this request"), { code: "CONFLICT" });
   await audit(admin.id, "payment.rejected", updated.id, request.userId, { reason });
   return serializePayment(updated);
 }
@@ -263,8 +289,9 @@ export async function requestInfoPaymentRequest(identity: PlatformIdentity, id: 
 
   const [updated] = await db.update(paymentRequests)
     .set({ status: "needs_info", infoRequestReason: reason, reviewedBy: admin.id, reviewedAt: nowIso(), statusVersion: sql`${paymentRequests.statusVersion} + 1`, updatedAt: nowIso() })
-    .where(eq(paymentRequests.id, id))
+    .where(and(eq(paymentRequests.id, id), eq(paymentRequests.statusVersion, expectedVersion)))
     .returning();
+  if (!updated) throw Object.assign(new Error("Another admin reviewed this request"), { code: "CONFLICT" });
   await audit(admin.id, "payment.info_requested", updated.id, request.userId, { reason });
   return serializePayment(updated);
 }
@@ -296,7 +323,10 @@ export async function getGuestLimitForUser(userId: string): Promise<number | nul
     .from(platformPlans)
     .where(eq(platformPlans.code, planCode))
     .limit(1);
-  return plan?.guestLimit ?? null;
+  // Floor to the free-plan limit when the plan row is missing, so a missing row
+  // never silently grants unlimited guests to everyone.
+  if (!plan) return 50;
+  return plan.guestLimit ?? null;
 }
 
 /**

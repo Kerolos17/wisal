@@ -1,5 +1,5 @@
 import { getPlatformIdentity } from "@/lib/auth/identity";
-import { cancelPaymentRequest } from "@/lib/payments";
+import { cancelPaymentRequest, paymentErrorStatus } from "@/lib/payments";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +13,6 @@ export async function PATCH(_request: Request, { params }: { params: Promise<{ i
     return Response.json({ payment });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to cancel payment request";
-    return Response.json({ error: message }, { status: 400 });
+    return Response.json({ error: message }, { status: paymentErrorStatus(error) });
   }
 }

@@ -1,5 +1,5 @@
 import { getPlatformIdentity } from "@/lib/auth/identity";
-import { createPaymentRequest } from "@/lib/payments";
+import { createPaymentRequest, paymentErrorStatus } from "@/lib/payments";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +16,6 @@ export async function POST(request: Request) {
     return Response.json({ payment }, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to create payment request";
-    const status = (error as { code?: string }).code === "CONFLICT" ? 409 : 400;
-    return Response.json({ error: message }, { status: (error as { code?: string }).code === "CONFLICT" ? status : 500 });
+    return Response.json({ error: message }, { status: paymentErrorStatus(error) });
   }
 }

@@ -1,5 +1,5 @@
 import { getPlatformIdentity } from "@/lib/auth/identity";
-import { getOwnPaymentRequest } from "@/lib/payments";
+import { getOwnPaymentRequest, paymentErrorStatus } from "@/lib/payments";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +14,6 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     return Response.json({ payment });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to load payment request";
-    return Response.json({ error: message }, { status: 500 });
+    return Response.json({ error: message }, { status: paymentErrorStatus(error) });
   }
 }

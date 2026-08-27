@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Bell, CircleCheckBig, CircleDashed, Eye, Headphones, History, House, LayoutDashboard, LayoutTemplate, ListChecks, MessageSquareText, Palette, Quote, Rocket, Send, Settings, UsersRound } from "lucide-react";
 import { type Locale, useWisalLocale } from "./use-wisal-locale";
+import { isPremiumTemplateCode } from "@/lib/template-entitlements";
 
 const AdminDashboard = lazy(() => import("./admin-dashboard"));
 const AccountCenter = lazy(() => import("./account-center"));
@@ -693,8 +694,6 @@ function BuilderUnavailable({ locale, message, onRetry, onCreate }: { locale: Lo
   return <section className="builder-state" role="alert"><Icon>!</Icon><h1>{tr(locale, "تعذر فتح استوديو الدعوة", "We could not open the invitation studio")}</h1><p>{message}</p><div><button className="ghost" onClick={onRetry}>{tr(locale, "إعادة المحاولة", "Try again")}</button><button className="primary" onClick={onCreate}>{tr(locale, "إنشاء دعوة جديدة ←", "Create a new invitation →")}</button></div></section>;
 }
 
-const PREMIUM_TEMPLATE_ARTS = new Set(["cinematic", "glass", "royal", "coastal"]);
-
 function Studio({ step, setStep, selectedTemplate, setSelectedTemplate, templates, eventData, locale, activePlanCode, authenticated, onSaved }: { step: number; setStep: (n: number) => void; selectedTemplate: number; setSelectedTemplate: (n: number) => void; templates: PublicTemplate[]; eventData: EventOverview; locale: Locale; activePlanCode: string | null; authenticated: boolean; onSaved: (event: EventOverview) => Promise<void> }) {
   const L = (arabic: string, english: string) => tr(locale, arabic, english);
   const ar = locale === "ar";
@@ -738,7 +737,7 @@ function Studio({ step, setStep, selectedTemplate, setSelectedTemplate, template
   const [previewDevice, setPreviewDevice] = useState<"phone" | "desktop">("phone");
   const [templateFilter, setTemplateFilter] = useState("all");
   const selectedTemplateData = templates[selectedTemplate] ?? templates[0];
-  const isPremiumTemplate = (template: PublicTemplate) => PREMIUM_TEMPLATE_ARTS.has(template.art);
+  const isPremiumTemplate = (template: PublicTemplate) => isPremiumTemplateCode(template.code);
   const hasPaidPlan = authenticated && activePlanCode !== null && activePlanCode !== "starter";
   const hasLockedPremium = templates.some((template) => isPremiumTemplate(template) && !hasPaidPlan);
   const chooseTemplate = (index: number) => {

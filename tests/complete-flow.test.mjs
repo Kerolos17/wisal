@@ -41,6 +41,6 @@ test("public invitation handles deadline and server errors clearly", () => {
 });
 
 test("event APIs return an authentication status instead of a server failure", () => {
-  assert.match(ownerSource, /message === "Authentication required" \? 401 : 500/);
+  assert.match(ownerSource, /message === "Authentication required"\) return Response\.json\(\{ error: message \}, \{ status: 401 \}\)/);
   assert.match(eventsRouteSource, /ownerApiError/);
 });

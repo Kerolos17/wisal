@@ -1,7 +1,8 @@
 import { and, asc, count, desc, eq, inArray, sql } from "drizzle-orm";
 import { getDb } from "@/db";
 import { activityLogs, eventSegments, events, guestGroupMemberships, guestGroups, guests, guestSegmentAccess, invitations, messages, segmentRsvps, users } from "@/db/schema";
-import { getGuestLimitForOwnerEmail } from "@/lib/payments";
+import { getActiveSubscription, getGuestLimitForOwnerEmail } from "@/lib/payments";
+import { isPaidPlanCode, isPremiumTemplateCode } from "@/lib/template-entitlements";
 
 function createInviteToken() {
   return crypto.randomUUID();
@@ -164,6 +165,9 @@ function cairoDateTime(value: string) {
 export async function createEvent(ownerEmail: string, input: EventInput) {
   const db = getDb();
   const ownerId = await ensureOwner(ownerEmail);
+  if (isPremiumTemplateCode(input.template) && !isPaidPlanCode((await getActiveSubscription(ownerId))?.planCode)) {
+    throw Object.assign(new Error("هذه التجربة متاحة فقط في الباقات المدفوعة"), { code: "FORBIDDEN" });
+  }
   const id = crypto.randomUUID();
   const token = id.replaceAll("-", "").slice(0, 8);
   const coupleSlug = [slugPart(input.brideName), slugPart(input.groomName)].filter(Boolean).join("-");
@@ -203,6 +207,9 @@ export async function updateEvent(ownerEmail: string, eventId: string, input: Pa
   const ownerId = await ensureOwner(ownerEmail);
   const [existing] = await db.select().from(events).where(and(eq(events.id, eventId), eq(events.ownerId, ownerId))).limit(1);
   if (!existing) return null;
+  if (isPremiumTemplateCode(input.template) && !isPaidPlanCode((await getActiveSubscription(ownerId))?.planCode)) {
+    throw Object.assign(new Error("هذه التجربة متاحة فقط في الباقات المدفوعة"), { code: "FORBIDDEN" });
+  }
   const eventPatch: Partial<typeof events.$inferInsert> = { updatedAt: new Date().toISOString() };
   for (const key of ["title", "brideName", "groomName", "eventDate", "venue", "city", "mapUrl", "status"] as const) {
     if (input[key] !== undefined) Object.assign(eventPatch, { [key]: input[key] });

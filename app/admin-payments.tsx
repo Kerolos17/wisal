@@ -7,7 +7,7 @@ type Locale = "ar" | "en";
 type AdminPayment = {
   id: string;
   planCode: string;
-  status: "draft" | "pending_review" | "approved" | "rejected" | "info_requested";
+  status: "draft" | "pending_review" | "approved" | "rejected" | "needs_info";
   planNameSnapshot: string | null;
   priceEgpSnapshot: number | null;
   currency: string;
@@ -30,7 +30,7 @@ const statusLabel = (locale: Locale, status: AdminPayment["status"]) => {
     pending_review: ["بانتظار المراجعة", "Pending review"],
     approved: ["معتمد", "Approved"],
     rejected: ["مرفوض", "Rejected"],
-    info_requested: ["معلومات مطلوبة", "Info requested"],
+    needs_info: ["معلومات مطلوبة", "Info requested"],
   };
   const [ar, en] = map[status];
   return locale === "ar" ? ar : en;
@@ -44,7 +44,7 @@ function PaymentCard({ locale, payment, busy, onAct }: {
 }) {
   const L = (ar: string, en: string) => (locale === "ar" ? ar : en);
   const [reason, setReason] = useState("");
-  const canReview = payment.status === "pending_review" || payment.status === "info_requested";
+  const canReview = payment.status === "pending_review" || payment.status === "needs_info";
   const money = `${payment.priceEgpSnapshot ?? 0} ${payment.currency}`;
   const submitted = payment.submittedAt ?? payment.createdAt;
 

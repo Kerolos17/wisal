@@ -1,5 +1,5 @@
 import { getPlatformIdentity } from "@/lib/auth/identity";
-import { submitPaymentRequest } from "@/lib/payments";
+import { submitPaymentRequest, paymentErrorStatus } from "@/lib/payments";
 import { storeReceipt } from "@/lib/payment-storage";
 
 export const dynamic = "force-dynamic";
@@ -44,7 +44,6 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     return Response.json({ payment });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to submit payment";
-    const status = (error as { code?: string }).code === "CONFLICT" ? 409 : 400;
-    return Response.json({ error: message }, { status: (error as { code?: string }).code === "CONFLICT" ? status : 500 });
+    return Response.json({ error: message }, { status: paymentErrorStatus(error) });
   }
 }

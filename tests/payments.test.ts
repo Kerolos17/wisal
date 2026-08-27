@@ -97,4 +97,35 @@ describe("payment domain", () => {
     const list = await listPaymentRequests(adminIdentity as never);
     assert.ok(Array.isArray(list));
   });
+
+  it("guards concurrent approval via the statusVersion claim", async () => {
+    // Use a dedicated user so an existing pending_review from another test
+    // does not block this draft's submission.
+    const email = `paytest-conc-${Date.now()}@example.com`;
+    await getDb().insert(users).values({ email, displayName: "Conc", role: "couple" }).onConflictDoNothing();
+    const [u] = await getDb().select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
+    if (u) testUserIds.push(u.id);
+    const identity = fakeIdentity(email);
+    const draft = await createPaymentRequest(identity, { planCode: "starter", idempotencyKey: crypto.randomUUID() });
+    createdPaymentIds.push(draft.id);
+    const submitted = await submitPaymentRequest(
+      identity,
+      draft.id,
+      { key: `receipts/${draft.userId}/${draft.id}.pdf`, mime: "application/pdf", size: 1024, checksum: "c" },
+      { paymentMethod: "instapay", amountPaid: 0 },
+    );
+    const adminIdentity = { displayName: "Admin", email: "owner@example.com", fullName: null };
+    const results = await Promise.allSettled([
+      approvePaymentRequest(adminIdentity as never, draft.id, submitted.statusVersion),
+      approvePaymentRequest(adminIdentity as never, draft.id, submitted.statusVersion),
+    ]);
+    let successCount = 0;
+    let rejectionCount = 0;
+    for (const r of results) {
+      if (r.status === "fulfilled") successCount++;
+      else rejectionCount++;
+    }
+    assert.equal(successCount, 1, "exactly one concurrent approval should succeed");
+    assert.equal(rejectionCount, 1, "the losing concurrent approval must be rejected");
+  });
 });

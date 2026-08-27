@@ -1,12 +1,12 @@
 import { getPlatformIdentity } from "@/lib/auth/identity";
-import { rejectPaymentRequest } from "@/lib/payments";
+import { rejectPaymentRequest, paymentErrorStatus } from "@/lib/payments";
 import { forbiddenUnless } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const forbidden = await forbiddenUnless("overview.read");
+    const forbidden = await forbiddenUnless("users.manage");
     if (forbidden) return forbidden;
 
     const identity = await getPlatformIdentity();
@@ -21,7 +21,6 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     return Response.json({ payment });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to reject payment";
-    const status = (error as { code?: string }).code === "CONFLICT" ? 409 : 400;
-    return Response.json({ error: message }, { status: (error as { code?: string }).code === "CONFLICT" ? status : 500 });
+    return Response.json({ error: message }, { status: paymentErrorStatus(error) });
   }
 }
