@@ -4,7 +4,14 @@ export const dynamic = "force-dynamic";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ key: string[] }> }) {
   const { key } = await params;
-  const object = await getBucket().get(key.join("/"));
+  const joined = key.join("/");
+
+  // SEC-R04: receipts must never be served from the public media route
+  if (joined === "receipts" || joined.startsWith("receipts/")) {
+    return new Response("Forbidden", { status: 403 });
+  }
+
+  const object = await getBucket().get(joined);
   if (!object) return new Response("Not found", { status: 404 });
   return new Response(object.body, {
     headers: {

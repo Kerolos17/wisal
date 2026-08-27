@@ -9,9 +9,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "node --test tests/*.test.mjs",
+    "test": "node --env-file=.env --test tests/*.test.mjs",
+    "test:payments": "tsx --env-file=.env --test tests/payments.test.ts tests/guest-limit.test.ts",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
     "@fontsource-variable/cormorant-garamond": "^5.3.0",

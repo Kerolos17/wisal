@@ -8,5 +8,9 @@ export async function getCurrentOwnerEmail() {
 
 export function ownerApiError(error: unknown, fallback: string) {
   const message = error instanceof Error ? error.message : fallback;
-  return Response.json({ error: message }, { status: message === "Authentication required" ? 401 : 500 });
+  const code = (error as { code?: string } | null)?.code;
+  if (message === "Authentication required") return Response.json({ error: message }, { status: 401 });
+  if (code === "FORBIDDEN") return Response.json({ error: message }, { status: 403 });
+  if (code === "CONFLICT") return Response.json({ error: message }, { status: 409 });
+  return Response.json({ error: message }, { status: 500 });
 }

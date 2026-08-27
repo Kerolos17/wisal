@@ -104,6 +104,7 @@ export const platformPlans = pgTable("platform_plans", {
   nameEn: text("name_en").notNull(),
   priceEgp: integer("price_egp").notNull().default(0),
   guestLimit: integer("guest_limit"),
+  durationDays: integer("duration_days").notNull().default(365),
   active: boolean("active").notNull().default(true),
   featured: boolean("featured").notNull().default(false),
   position: integer("position").notNull().default(0),
@@ -226,3 +227,81 @@ export const messages = pgTable("messages", {
   status: text("status", { enum: ["draft", "scheduled"] }).notNull().default("draft"), scheduledAt: timestamp("scheduled_at", { withTimezone: true, mode: "string" }), sentAt: timestamp("sent_at", { withTimezone: true, mode: "string" }),
   createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).notNull().default(now),
 }, (table) => [index("messages_event_created_idx").on(table.eventId, table.createdAt), index("messages_event_group_idx").on(table.eventId, table.groupId), index("messages_event_segment_idx").on(table.eventId, table.segmentId)]);
+
+// --- Phase 1: Manual payment domain ---
+
+export const paymentStatus = ["draft", "pending_review", "needs_info", "rejected", "approved", "cancelled"] as const;
+export const paymentMethod = ["instapay", "vodafone_cash", "etisalat_cash", "bank_transfer"] as const;
+
+export const paymentRequests = pgTable("payment_requests", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  planCode: text("plan_code").notNull().references(() => platformPlans.code, { onDelete: "restrict" }),
+  status: text("status", { enum: paymentStatus }).notNull().default("draft"),
+
+  // Plan snapshot (immutable after creation)
+  planNameSnapshot: text("plan_name_snapshot").notNull(),
+  priceEgpSnapshot: integer("price_egp_snapshot").notNull(),
+  currency: text("currency").notNull().default("EGP"),
+  guestLimitSnapshot: integer("guest_limit_snapshot"),
+  durationDaysSnapshot: integer("duration_days_snapshot").notNull(),
+
+  // Payment details (customer-provided)
+  paymentMethod: text("payment_method", { enum: paymentMethod }),
+  amountPaid: integer("amount_paid"),
+  referenceNumber: text("reference_number"),
+  payerName: text("payer_name"),
+  payerPhoneMasked: text("payer_phone_masked"),
+
+  // Receipt fields
+  receiptKey: text("receipt_key"),
+  receiptMime: text("receipt_mime"),
+  receiptSize: integer("receipt_size"),
+  receiptChecksum: text("receipt_checksum"),
+
+  // Review fields
+  reviewedBy: uuid("reviewed_by").references(() => users.id, { onDelete: "set null" }),
+  reviewedAt: timestamp("reviewed_at", { withTimezone: true, mode: "string" }),
+  rejectionReason: text("rejection_reason"),
+  adminNotes: text("admin_notes"),
+  infoRequestReason: text("info_request_reason"),
+
+  // Metadata
+  idempotencyKey: text("idempotency_key").notNull().unique(),
+  statusVersion: integer("status_version").notNull().default(1),
+  submittedAt: timestamp("submitted_at", { withTimezone: true, mode: "string" }),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).notNull().default(now),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).notNull().default(now),
+}, (table) => [
+  // Only one pending_review request per user at a time
+  uniqueIndex("payment_requests_user_pending_idx").on(table.userId).where(sql`${table.status} = 'pending_review'`),
+]);
+
+export const subscriptionStatus = ["active", "expired", "cancelled", "suspended"] as const;
+
+export const userSubscriptions = pgTable("user_subscriptions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  planCode: text("plan_code").notNull().references(() => platformPlans.code, { onDelete: "restrict" }),
+  status: text("status", { enum: subscriptionStatus }).notNull().default("active"),
+  startsAt: timestamp("starts_at", { withTimezone: true, mode: "string" }).notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true, mode: "string" }).notNull(),
+  paymentRequestId: uuid("payment_request_id").references(() => paymentRequests.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).notNull().default(now),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).notNull().default(now),
+}, (table) => [
+  index("user_subscriptions_user_status_idx").on(table.userId, table.status),
+]);
+
+export const paymentAuditLogs = pgTable("payment_audit_logs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  actorUserId: uuid("actor_user_id").references(() => users.id, { onDelete: "set null" }),
+  action: text("action").notNull(),
+  paymentRequestId: uuid("payment_request_id").references(() => paymentRequests.id, { onDelete: "set null" }),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+  metadata: jsonb("metadata").notNull().default({}),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).notNull().default(now),
+}, (table) => [
+  index("payment_audit_logs_created_idx").on(table.createdAt),
+  index("payment_audit_logs_payment_idx").on(table.paymentRequestId),
+]);
