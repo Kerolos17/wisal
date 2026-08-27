@@ -41,3 +41,9 @@ next-env.d.ts
 /.sites-runtime/
 /outputs/
 /work/
+*.tsbuildinfo
+
+# tooling output
+.impeccable/
+graphify-out/
+.pnpm-store/
