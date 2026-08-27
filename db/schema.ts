@@ -245,6 +245,8 @@ export const paymentDestinations = pgTable("payment_destinations", {
   bankName: text("bank_name").notNull().default(""),
   instructionsAr: text("instructions_ar").notNull().default(""),
   instructionsEn: text("instructions_en").notNull().default(""),
+  paymentUrl: text("payment_url").notNull().default(""),
+  qrKey: text("qr_key"),
   active: boolean("active").notNull().default(true),
   position: integer("position").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).notNull().default(now),

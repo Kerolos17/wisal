@@ -66,6 +66,7 @@ describe("manual payment integrity contracts", () => {
     const admin = read("app/admin-payments.tsx");
     const destinationRoute = read("app/api/payment-destinations/route.ts");
     const adminDestinationRoute = read("app/api/admin/payment-destinations/route.ts");
+    const qrRoute = read("app/api/payment-destinations/[method]/qr/route.ts");
     assert.match(schema, /paymentDestinations = pgTable\("payment_destinations"/);
     assert.match(migration, /CREATE TABLE IF NOT EXISTS public\.payment_destinations/);
     assert.match(migration, /orange_cash/);
@@ -74,6 +75,12 @@ describe("manual payment integrity contracts", () => {
     assert.match(adminDestinationRoute, /forbiddenUnless\("users\.manage"\)/);
     assert.match(checkout, /destinations/);
     assert.match(checkout, /Copy transfer details/);
+    assert.match(checkout, /paymentUrl/);
+    assert.match(checkout, /payment-destinations\/\$\{destination\.method\}\/qr/);
+    assert.match(schema, /paymentUrl: text\("payment_url"\)/);
+    assert.match(schema, /qrKey: text\("qr_key"\)/);
+    assert.match(qrRoute, /getPlatformIdentity/);
+    assert.match(qrRoute, /Cache-Control.*private, no-store/);
     assert.match(admin, /Payment receiving details/);
   });
 

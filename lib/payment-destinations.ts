@@ -13,6 +13,7 @@ export type PaymentDestinationInput = {
   bankName: string;
   instructionsAr: string;
   instructionsEn: string;
+  paymentUrl: string;
   active: boolean;
   position: number;
 };
@@ -25,6 +26,18 @@ function clean(value: unknown, field: string, required = true) {
   if (required && !normalized) throw new Error(`${field} is required`);
   if (normalized.length > 500) throw new Error(`${field} is too long`);
   return normalized;
+}
+
+function cleanPaymentUrl(value: unknown) {
+  const url = clean(value ?? "", "Payment link", false);
+  if (!url) return "";
+  try {
+    if (new URL(url).protocol !== "https:") throw new Error();
+  } catch {
+    throw new Error("Payment link must be a valid HTTPS URL");
+  }
+  if (url.length > 2048) throw new Error("Payment link is too long");
+  return url;
 }
 
 export function parsePaymentDestination(input: unknown): PaymentDestinationInput {
@@ -42,6 +55,7 @@ export function parsePaymentDestination(input: unknown): PaymentDestinationInput
     bankName: clean(value.bankName ?? "", "Bank name", false),
     instructionsAr: clean(value.instructionsAr ?? "", "Arabic instructions", false),
     instructionsEn: clean(value.instructionsEn ?? "", "English instructions", false),
+    paymentUrl: cleanPaymentUrl(value.paymentUrl),
     active: value.active,
     position: Number(value.position),
   };
