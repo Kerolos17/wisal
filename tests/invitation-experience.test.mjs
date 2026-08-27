@@ -151,3 +151,12 @@ test("cinematic envelope lettering remains readable on its light paper", () => {
   assert.match(stylesSource, /\.opening-concept-cinema-night \.envelope-letter\{[^}]*color:#3a2028/);
   assert.match(stylesSource, /\.opening-concept-cinema-night \.envelope-letter i\{[^}]*color:#b66f59/);
 });
+
+test("invitation utility actions support save-the-date and sharing without new backend state", () => {
+  assert.match(inviteSource, /const saveDate = \(\) =>/);
+  assert.match(inviteSource, /text\/calendar;charset=utf-8/);
+  assert.match(inviteSource, /navigator\.share/);
+  assert.match(inviteSource, /setUtilityFeedback\("shared"\)/);
+  assert.match(inviteSource, /className="invitation-utilities"/);
+  assert.match(stylesSource, /\.invitation-utilities button\{[^}]*min-height:44px/);
+});

@@ -549,6 +549,16 @@
 .opening-concept-cinema-night .envelope-letter{color:#3a2028;background:#fffaf6;text-shadow:none}
 .opening-concept-cinema-night .envelope-letter i{color:#b66f59}
 
+/* Small, tactile actions keep the invitation useful after the reveal. */
+.invitation-utilities{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:16px;color:inherit}
+.invitation-utilities button{min-width:44px;min-height:44px;padding:10px 14px;border:1px solid color-mix(in srgb,currentColor 38%,transparent);border-radius:3px;background:color-mix(in srgb,currentColor 8%,transparent);color:inherit;font-size:11px;font-weight:700;transition:background .2s ease,border-color .2s ease,transform .2s ease}
+.invitation-utilities button:hover{background:color-mix(in srgb,currentColor 16%,transparent);border-color:currentColor;transform:translateY(-2px)}
+.invitation-utilities button:focus-visible{outline:3px solid var(--atelier-focus,#d69a6d);outline-offset:3px}
+.invitation-utilities small{flex-basis:100%;font-size:10px;opacity:.84}
+.signature-invite-hero .invitation-utilities{color:inherit}
+.guest-cover .invitation-utilities{color:inherit}
+@media(prefers-reduced-motion:reduce){.invitation-utilities button{transition:none}.invitation-utilities button:hover{transform:none}}
+
 /* Invitation semantic surface system — every authored world owns the same roles. */
 .public-invite[class*="invite-concept-"]{--atelier-dark:#24171d;--atelier-action-ink:#fff4e9;--atelier-border:color-mix(in srgb,var(--atelier-oxblood) 22%,transparent);--atelier-focus:var(--atelier-gold);--atelier-background:var(--atelier-cream);--atelier-surface:var(--atelier-paper);--atelier-accent:var(--atelier-gold);--atelier-action:var(--atelier-oxblood);--atelier-action-hover:#4f1420;--atelier-success:#3d7758;--atelier-error:#a13f45}
 .invite-concept-love-poem{--atelier-dark:#392126;--atelier-action-ink:#fff8ef;--atelier-border:rgba(109,30,43,.24);--atelier-action:#6d1e2b;--atelier-action-hover:#4f1420}

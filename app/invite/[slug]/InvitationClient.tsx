@@ -15,8 +15,8 @@ type InvitationData = {
 };
 
 const copy = {
-  ar: { privateInvite: "دعوة خاصة إلى", welcome: "أهلًا", special: "دعوة خاصة لكم", inside: "لحظة جميلة تنتظركم بالداخل", open: "افتح الدعوة", joy: "يسعدنا أن تشاركونا فرحتنا", scroll: "مرّر لتأكيد الحضور ↓", program: "برنامج دعوتكم", stages: "المراحل المدعوون إليها", stagesNote: "يعرض هذا الرابط فقط الأماكن والمواعيد المخصصة لكم.", map: "الخريطة ↗", rsvp: "تأكيد الحضور", confirmEach: "أكد حضورك لكل مرحلة", before: "يمكنك اختيار رد مختلف لكل جزء من المناسبة قبل", attend: "سأحضر", maybe: "ربما", decline: "أعتذر", party: "عدد الحضور", fullName: "الاسم الكامل", namePlaceholder: "اكتب اسمك", personalized: "تم تخصيص هذا الرابط لكم", meal: "تفضيل الطعام", regular: "عادي", vegetarian: "نباتي", send: "إرسال تأكيد الحضور ←", saving: "جارٍ حفظ الرد…", privacy: "⌁ بياناتك خاصة ولا تظهر إلا لصاحب الدعوة", closed: "انتهى موعد تأكيد الحضور", closedNote: "يمكنكم التواصل مباشرة مع أصحاب الدعوة إذا احتجتم إلى تعديل الرد.", thanks: "وصلنا ردّك، شكرًا لك", thanksNote: "سعداء بمشاركتك هذه اللحظة الجميلة.", invalidName: "اكتب اسمًا صحيحًا ثم حاول مرة أخرى.", saveError: "تعذر حفظ الرد. حاول مرة أخرى.", musicOn: "إيقاف الموسيقى", musicOff: "تشغيل موسيقى هادئة", tagline: "دعوتكم… كما تخيلتموها" },
-  en: { privateInvite: "A private invitation for", welcome: "Welcome", special: "A private invitation for you", inside: "A beautiful moment is waiting inside", open: "Open invitation", joy: "We would love you to share our joy", scroll: "Scroll to RSVP ↓", program: "Your invitation", stages: "The moments you are invited to", stagesNote: "This link only shows the places and times selected for you.", map: "Map ↗", rsvp: "RSVP", confirmEach: "Respond to each part", before: "You can choose a different response for every part before", attend: "Attending", maybe: "Maybe", decline: "Decline", party: "Party size", fullName: "Full name", namePlaceholder: "Enter your name", personalized: "This link is personalized for you", meal: "Meal preference", regular: "Regular", vegetarian: "Vegetarian", send: "Send RSVP →", saving: "Saving…", privacy: "⌁ Your details are only visible to the host", closed: "RSVP is now closed", closedNote: "Please contact the hosts directly if you need to change your response.", thanks: "Thank you, we received your reply", thanksNote: "We are delighted to share this beautiful moment with you.", invalidName: "Please enter a valid name and try again.", saveError: "We could not save your reply. Please try again.", musicOn: "Stop music", musicOff: "Play soft music", tagline: "Invitations, beautifully yours" },
+  ar: { privateInvite: "دعوة خاصة إلى", welcome: "أهلًا", special: "دعوة خاصة لكم", inside: "لحظة جميلة تنتظركم بالداخل", open: "افتح الدعوة", joy: "يسعدنا أن تشاركونا فرحتنا", scroll: "مرّر لتأكيد الحضور ↓", program: "برنامج دعوتكم", stages: "المراحل المدعوون إليها", stagesNote: "يعرض هذا الرابط فقط الأماكن والمواعيد المخصصة لكم.", map: "الخريطة ↗", rsvp: "تأكيد الحضور", confirmEach: "أكد حضورك لكل مرحلة", before: "يمكنك اختيار رد مختلف لكل جزء من المناسبة قبل", attend: "سأحضر", maybe: "ربما", decline: "أعتذر", party: "عدد الحضور", fullName: "الاسم الكامل", namePlaceholder: "اكتب اسمك", personalized: "تم تخصيص هذا الرابط لكم", meal: "تفضيل الطعام", regular: "عادي", vegetarian: "نباتي", send: "إرسال تأكيد الحضور ←", saving: "جارٍ حفظ الرد…", privacy: "⌁ بياناتك خاصة ولا تظهر إلا لصاحب الدعوة", closed: "انتهى موعد تأكيد الحضور", closedNote: "يمكنكم التواصل مباشرة مع أصحاب الدعوة إذا احتجتم إلى تعديل الرد.", thanks: "وصلنا ردّك، شكرًا لك", thanksNote: "سعداء بمشاركتك هذه اللحظة الجميلة.", invalidName: "اكتب اسمًا صحيحًا ثم حاول مرة أخرى.", saveError: "تعذر حفظ الرد. حاول مرة أخرى.", musicOn: "إيقاف الموسيقى", musicOff: "تشغيل موسيقى هادئة", saveDate: "حفظ الموعد", share: "مشاركة الدعوة", copied: "تم نسخ الرابط", shared: "تمت مشاركة الدعوة", saved: "تم حفظ الموعد", tagline: "دعوتكم… كما تخيلتموها" },
+  en: { privateInvite: "A private invitation for", welcome: "Welcome", special: "A private invitation for you", inside: "A beautiful moment is waiting inside", open: "Open invitation", joy: "We would love you to share our joy", scroll: "Scroll to RSVP ↓", program: "Your invitation", stages: "The moments you are invited to", stagesNote: "This link only shows the places and times selected for you.", map: "Map ↗", rsvp: "RSVP", confirmEach: "Respond to each part", before: "You can choose a different response for every part before", attend: "Attending", maybe: "Maybe", decline: "Decline", party: "Party size", fullName: "Full name", namePlaceholder: "Enter your name", personalized: "This link is personalized for you", meal: "Meal preference", regular: "Regular", vegetarian: "Vegetarian", send: "Send RSVP →", saving: "Saving…", privacy: "⌁ Your details are only visible to the host", closed: "RSVP is now closed", closedNote: "Please contact the hosts directly if you need to change your response.", thanks: "Thank you, we received your reply", thanksNote: "We are delighted to share this beautiful moment with you.", invalidName: "Please enter a valid name and try again.", saveError: "We could not save your reply. Please try again.", musicOn: "Stop music", musicOff: "Play soft music", saveDate: "Save the date", share: "Share invitation", copied: "Link copied", shared: "Invitation shared", saved: "Date saved", tagline: "Invitations, beautifully yours" },
 } as const;
 
 type TemplateArt = "editorial" | "botanical" | "glass" | "royal" | "minimal" | "cinematic" | "coastal" | "arabic";
@@ -62,6 +62,14 @@ const publicTemplateArt: Record<string, TemplateArt> = {
   "Velvet Première": "cinematic",
 };
 
+function escapeCalendarText(value: string) {
+  return value.replace(/[\\;,\n]/g, (character) => character === "\n" ? "\\n" : `\\${character}`);
+}
+
+function calendarDate(value: Date) {
+  return value.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
+}
+
 export default function InvitationClient({ data }: { data: InvitationData }) {
   const { event, invitation, guest } = data;
   const eventDate = new Date(event.eventDate);
@@ -78,6 +86,7 @@ export default function InvitationClient({ data }: { data: InvitationData }) {
   const [openingState, setOpeningState] = useState<"closed" | "opening" | "open">("closed");
   const [locale, setLocale] = useWisalLocale("lang");
   const [musicPlaying, setMusicPlaying] = useState(false);
+  const [utilityFeedback, setUtilityFeedback] = useState<"idle" | "saved" | "copied" | "shared">("idle");
   const contentRef = useRef<HTMLElement>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const ambienceTimerRef = useRef<number | null>(null);
@@ -159,6 +168,48 @@ export default function InvitationClient({ data }: { data: InvitationData }) {
     setMusicPlaying(true);
   };
 
+  const saveDate = () => {
+    const end = new Date(eventDate.getTime() + 2 * 60 * 60 * 1000);
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "PRODID:-//Wisal//Invitation//EN",
+      "BEGIN:VEVENT",
+      `UID:${event.id}@wisal.invite`,
+      `DTSTAMP:${calendarDate(new Date())}`,
+      `DTSTART:${calendarDate(eventDate)}`,
+      `DTEND:${calendarDate(end)}`,
+      `SUMMARY:${escapeCalendarText(`${event.brideName} & ${event.groomName}`)}`,
+      `LOCATION:${escapeCalendarText(`${event.venue}, ${event.city}`)}`,
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\r\n");
+    const url = URL.createObjectURL(new Blob([ics], { type: "text/calendar;charset=utf-8" }));
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `${event.brideName}-${event.groomName}-save-the-date.ics`.replace(/[^a-z0-9\-_.]+/gi, "-");
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setUtilityFeedback("saved");
+  };
+
+  const shareInvitation = async () => {
+    const url = window.location.href;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: `${event.brideName} & ${event.groomName}`, text: t.joy, url });
+        setUtilityFeedback("shared");
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(url);
+        setUtilityFeedback("copied");
+      }
+    } catch {
+      setUtilityFeedback("idle");
+    }
+  };
+
   const openInvitation = () => {
     if (openingState !== "closed") return;
     setOpeningState("opening");
@@ -226,10 +277,11 @@ export default function InvitationClient({ data }: { data: InvitationData }) {
           </div>
           {invitation.showCountdown && <div className="signature-countdown">{[[countdown.days, ar ? "يوم" : "Days"], [countdown.hours, ar ? "ساعة" : "Hours"], [countdown.minutes, ar ? "دقيقة" : "Minutes"]].map(([value, label]) => <span key={String(label)}><b>{String(value).padStart(2, "0")}</b><small>{label}</small></span>)}</div>}
           {invitation.rsvpEnabled && <button className="signature-rsvp" type="button" onClick={() => document.getElementById("invitation-rsvp")?.scrollIntoView({ behavior: "smooth" })}>{t.rsvp} <span>{ar ? "←" : "→"}</span></button>}
+          <div className="invitation-utilities" aria-live="polite"><button type="button" onClick={saveDate}>{t.saveDate}</button><button type="button" onClick={() => void shareInvitation()}>{utilityFeedback === "copied" ? t.copied : utilityFeedback === "shared" ? t.shared : t.share}</button>{utilityFeedback !== "idle" && <small>{utilityFeedback === "saved" ? t.saved : utilityFeedback === "copied" ? t.copied : t.shared}</small>}</div>
         </div>
         <button className="signature-scroll" type="button" aria-label={t.scroll} onClick={() => contentRef.current?.querySelector(".guest-content")?.scrollIntoView({ behavior: "smooth" })}><ChevronDown aria-hidden="true" /></button>
       </section> : <section className={`guest-cover image-treatment-${templateArt} concept-${templateConcept} ${coverUrl ? "with-cover" : ""}`} style={coverUrl ? { "--guest-photo": `url(${coverUrl})` } as CSSProperties : undefined}>
-        <span className="guest-flower">❦</span><small>{guest ? `${t.privateInvite} ${guest.name}` : t.joy}</small><h1>{event.brideName} <b>&</b> {event.groomName}</h1><div className="guest-date"><span><b>{dateFormatter.format(eventDate)}</b><small>{timeFormatter.format(eventDate)}</small></span><i /><span><b>{event.venue}</b><small>{event.city}</small></span></div><div className="scroll-hint">{t.scroll}</div>
+        <span className="guest-flower">❦</span><small>{guest ? `${t.privateInvite} ${guest.name}` : t.joy}</small><h1>{event.brideName} <b>&</b> {event.groomName}</h1><div className="guest-date"><span><b>{dateFormatter.format(eventDate)}</b><small>{timeFormatter.format(eventDate)}</small></span><i /><span><b>{event.venue}</b><small>{event.city}</small></span></div><div className="invitation-utilities" aria-live="polite"><button type="button" onClick={saveDate}>{t.saveDate}</button><button type="button" onClick={() => void shareInvitation()}>{utilityFeedback === "copied" ? t.copied : utilityFeedback === "shared" ? t.shared : t.share}</button>{utilityFeedback !== "idle" && <small>{utilityFeedback === "saved" ? t.saved : utilityFeedback === "copied" ? t.copied : t.shared}</small>}</div><div className="scroll-hint">{t.scroll}</div>
       </section>}
       <div className="guest-content">{sectionOrder.map((section) => sectionNodes[section as keyof typeof sectionNodes])}</div>
       <footer className="invite-footer"><Image src="/brand/wisal-monogram-64.png" width={36} height={36} alt="" unoptimized /><strong>{ar ? "وِصال" : "Wisal"}</strong><span>{t.tagline}</span><nav><a href="/privacy">{ar ? "الخصوصية" : "Privacy"}</a><a href="/terms">{ar ? "الشروط" : "Terms"}</a></nav></footer>
