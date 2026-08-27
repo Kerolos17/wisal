@@ -1,6 +1,7 @@
-import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, inArray, sql } from "drizzle-orm";
 import { getDb } from "@/db";
 import { activityLogs, eventSegments, events, guestGroupMemberships, guestGroups, guests, guestSegmentAccess, invitations, messages, segmentRsvps, users } from "@/db/schema";
+import { getGuestLimitForOwnerEmail } from "@/lib/payments";
 
 function createInviteToken() {
   return crypto.randomUUID();
@@ -359,7 +360,14 @@ export async function importGuests(ownerEmail: string, eventId: string, rows: Ar
   const groupIds = [...new Set(normalized.map((row) => row.groupId).filter((value): value is string => Boolean(value)))];
   if (groupIds.length) {
     const validGroups = await db.select({ id: guestGroups.id }).from(guestGroups).where(and(eq(guestGroups.eventId, eventId), inArray(guestGroups.id, groupIds)));
-    if (validGroups.length !== groupIds.length) throw new Error("إحدى فئات الاستيراد غير صالحة");
+    if (validGroups.length !== groupIds.length) throw new Error("مجموعة غير صالحة للضيوف");
+  }
+  const limit = await getGuestLimitForOwnerEmail(ownerEmail);
+  if (limit !== null) {
+    const [row] = await db.select({ value: count() }).from(guests).where(eq(guests.eventId, eventId));
+    if (Number(row.value) + normalized.length > limit) {
+      throw Object.assign(new Error("تجاوزت الحد الأقصى للضيوف في باقتك"), { code: "GUEST_LIMIT" });
+    }
   }
   const updatedAt = new Date().toISOString();
   if (normalized.length) await db.insert(guests).values(normalized.map((row) => ({ eventId, inviteToken: createInviteToken(), name: row.name, phone: row.phone, partySize: row.partySize, updatedAt }))).onConflictDoUpdate({
@@ -385,6 +393,13 @@ export async function addGuest(ownerEmail: string, eventId: string, input: { nam
   const ownerId = await ensureOwner(ownerEmail);
   const [event] = await db.select().from(events).where(and(eq(events.id, eventId), eq(events.ownerId, ownerId))).limit(1);
   if (!event) return null;
+  const limit = await getGuestLimitForOwnerEmail(ownerEmail);
+  if (limit !== null) {
+    const [row] = await db.select({ value: count() }).from(guests).where(eq(guests.eventId, eventId));
+    if (Number(row.value) + 1 > limit) {
+      throw Object.assign(new Error("تجاوزت الحد الأقصى للضيوف في باقتك"), { code: "GUEST_LIMIT" });
+    }
+  }
   const now = new Date().toISOString();
   await db.insert(guests).values({ eventId, inviteToken: createInviteToken(), name: input.name.trim(), phone: input.phone?.trim() || "", status: input.status ?? "pending", partySize: Math.max(1, Math.min(10, input.partySize ?? 1)), meal: input.meal?.trim() || "—", respondedAt: input.status && input.status !== "pending" ? now : null, updatedAt: now }).onConflictDoUpdate({
     target: [guests.eventId, guests.name],

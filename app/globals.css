@@ -877,3 +877,59 @@
     transition: none;
   }
 }
+
+/* Admin: Payments section */
+.admin-payment-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:18px;margin-top:8px}
+.admin-payment-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.admin-payment-card>header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.admin-payment-card header b{font-family:Georgia,serif;font-size:20px;color:var(--plum);display:block}
+.admin-payment-card header small{color:var(--muted);font-size:12px}
+.payment-status{font-size:11px;font-weight:700;padding:5px 12px;border-radius:99px;white-space:nowrap;background:var(--ivory);color:var(--muted)}
+.payment-status.pending_review{background:#fdf0e3;color:#b9802f}
+.payment-status.approved{background:#e7eee8;color:var(--green)}
+.payment-status.rejected{background:#f6e3e1;color:#b14a3e}
+.payment-status.info_requested{background:#eae7f6;color:#6b5bb0}
+.payment-status.draft{background:#f0f0f0;color:#7a7a7a}
+.admin-payment-meta{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;margin:0}
+.admin-payment-meta div{display:flex;flex-direction:column}
+.admin-payment-meta dt{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.admin-payment-meta dd{margin:0;font-size:13px;color:var(--ink)}
+.admin-receipt-link{font-size:12px;color:var(--plum);font-weight:700;text-decoration:underline;align-self:flex-start}
+.admin-payment-note{font-size:12px;margin:0;padding:8px 12px;border-radius:10px;background:#faf5f1}
+.admin-payment-note.rejected{background:#f6e3e1;color:#9c4034}
+.admin-payment-note.info{background:#eae7f6;color:#5c4ca0}
+.admin-payment-actions{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:14px}
+.admin-reason-input{border:1px solid var(--line);border-radius:10px;padding:10px;font-size:13px;background:#fcfaf8;outline:none}
+.admin-reason-input:focus{border-color:var(--rose)}
+.admin-payment-buttons{display:flex;gap:8px;flex-wrap:wrap}
+.admin-payment-buttons button{border:0;border-radius:10px;padding:10px 14px;font-size:13px;font-weight:700;color:#fff}
+.admin-payment-buttons .admin-approve{background:var(--green)}
+.admin-payment-buttons .admin-reject{background:#b14a3e}
+.admin-payment-buttons .admin-request-info{background:#6b5bb0}
+.admin-payment-buttons button:disabled{opacity:.4;cursor:not-allowed}
+
+/* Checkout page */
+.checkout-shell{min-height:calc(100vh - 78px);display:grid;place-items:center;padding:48px 6%;background:radial-gradient(circle at 50% 0%,#f6eae5 0,transparent 38%),linear-gradient(160deg,#fffdfa,#f7efe9)}
+.checkout-card{width:min(520px,100%);background:#fff;border:1px solid var(--line);border-radius:24px;padding:34px;box-shadow:var(--shadow)}
+.checkout-card.success{text-align:center}
+.checkout-icon{width:64px;height:64px;border-radius:50%;background:#e7eee8;color:var(--green);display:grid;place-items:center;font-size:30px;margin:0 auto 14px}
+.checkout-head{text-align:center;border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:18px}
+.checkout-head small{color:var(--rose-dark);font-size:11px;font-weight:700;letter-spacing:.04em}
+.checkout-head h1{font-family:Georgia,serif;font-size:30px;color:var(--plum);margin:8px 0}
+.checkout-price{display:block;font-size:22px;color:var(--plum)}
+.checkout-sub{color:var(--muted);font-size:13px;margin:6px 0 0}
+.checkout-features{list-style:none;padding:0;margin:0 0 16px;display:flex;flex-direction:column;gap:7px}
+.checkout-features li{font-size:13px;color:#6d626c}
+.checkout-steps{margin:0 0 22px;padding-right:18px;color:var(--muted);font-size:12.5px;line-height:1.9}
+.checkout-form{display:flex;flex-direction:column;gap:14px}
+.checkout-form label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted)}
+.checkout-form input,.checkout-form select{border:1px solid var(--line);border-radius:11px;padding:12px;background:#fcfaf8;color:var(--ink);outline:none}
+.checkout-form input:focus,.checkout-form select:focus{border-color:var(--rose)}
+.checkout-file input{padding:9px}
+.checkout-error{color:#b14a3e;font-size:13px;margin:0 0 12px;text-align:center}
+.checkout-submit{width:100%;margin-top:8px;padding:15px}
+.studio-templates>button.is-locked,.studio-templates>button[data-locked="true"]{opacity:.5;cursor:not-allowed}
+.studio-templates>button[data-locked="true"] .mini-template{position:relative}
+.studio-templates>button[data-locked="true"] .mini-template:after{content:"🔒";position:absolute;inset:0;display:grid;place-items:center;font-size:1.6rem;background:rgba(30,18,27,.4);border-radius:inherit}
+.template-upgrade-notice{font-size:12px;color:var(--muted);background:#fbf6f3;border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:0 0 4px}
+.template-upgrade-notice a{color:var(--rose-dark);font-weight:700;text-decoration:none;white-space:nowrap}

@@ -267,6 +267,7 @@ export default function Home({ initialView = "home", authenticated = false, acco
   const [publicPlans, setPublicPlans] = useState<PublicPlan[]>(defaultPlans);
   const [publicContent, setPublicContent] = useState<PublicContent>({});
   const [publicTemplates, setPublicTemplates] = useState<PublicTemplate[]>(atelierTemplates);
+  const [activePlanCode, setActivePlanCode] = useState<string | null>(null);
   const [guestEditor, setGuestEditor] = useState<{ mode: "add" | "edit"; guest?: GuestRecord } | null>(null);
 
   const loadEvent = useCallback(async (eventId?: string, showLoading = true) => {
@@ -354,6 +355,21 @@ export default function Home({ initialView = "home", authenticated = false, acco
     return () => window.clearTimeout(timer);
   }, [eventData?.invitation.template, publicTemplates]);
 
+  useEffect(() => {
+    if (!authenticated) return;
+    let cancelled = false;
+    void fetch("/api/me/subscription", { cache: "no-store" })
+      .then(async (res) => {
+        if (!res.ok || cancelled) return;
+        const data = await res.json() as { planCode: string | null };
+        if (!cancelled) setActivePlanCode(data.planCode ?? null);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [authenticated]);
+
   const chooseEvent = async (id: string) => {
     setCurrentEventId(id);
     setStep(1);
@@ -435,6 +451,17 @@ export default function Home({ initialView = "home", authenticated = false, acco
   };
 
   const choosePlan = (plan: PlanCode) => {
+    const foundPlan = publicPlans.find((item) => item.code === plan);
+    const isPaid = (foundPlan?.priceEgp ?? 0) > 0;
+    if (isPaid) {
+      const target = `/checkout?plan=${encodeURIComponent(plan)}`;
+      if (!authenticated) {
+        router.push(`/auth/sign-in?returnTo=${encodeURIComponent(target)}`);
+        return;
+      }
+      router.push(target);
+      return;
+    }
     setSelectedPlan(plan);
     if (!authenticated) {
       const returnTo = encodeURIComponent(`/workspace?plan=${encodeURIComponent(plan)}`);
@@ -494,6 +521,8 @@ export default function Home({ initialView = "home", authenticated = false, acco
           templates={publicTemplates}
           eventData={eventData}
           locale={locale}
+          activePlanCode={activePlanCode}
+          authenticated={authenticated}
           onSaved={async (updated) => {
             setEventData(updated);
             setEventList((current) => current.map((item) => item.id === updated.event.id ? { ...updated.event, stats: updated.stats } : item));
@@ -633,7 +662,7 @@ function Landing({ locale, plans, templates, content, onStart, onGuest, onChoose
       <section className="atlas-section atlas-pricing" id="pricing">
         <header className="atlas-section-head">
           <h2>{ar ? "خطة تناسب حجم احتفالكم" : "A plan shaped for your celebration"}</h2>
-          <p>{ar ? "الباقات معروضة للتخطيط. الدفع الإلكتروني متوقف حتى اكتمال اختبار المنصة." : "Plans are shown for planning. Online payment stays paused while the platform is tested."}</p>
+          <p>{ar ? "اختر باقتك وادفع بأمان عبر إيصال التحويل، ثم تفعّل باقتك بعد المراجعة." : "Choose your plan and pay securely via transfer receipt, then your plan activates after review."}</p>
         </header>
         <div className="atlas-plan-list">
           {plans.map((plan) => <article className={plan.featured ? "is-featured" : ""} key={plan.code}>
@@ -664,7 +693,9 @@ function BuilderUnavailable({ locale, message, onRetry, onCreate }: { locale: Lo
   return <section className="builder-state" role="alert"><Icon>!</Icon><h1>{tr(locale, "تعذر فتح استوديو الدعوة", "We could not open the invitation studio")}</h1><p>{message}</p><div><button className="ghost" onClick={onRetry}>{tr(locale, "إعادة المحاولة", "Try again")}</button><button className="primary" onClick={onCreate}>{tr(locale, "إنشاء دعوة جديدة ←", "Create a new invitation →")}</button></div></section>;
 }
 
-function Studio({ step, setStep, selectedTemplate, setSelectedTemplate, templates, eventData, locale, onSaved }: { step: number; setStep: (n: number) => void; selectedTemplate: number; setSelectedTemplate: (n: number) => void; templates: PublicTemplate[]; eventData: EventOverview; locale: Locale; onSaved: (event: EventOverview) => Promise<void> }) {
+const PREMIUM_TEMPLATE_ARTS = new Set(["cinematic", "glass", "royal", "coastal"]);
+
+function Studio({ step, setStep, selectedTemplate, setSelectedTemplate, templates, eventData, locale, activePlanCode, authenticated, onSaved }: { step: number; setStep: (n: number) => void; selectedTemplate: number; setSelectedTemplate: (n: number) => void; templates: PublicTemplate[]; eventData: EventOverview; locale: Locale; activePlanCode: string | null; authenticated: boolean; onSaved: (event: EventOverview) => Promise<void> }) {
   const L = (arabic: string, english: string) => tr(locale, arabic, english);
   const ar = locale === "ar";
   const steps = ar ? ["القالب", "المحتوى", "الهوية", "تأكيد الحضور", "المعاينة والنشر"] : ["Template", "Content", "Identity", "RSVP", "Preview & publish"];
@@ -707,9 +738,13 @@ function Studio({ step, setStep, selectedTemplate, setSelectedTemplate, template
   const [previewDevice, setPreviewDevice] = useState<"phone" | "desktop">("phone");
   const [templateFilter, setTemplateFilter] = useState("all");
   const selectedTemplateData = templates[selectedTemplate] ?? templates[0];
+  const isPremiumTemplate = (template: PublicTemplate) => PREMIUM_TEMPLATE_ARTS.has(template.art);
+  const hasPaidPlan = authenticated && activePlanCode !== null && activePlanCode !== "starter";
+  const hasLockedPremium = templates.some((template) => isPremiumTemplate(template) && !hasPaidPlan);
   const chooseTemplate = (index: number) => {
     const template = templates[index];
     if (!template) return;
+    if (isPremiumTemplate(template) && !hasPaidPlan) return;
     setSelectedTemplate(index);
     setDraft((current) => ({
       ...current,
@@ -861,7 +896,10 @@ function Studio({ step, setStep, selectedTemplate, setSelectedTemplate, template
             <div className="template-filter" aria-label={L("تصفية القوالب", "Filter templates")}>
               {[["all", L("الكل", "All")], ["classic", L("كلاسيكي", "Classic")], ["botanical", L("طبيعي", "Botanical")], ["modern", L("عصري", "Modern")], ["luxury", L("فاخر", "Luxury")], ["minimal", L("بسيط", "Minimal")], ["cinematic", L("سينمائي", "Cinematic")]].map(([value, label]) => <button type="button" key={value} className={templateFilter === value ? "active" : ""} onClick={() => setTemplateFilter(value)}>{label}</button>)}
             </div>
-            <div className="studio-templates">{templates.slice(0, 6).map((template, i) => ({ template, i })).filter(({ template }) => templateFilter === "all" || template.category === templateFilter).map(({ template, i }) => <button type="button" key={template.code} onClick={() => chooseTemplate(i)} className={selectedTemplate === i ? "selected" : ""}><div className={`mini-template ${template.color} template-art-${template.art} template-concept-${template.code}`}><InvitationSpecimen template={template} brideName={draft.brideName} groomName={draft.groomName} date={draft.eventDate.slice(0, 10)} locale={locale} /></div><span><b>{ar ? template.name : template.enName}</b><small>{ar ? template.tag : template.enTag}</small></span>{selectedTemplate === i && <i>✓</i>}</button>)}</div>
+            <div className="studio-templates">{templates.slice(0, 6).map((template, i) => ({ template, i })).filter(({ template }) => templateFilter === "all" || template.category === templateFilter).map(({ template, i }) => <button type="button" key={template.code} disabled={isPremiumTemplate(template) && !hasPaidPlan} data-locked={isPremiumTemplate(template) && !hasPaidPlan} onClick={() => chooseTemplate(i)} className={selectedTemplate === i ? "selected" : ""}><div className={`mini-template ${template.color} template-art-${template.art} template-concept-${template.code}`}><InvitationSpecimen template={template} brideName={draft.brideName} groomName={draft.groomName} date={draft.eventDate.slice(0, 10)} locale={locale} /></div><span><b>{ar ? template.name : template.enName}</b><small>{ar ? template.tag : template.enTag}</small></span>{selectedTemplate === i && <i>✓</i>}</button>)}</div>
+            {hasLockedPremium && (
+              <p className="template-upgrade-notice">{ar ? "هذه التجربة متاحة في الباقات المدفوعة." : "This experience is available on paid plans."} <a href="/checkout?plan=elegant">{ar ? "ترقية باقتك ←" : "Upgrade your plan →"}</a></p>
+            )}
             <section className={`selected-template-note template-art-${selectedTemplateData.art} template-concept-${selectedTemplateData.code}`}><div><Image src="/brand/wisal-monogram-64.png" width={36} height={36} alt="" unoptimized /><span><small>{L("التجربة المختارة", "Selected experience")}</small><b>{ar ? selectedTemplateData.name : selectedTemplateData.enName}</b><p>{ar ? selectedTemplateData.description : selectedTemplateData.enDescription}</p></span></div><span className="template-experience-meta"><b>{openingStyles.find((item) => item.value === selectedTemplateData.openingStyle)?.[ar ? "name" : "enName"]}</b><small>{layoutStyles.find((item) => item.value === selectedTemplateData.layoutStyle)?.[ar ? "name" : "enName"]}</small></span></section>
             <section className="experience-picker"><div><span className="eyebrow"><i /> {L("لحظة الوصول", "Arrival moment")}</span><h3>{L("كيف تبدأ الدعوة؟", "How should the invitation begin?")}</h3></div><div className="choice-grid opening-grid">{openingStyles.map((option) => <button type="button" key={option.value} className={draft.openingStyle === option.value ? "selected" : ""} onClick={() => setField("openingStyle", option.value)}><span>{option.icon}</span><b>{ar ? option.name : option.enName}</b><small>{ar ? option.description : option.enDescription}</small>{draft.openingStyle === option.value && <i>✓</i>}</button>)}</div></section>
             <section className="experience-picker"><div><span className="eyebrow"><i /> {L("أسلوب الحكاية", "Story style")}</span><h3>{L("كيف تظهر التفاصيل؟", "How should the details unfold?")}</h3></div><div className="choice-grid">{layoutStyles.map((option) => <button type="button" key={option.value} className={draft.layoutStyle === option.value ? "selected" : ""} onClick={() => setField("layoutStyle", option.value)}><b>{ar ? option.name : option.enName}</b><small>{ar ? option.description : option.enDescription}</small>{draft.layoutStyle === option.value && <i>✓</i>}</button>)}</div></section>

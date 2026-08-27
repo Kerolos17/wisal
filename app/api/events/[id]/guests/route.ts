@@ -13,6 +13,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     return event ? Response.json(event, { status: 201 }) : Response.json({ error: "المناسبة غير موجودة" }, { status: 404 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "تعذر إضافة الضيف";
-    return Response.json({ error: message }, { status: 500 });
+    const code = (error as { code?: string }).code;
+    const status = code === "GUEST_LIMIT" || code === "CONFLICT" ? 409 : 500;
+    return Response.json({ error: message }, { status });
   }
 }
