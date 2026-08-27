@@ -144,3 +144,8 @@ test("invitation surfaces expose explicit readable tokens for dark and light sec
   assert.match(stylesSource, /\.countdown-card[^}]*color:var\(--atelier-paper\)/);
   assert.match(stylesSource, /\.invite-primary-action[^}]*:focus-visible/);
 });
+
+test("cinematic envelope lettering remains readable on its light paper", () => {
+  assert.match(stylesSource, /\.opening-concept-cinema-night \.envelope-letter\{[^}]*color:#3a2028/);
+  assert.match(stylesSource, /\.opening-concept-cinema-night \.envelope-letter i\{[^}]*color:#b66f59/);
+});

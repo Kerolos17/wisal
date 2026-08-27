@@ -545,6 +545,10 @@
 @media(max-width:650px){.guest-actions button,.filters button,.list-actions button,.admin-panel button{min-height:44px}.dashboard-main :where(input,select,textarea),.admin-main :where(input,select,textarea),.app-shell :where(input,select,textarea){font-size:16px}}
 @media(prefers-reduced-motion:reduce){.launch-progress span{transition:none}}
 
+/* Keep the cinematic opening letter legible against its ivory paper. */
+.opening-concept-cinema-night .envelope-letter{color:#3a2028;background:#fffaf6;text-shadow:none}
+.opening-concept-cinema-night .envelope-letter i{color:#b66f59}
+
 /* Invitation semantic surface system — every authored world owns the same roles. */
 .public-invite[class*="invite-concept-"]{--atelier-dark:#24171d;--atelier-action-ink:#fff4e9;--atelier-border:color-mix(in srgb,var(--atelier-oxblood) 22%,transparent);--atelier-focus:var(--atelier-gold);--atelier-background:var(--atelier-cream);--atelier-surface:var(--atelier-paper);--atelier-accent:var(--atelier-gold);--atelier-action:var(--atelier-oxblood);--atelier-action-hover:#4f1420;--atelier-success:#3d7758;--atelier-error:#a13f45}
 .invite-concept-love-poem{--atelier-dark:#392126;--atelier-action-ink:#fff8ef;--atelier-border:rgba(109,30,43,.24);--atelier-action:#6d1e2b;--atelier-action-hover:#4f1420}
