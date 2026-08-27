@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(_: Request, { params }: { params: Promise<{ method: string }> }) {
   const identity = await getPlatformIdentity();
-  if (!identity) return Response.json({ error: "Authentication required" }, { status: 401 });
+  if (!identity) return Response.json({ error: "Authentication required" }, { status: 401, headers: { "Cache-Control": "private, no-store" } });
 
   const { method } = await params;
   const destination = (await listActivePaymentDestinations()).find((item) => item.method === method);

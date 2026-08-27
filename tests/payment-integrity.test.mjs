@@ -81,6 +81,7 @@ describe("manual payment integrity contracts", () => {
     assert.match(schema, /qrKey: text\("qr_key"\)/);
     assert.match(qrRoute, /getPlatformIdentity/);
     assert.match(qrRoute, /Cache-Control.*private, no-store/);
+    assert.match(destinationRoute, /Cache-Control.*private, no-store/);
     assert.match(admin, /Payment receiving details/);
   });
 
