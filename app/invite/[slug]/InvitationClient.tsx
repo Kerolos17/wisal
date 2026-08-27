@@ -116,6 +116,32 @@ export default function InvitationClient({ data }: { data: InvitationData }) {
   }, [event.id, guest?.inviteToken]);
 
   useEffect(() => {
+    const root = contentRef.current;
+    if (!root) return;
+
+    const nameInput = root.querySelector<HTMLInputElement>(".guest-form input");
+    if (nameInput) {
+      nameInput.id = "rsvp-full-name";
+      nameInput.name = "name";
+      nameInput.closest("label")?.setAttribute("for", nameInput.id);
+    }
+
+    root.querySelectorAll<HTMLSelectElement>(".segment-rsvp-list select").forEach((select, index) => {
+      const id = `party-size-${index + 1}`;
+      select.id = id;
+      select.name = id;
+      select.closest("label")?.setAttribute("for", id);
+    });
+
+    const mealSelect = root.querySelector<HTMLSelectElement>(".guest-form select");
+    if (mealSelect) {
+      mealSelect.id = "rsvp-meal";
+      mealSelect.name = "meal";
+      mealSelect.closest("label")?.setAttribute("for", mealSelect.id);
+    }
+  }, [locale, openingState, state, invitation.mealQuestionEnabled]);
+
+  useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 60000);
     return () => window.clearInterval(timer);
   }, []);
