@@ -22,8 +22,8 @@
 - Complete counsel review of the privacy policy, terms, retention policy, and local tax/invoice requirements before selling plans.
 - Replace the current per-instance API rate limiter with a durable edge or shared-store limit before a broad public launch.
 - Enable uptime/error monitoring and analytics, then test an alert and an error-recovery path.
-- Keep payment disabled until plans, invoices, refunds, and webhook handling have been tested end to end.
+- Do not accept customer payment until the manual-payment acceptance checklist has been completed in staging and production: receiving destinations, receipt review, approval, rejection/resubmission, expiry, customer support, and refund/invoice policy.
 
 ## Release decision
 
-The product is ready for a controlled beta after the domain, monitoring, sender setup, production-account, and legal-review items above are completed. Payment should remain the final integration.
+The product is ready for a controlled beta after the domain, monitoring, sender setup, production-account, and legal-review items above are completed. Manual payment remains a gated release item, not proof of launch readiness by implementation alone.

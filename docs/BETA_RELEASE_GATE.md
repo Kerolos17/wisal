@@ -8,7 +8,7 @@ Updated: 20 August 2026
 - RTL/LTR layouts, responsive navigation, reduced-motion handling, and self-hosted brand typography.
 - Invitation templates, configurable sections, multiple event stages, guest audiences, personal links, RSVP per stage, CSV import/export, and owner-initiated WhatsApp sharing.
 - Neon-backed authentication and event data, scoped access, upload restrictions, security headers, protected private routes, public mutation guards, and database health reporting.
-- Payment remains intentionally disabled.
+- Manual payment is implemented in code, but is not yet cleared for customer charges.
 
 ## Must pass before inviting beta customers
 
@@ -19,11 +19,12 @@ Updated: 20 August 2026
 5. Obtain legal review for privacy, terms, retention, guest-data consent, tax, and invoicing language.
 6. Add durable edge/shared-store rate limiting for public mutation routes.
 7. Run the production smoke suite: sign-in, invitation creation, publish, personal link, open tracking, RSVP per stage, CSV round trip, image upload, Arabic/English, and phone/tablet/desktop layouts.
+8. Complete the manual-payment production acceptance checklist with a separate staging database and test transfer; record the reviewer, plan activation, rejection, and resubmission evidence.
 
 ## Beta operating limits
 
 - Start with a small invited cohort and owner-initiated WhatsApp delivery.
-- Keep payment, automated WhatsApp, and unsupported email promises disabled.
+- Keep automated WhatsApp and unsupported email promises disabled. Do not accept customer payment until the payment acceptance checklist is complete.
 - Export a backup of critical guest data before each live event.
 - Review errors, support requests, and RSVP delivery daily during the beta.
 

@@ -6,9 +6,9 @@ import { users, events, guests, userSubscriptions } from "@/db/schema";
 import { eq, count } from "drizzle-orm";
 import { addGuest, importGuests, createEvent } from "@/lib/wisal-data";
 import { getGuestLimitForOwnerEmail, getGuestLimitForUser } from "@/lib/payments";
+import { configurePaymentTestEnvironment } from "./helpers/payment-test-environment.mjs";
 
-const url = process.env.DATABASE_URL;
-if (!url) throw new Error("DATABASE_URL required for guest-limit tests");
+configurePaymentTestEnvironment();
 
 function fakeEmail(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;

@@ -16,11 +16,11 @@
 | Receipt storage | ✅ | `lib/payment-storage.ts` (magic-byte verified upload) |
 | API routes | ✅ | 10 routes (customer + admin), all with auth + `forbiddenUnless` |
 | Receipt 403 | ✅ | `app/api/media/[...key]/route.ts` lines 9-12 (SEC-R04) |
-| Tests | ✅ | `tests/payments.test.ts` (happy path + edge cases) |
+| Tests | ✅ contract/unit coverage | Runtime payment tests require an explicit, isolated `PAYMENT_TEST_DATABASE_URL`; see `docs/PAYMENT_PRODUCTION_ACCEPTANCE.md`. |
 | **App integration** | ✅ | Active subscriptions enforce guest limits and paid-template access; existing invitations remain unaffected. |
-| **UI** | ✅ | Checkout, receipt upload, payment tracking, customer plan card, and admin review queue are live. |
+| **UI** | ✅ implemented | Checkout, receipt upload, payment tracking, customer plan card, and admin review queue are implemented; browser acceptance remains a release gate. |
 
-**Conclusion:** the payment system is integrated end-to-end. Paid plan selection opens checkout; receipt submission creates a reviewable request; approval activates the subscription; and server-side entitlements enforce guest limits and premium-template access.
+**Conclusion:** the payment system is implemented end-to-end in the application. Paid plan selection opens checkout; receipt submission creates a reviewable request; approval activates the subscription; and server-side entitlements enforce guest limits and premium-template access. It must still pass the documented staging/production acceptance run before real customer charges are enabled.
 
 ## 2. Architectural decisions
 

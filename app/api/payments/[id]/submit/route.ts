@@ -1,7 +1,8 @@
 import { getPlatformIdentity } from "@/lib/auth/identity";
-import { getOwnPaymentRequest, submitPaymentRequest, paymentErrorStatus } from "@/lib/payments";
-import { MAX_RECEIPT_BYTES, storeReceipt } from "@/lib/payment-storage";
+import { getOwnPaymentSubmission, submitPaymentRequest, paymentErrorStatus } from "@/lib/payments";
+import { deleteReceipt, MAX_RECEIPT_BYTES, storeReceipt } from "@/lib/payment-storage";
 import { listActivePaymentDestinations } from "@/lib/payment-destinations";
+import { submitStoredReceipt } from "@/lib/payment-receipt-submission";
 
 export const dynamic = "force-dynamic";
 
@@ -35,28 +36,31 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const amount = Number(amountPaid);
     if (!Number.isInteger(amount) || amount < 0) return Response.json({ error: "Valid amount is required" }, { status: 400 });
 
-    const payment = await getOwnPaymentRequest(identity, id);
+    const payment = await getOwnPaymentSubmission(identity, id);
     if (!payment) return Response.json({ error: "Payment request not found" }, { status: 404 });
     if (amount !== payment.priceEgpSnapshot) return Response.json({ error: "Payment amount does not match plan price" }, { status: 400 });
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-    const receipt = await storeReceipt(payment.userId, id, buffer, file.type);
-
-    const submittedPayment = await submitPaymentRequest(
-      identity,
-      id,
-      { key: receipt.key, mime: file.type, size: receipt.size, checksum: receipt.checksum },
-      {
-        paymentMethod,
-        amountPaid: amount,
-        referenceNumber: typeof referenceNumber === "string" ? referenceNumber : undefined,
-        payerName: typeof payerName === "string" ? payerName : undefined,
-        payerPhoneMasked: typeof payerPhone === "string" && payerPhone.replace(/\D/g, "").length > 0
-          ? `••••${payerPhone.replace(/\D/g, "").slice(-4)}`
-          : undefined,
-      },
-    );
+    const submittedPayment = await submitStoredReceipt({
+      previousReceiptKey: payment.receiptKey,
+      store: () => storeReceipt(payment.userId, id, buffer, file.type),
+      submit: (receipt) => submitPaymentRequest(
+        identity,
+        id,
+        receipt,
+        {
+          paymentMethod,
+          amountPaid: amount,
+          referenceNumber: typeof referenceNumber === "string" ? referenceNumber : undefined,
+          payerName: typeof payerName === "string" ? payerName : undefined,
+          payerPhoneMasked: typeof payerPhone === "string" && payerPhone.replace(/\D/g, "").length > 0
+            ? `••••${payerPhone.replace(/\D/g, "").slice(-4)}`
+            : undefined,
+        },
+      ),
+      discard: deleteReceipt,
+    });
     return Response.json({ payment: submittedPayment });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to submit payment";

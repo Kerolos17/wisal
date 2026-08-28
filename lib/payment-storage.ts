@@ -1,12 +1,8 @@
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { getBucket } from "@/lib/wisal-storage";
 
 const ALLOWED_MIME = new Set(["image/jpeg", "image/png", "image/webp", "application/pdf"]);
 export const MAX_RECEIPT_BYTES = 5 * 1024 * 1024; // 5 MB
-
-function receiptKeyFor(userId: string, id: string, ext: string) {
-  return `receipts/${userId}/${id}.${ext}`;
-}
 
 function extFromMime(mime: string): string | null {
   switch (mime) {
@@ -18,9 +14,13 @@ function extFromMime(mime: string): string | null {
   }
 }
 
-export async function storeReceipt(userId: string, id: string, buffer: Buffer, mime: string): Promise<{ key: string; size: number; checksum: string }> {
+export function createReceiptStorageKey(userId: string, id: string, mime: string, attemptId: string = randomUUID()) {
   const ext = extFromMime(mime);
   if (!ext) throw new Error("Invalid receipt file type");
+  return `receipts/${userId}/${id}/${attemptId}.${ext}`;
+}
+
+export async function storeReceipt(userId: string, id: string, buffer: Buffer, mime: string): Promise<{ key: string; mime: string; size: number; checksum: string }> {
   if (!ALLOWED_MIME.has(mime)) throw new Error("Invalid receipt file type");
   if (buffer.byteLength > MAX_RECEIPT_BYTES) throw new Error("Receipt file is too large");
 
@@ -28,10 +28,15 @@ export async function storeReceipt(userId: string, id: string, buffer: Buffer, m
   if (!verifyMagicBytes(buffer, mime)) throw new Error("Receipt content does not match its type");
 
   const checksum = createHash("sha256").update(buffer).digest("hex");
-  const key = receiptKeyFor(userId, id, ext);
+  const key = createReceiptStorageKey(userId, id, mime);
   const arrayBuffer = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer;
   await getBucket().put(key, arrayBuffer, { httpMetadata: { contentType: mime } });
-  return { key, size: buffer.byteLength, checksum };
+  return { key, mime, size: buffer.byteLength, checksum };
+}
+
+export async function deleteReceipt(key: string) {
+  if (!key.startsWith("receipts/")) throw new Error("Invalid receipt key");
+  await getBucket().delete(key);
 }
 
 export async function readReceipt(key: string): Promise<{ body: Blob; contentType: string } | null> {

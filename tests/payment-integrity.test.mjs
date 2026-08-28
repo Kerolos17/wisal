@@ -11,9 +11,11 @@ describe("manual payment integrity contracts", () => {
     const source = read("app/api/payments/[id]/submit/route.ts");
     assert.match(source, /content-length/);
     assert.match(source, /file\.size > MAX_RECEIPT_BYTES/);
-    assert.ok(source.indexOf("getOwnPaymentRequest(identity, id)") < source.indexOf("storeReceipt("));
+    assert.ok(source.indexOf("getOwnPaymentSubmission(identity, id)") < source.indexOf("storeReceipt("));
     assert.match(source, /amount !== payment\.priceEgpSnapshot/);
     assert.match(source, /storeReceipt\(payment\.userId, id/);
+    assert.match(source, /submitStoredReceipt/);
+    assert.match(source, /discard: deleteReceipt/);
   });
 
   it("uses a transaction and status guards for approval", () => {
@@ -77,6 +79,8 @@ describe("manual payment integrity contracts", () => {
     assert.match(checkout, /destinations/);
     assert.match(checkout, /Copy transfer details/);
     assert.match(checkout, /paymentUrl/);
+    assert.match(checkout, /aria-haspopup="dialog"/);
+    assert.match(checkout, /onKeyDown=\{trapQrFocus\}/);
     assert.match(checkout, /payment-destinations\/\$\{destination\.method\}\/qr/);
     assert.match(schema, /paymentUrl: text\("payment_url"\)/);
     assert.match(schema, /qrKey: text\("qr_key"\)/);
