@@ -116,6 +116,33 @@ const templates: PublicTemplate[] = [
 // offered as new choices in the studio or public catalogue.
 const atelierTemplates = templates.slice(0, 6);
 
+const atelierDirections = {
+  "love-poem": {
+    ar: { material: "ورق قطني دافئ", composition: "قوس تحريري", moment: "كشف هادئ" },
+    en: { material: "Warm cotton paper", composition: "Editorial arch", moment: "Quiet reveal" },
+  },
+  "garden-night": {
+    ar: { material: "أزهار مائية", composition: "حديقة مؤطرة", moment: "رسالة داخل ظرف" },
+    en: { material: "Watercolour blooms", composition: "Framed garden", moment: "Letter in an envelope" },
+  },
+  moonlight: {
+    ar: { material: "زجاج قمري", composition: "طبقات ضوء", moment: "بطاقة شفافة" },
+    en: { material: "Moonlit glass", composition: "Layers of light", moment: "Translucent card" },
+  },
+  "golden-vows": {
+    ar: { material: "ورق شامبانيا", composition: "إطار ذهبي", moment: "ختم احتفالي" },
+    en: { material: "Champagne paper", composition: "Gilded frame", moment: "Ceremonial seal" },
+  },
+  "white-story": {
+    ar: { material: "ورق أبيض صافي", composition: "فراغ محسوب", moment: "اسم أولًا" },
+    en: { material: "Pure white stock", composition: "Measured space", moment: "Names first" },
+  },
+  "cinema-night": {
+    ar: { material: "فيلم ليلي", composition: "لقطة ممتدة", moment: "ستارة سينمائية" },
+    en: { material: "Nocturnal film", composition: "Full-bleed frame", moment: "Cinematic curtain" },
+  },
+} as const;
+
 function InvitationSpecimen({ template, brideName, groomName, date, venue, city, locale, phone = false }: { template: PublicTemplate; brideName: string; groomName: string; date: string; venue?: string; city?: string; locale: Locale; phone?: boolean }) {
   const ar = locale === "ar";
   const couple = `${brideName || (ar ? "العروس" : "Bride")} ${ar ? "و" : "&"} ${groomName || (ar ? "العريس" : "Groom")}`;
@@ -596,6 +623,7 @@ function Landing({ locale, plans, templates, content, onStart, onGuest, onChoose
   const showcaseTemplates = ["love-poem", "garden-night", "moonlight", "golden-vows", "white-story", "cinema-night"].map((code) => templates.find((template) => template.code === code) ?? atelierTemplates.find((template) => template.code === code)).filter(Boolean) as PublicTemplate[];
   const [previewTemplateCode, setPreviewTemplateCode] = useState("love-poem");
   const previewTemplate = showcaseTemplates.find((template) => template.code === previewTemplateCode) ?? showcaseTemplates[0];
+  const previewDirection = atelierDirections[previewTemplate?.code as keyof typeof atelierDirections];
   return (
     <div className="atlas-home">
       <section className="atlas-hero">
@@ -655,6 +683,11 @@ function Landing({ locale, plans, templates, content, onStart, onGuest, onChoose
             <h3>{ar ? previewTemplate.name : previewTemplate.enName}</h3>
             <p>{ar ? previewTemplate.description : previewTemplate.enDescription}</p>
             <span>{ar ? previewTemplate.tag : previewTemplate.enTag}</span>
+            {previewDirection && <dl className="atlas-template-directions" aria-label={ar ? "هوية التصميم" : "Design identity"}>
+              <div><dt>{ar ? "الخامة" : "Material"}</dt><dd>{previewDirection[ar ? "ar" : "en"].material}</dd></div>
+              <div><dt>{ar ? "التكوين" : "Composition"}</dt><dd>{previewDirection[ar ? "ar" : "en"].composition}</dd></div>
+              <div><dt>{ar ? "الافتتاح" : "Opening"}</dt><dd>{previewDirection[ar ? "ar" : "en"].moment}</dd></div>
+            </dl>}
             <div className="atlas-template-path" aria-label={ar ? "رحلة هذا القالب" : "This template journey"}>
               <span>{ar ? "فتح" : "Open"}</span>
               <span>{ar ? "تفاصيل" : "Details"}</span>

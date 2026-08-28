@@ -1,4 +1,4 @@
-import { describe, it, after } from "node:test";
+import { describe, it, after, before } from "node:test";
 import { randomUUID } from "node:crypto";
 import assert from "node:assert/strict";
 import { getDb } from "@/db";
@@ -6,9 +6,10 @@ import { users, events, guests, userSubscriptions } from "@/db/schema";
 import { eq, count } from "drizzle-orm";
 import { addGuest, importGuests, createEvent } from "@/lib/wisal-data";
 import { getGuestLimitForOwnerEmail, getGuestLimitForUser } from "@/lib/payments";
+import { configurePaymentTestEnvironment } from "./helpers/payment-test-environment.mjs";
+import { ensurePaymentTestPlans } from "./helpers/payment-test-data";
 
-const url = process.env.DATABASE_URL;
-if (!url) throw new Error("DATABASE_URL required for guest-limit tests");
+configurePaymentTestEnvironment();
 
 function fakeEmail(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
@@ -17,6 +18,8 @@ function fakeEmail(prefix: string) {
 describe("guest limit enforcement (Phase 1.1)", () => {
   const createdUserIds: string[] = [];
   const createdEventIds: string[] = [];
+
+  before(async () => { await ensurePaymentTestPlans(); });
 
   async function makeUser(email: string, planCode?: "starter" | "signature") {
     await getDb().insert(users).values({ email, displayName: "GL", role: "couple" }).onConflictDoNothing();

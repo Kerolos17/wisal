@@ -31,11 +31,11 @@ export function paymentErrorStatus(error: unknown): number {
   if (code === "FORBIDDEN") return 403;
   const message = error instanceof Error ? error.message : "";
   if (message === "Forbidden" || message === "Referenced plan is unavailable" || message === "Plan price has changed since request") return 403;
+  if (message === "Payment request is not in a submittable state") return 409;
   if (
     message === "Plan not found" ||
     message === "Plan is not available" ||
     message === "Plan duration is not configured" ||
-    message === "Payment request is not in a submittable state" ||
     message === "Payment request cannot be cancelled" ||
     message === "User account not found" ||
     message === "Payment amount is invalid" ||
@@ -187,6 +187,21 @@ export async function getOwnPaymentRequest(identity: PlatformIdentity, id: strin
   const [request] = await db.select().from(paymentRequests).where(eq(paymentRequests.id, id)).limit(1);
   if (!request || request.userId !== user.id) return null;
   return serializePayment(request);
+}
+
+/** Server-only view used while replacing a private receipt. */
+export async function getOwnPaymentSubmission(identity: PlatformIdentity, id: string) {
+  const db = getDb();
+  const user = await requireUser(identity);
+  const [request] = await db.select({
+    id: paymentRequests.id,
+    userId: paymentRequests.userId,
+    status: paymentRequests.status,
+    priceEgpSnapshot: paymentRequests.priceEgpSnapshot,
+    receiptKey: paymentRequests.receiptKey,
+  }).from(paymentRequests).where(eq(paymentRequests.id, id)).limit(1);
+  if (!request || request.userId !== user.id) return null;
+  return request;
 }
 
 // --- Admin: list all ---
