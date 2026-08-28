@@ -96,6 +96,7 @@ export const invitations = pgTable("invitations", {
   showCountdown: boolean("show_countdown").notNull().default(true),
   showSchedule: boolean("show_schedule").notNull().default(true),
   sectionOrder: jsonb("section_order").$type<string[]>().notNull().default(["message", "countdown", "schedule", "rsvp"]),
+  accessMode: text("access_mode", { enum: ["public", "private"] }).notNull().default("public"),
   rsvpEnabled: boolean("rsvp_enabled").notNull().default(true),
   mealQuestionEnabled: boolean("meal_question_enabled").notNull().default(true),
   maxPartySize: integer("max_party_size").notNull().default(2),
@@ -106,6 +107,7 @@ export const invitations = pgTable("invitations", {
   uniqueIndex("invitations_event_id_unique").on(table.eventId),
   check("invitations_opening_style_check", sql`${table.openingStyle} in ('envelope', 'card', 'curtain')`),
   check("invitations_layout_style_check", sql`${table.layoutStyle} in ('classic', 'story', 'cinematic')`),
+  check("invitations_access_mode_check", sql`${table.accessMode} in ('public', 'private')`),
 ]);
 
 export const platformTemplates = pgTable("platform_templates", {

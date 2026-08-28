@@ -22,6 +22,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     if (payload.status && !["draft", "published", "archived"].includes(payload.status)) return Response.json({ error: "حالة المناسبة غير صالحة" }, { status: 400 });
     if (payload.openingStyle && !["envelope", "card", "curtain"].includes(payload.openingStyle)) return Response.json({ error: "أسلوب فتح الدعوة غير صالح" }, { status: 400 });
     if (payload.layoutStyle && !["classic", "story", "cinematic"].includes(payload.layoutStyle)) return Response.json({ error: "تخطيط الدعوة غير صالح" }, { status: 400 });
+    if (payload.accessMode && !["public", "private"].includes(payload.accessMode)) return Response.json({ error: "وضع خصوصية الدعوة غير صالح" }, { status: 400 });
     if (payload.sectionOrder && (!Array.isArray(payload.sectionOrder) || payload.sectionOrder.length !== 4 || new Set(payload.sectionOrder).size !== 4 || !payload.sectionOrder.every((section: unknown) => typeof section === "string" && ["message", "countdown", "schedule", "rsvp"].includes(section)))) return Response.json({ error: "ترتيب أقسام الدعوة غير صالح" }, { status: 400 });
     const ownerEmail = await getCurrentOwnerEmail();
     if (payload.status === "published") {

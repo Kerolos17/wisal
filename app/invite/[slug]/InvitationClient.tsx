@@ -8,7 +8,7 @@ import { resolveInvitationConcept } from "@/lib/invitation-concepts";
 
 type InvitationData = {
   event: { id: string; brideName: string; groomName: string; eventDate: string; venue: string; city: string; mapUrl: string };
-  invitation: { template: string; message: string; rsvpDeadline: string | null; accentColor: string; openingStyle: "envelope" | "card" | "curtain"; layoutStyle: "classic" | "story" | "cinematic"; showMessage: boolean; showCountdown: boolean; showSchedule: boolean; sectionOrder: string[]; rsvpEnabled: boolean; mealQuestionEnabled: boolean; maxPartySize: number; coverImageKey: string | null };
+  invitation: { template: string; message: string; rsvpDeadline: string | null; accentColor: string; openingStyle: "envelope" | "card" | "curtain"; layoutStyle: "classic" | "story" | "cinematic"; showMessage: boolean; showCountdown: boolean; showSchedule: boolean; sectionOrder: string[]; accessMode: "public" | "private"; rsvpEnabled: boolean; mealQuestionEnabled: boolean; maxPartySize: number; coverImageKey: string | null };
   guest: { name: string; inviteToken: string | null; status: "yes" | "maybe" | "pending" | "no"; partySize: number; meal: string } | null;
   segments: { id: string; title: string; startsAt: string; endsAt: string | null; venueName: string; city: string; address: string; mapUrl: string }[];
   segmentRsvps: { segmentId: string; status: "yes" | "maybe" | "pending" | "no"; partySize: number }[];

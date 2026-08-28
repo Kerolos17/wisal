@@ -37,6 +37,16 @@ test("RSVP uses the personalized token and updates the exact guest", () => {
   assert.match(dataSource, /ON CONFLICT \(event_id, name\)/);
 });
 
+test("private invitations require a personalized guest token for viewing and RSVP", () => {
+  assert.match(schemaSource, /accessMode: text\("access_mode"/);
+  assert.match(dataSource, /invitation\.accessMode === "private" && !inviteToken/);
+  assert.match(dataSource, /if \(!guest\) return invitation\.accessMode === "private" \? null/);
+  assert.match(dataSource, /invitation\.accessMode === "private" && !input\.inviteToken/);
+  assert.match(dataSource, /هذه الدعوة الخاصة تحتاج رابط ضيف صالح/);
+  assert.match(rsvpRouteSource, /هذه الدعوة الخاصة تحتاج رابط ضيف صالح/);
+  assert.match(dashboardSource, /accessMode: eventData\.invitation\.accessMode/);
+});
+
 test("RSVP validates segment ownership and segment IDs before it mutates a guest", () => {
   const firstGuestWrite = dataSource.indexOf("WITH saved_guest AS");
   const segmentValidation = dataSource.indexOf("إحدى مراحل المناسبة غير صالحة");

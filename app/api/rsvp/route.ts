@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     const guest = await saveRsvp({ eventId, inviteToken: payload.inviteToken?.trim(), name, status: payload.status, partySize, meal: payload.meal?.trim() || "—", message: payload.message?.trim(), segmentResponses });
     return publicJson({ guest }, { status: 201 });
   } catch (error) {
-    const publicMessages = ["المناسبة مطلوبة", "تأكيد الحضور غير متاح لهذه الدعوة", "انتهى موعد تأكيد الحضور", "رابط الدعوة الشخصي غير صالح", "إحدى مراحل المناسبة غير صالحة", "لا تملك هذه الدعوة صلاحية الرد على إحدى المراحل"];
+    const publicMessages = ["المناسبة مطلوبة", "تأكيد الحضور غير متاح لهذه الدعوة", "انتهى موعد تأكيد الحضور", "رابط الدعوة الشخصي غير صالح", "هذه الدعوة الخاصة تحتاج رابط ضيف صالح", "إحدى مراحل المناسبة غير صالحة", "لا تملك هذه الدعوة صلاحية الرد على إحدى المراحل"];
     if (error instanceof Error && publicMessages.includes(error.message)) {
       return apiErrorResponse(error, { message: "تعذر حفظ الرد", status: 400, publicMessages });
     }

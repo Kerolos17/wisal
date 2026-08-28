@@ -5,7 +5,8 @@
     "0001_domain-checks.sql": "15cbde303ab0b0cc65dce95ebd9995c41decf47be104932a12f78c67a1e3ca77",
     "0002_media-blobs.sql": "439df11ae5ee1b5503dcd5cb5a5d58a14c0423865ee7c70260f7b7a42f821d89",
     "0003_account-message-domains.sql": "5f6ed97caddcb9a1cef3cff358ac47c9161925111decc3e123552933c7b40cc0",
-    "0004_shared-rate-limits.sql": "ad7a8d6bfdd57aaba42669be49f97cab69305c68d1026702c6fb49354daac40c"
+    "0004_shared-rate-limits.sql": "ad7a8d6bfdd57aaba42669be49f97cab69305c68d1026702c6fb49354daac40c",
+    "0005_invitation-access-mode.sql": "304d4e7d72c9f16c43f626fc2c531cc5b15916899219db718fe9537e00afbb56"
   },
   "seeds": {
     "../seeds/0001_platform_catalog.sql": "5a27486872b4f084e8d710a6f23ebbb38f7ed0e9aefb53c200e2161802540027"

@@ -35,6 +35,7 @@ export type EventInput = {
   showCountdown?: boolean;
   showSchedule?: boolean;
   sectionOrder?: string[];
+  accessMode?: "public" | "private";
   rsvpEnabled?: boolean;
   mealQuestionEnabled?: boolean;
   maxPartySize?: number;
@@ -219,7 +220,7 @@ export async function updateEvent(ownerEmail: string, eventId: string, input: Pa
   await db.update(events).set(eventPatch).where(eq(events.id, eventId));
 
   const invitationPatch: Partial<typeof invitations.$inferInsert> = {};
-  for (const key of ["template", "message", "rsvpDeadline", "accentColor", "fontStyle", "openingStyle", "layoutStyle", "showMessage", "showCountdown", "showSchedule", "sectionOrder", "rsvpEnabled", "mealQuestionEnabled", "maxPartySize", "coverImageKey"] as const) {
+  for (const key of ["template", "message", "rsvpDeadline", "accentColor", "fontStyle", "openingStyle", "layoutStyle", "showMessage", "showCountdown", "showSchedule", "sectionOrder", "accessMode", "rsvpEnabled", "mealQuestionEnabled", "maxPartySize", "coverImageKey"] as const) {
     if (input[key] !== undefined) Object.assign(invitationPatch, { [key]: input[key] });
   }
   if (Object.keys(invitationPatch).length) await db.update(invitations).set(invitationPatch).where(eq(invitations.eventId, eventId));
@@ -449,10 +450,11 @@ export async function getInvitationBySlug(slug: string, inviteToken?: string) {
   if (!event || event.status !== "published") return null;
   const [invitation] = await db.select().from(invitations).where(eq(invitations.eventId, event.id)).limit(1);
   if (!invitation) return null;
+  if (invitation.accessMode === "private" && !inviteToken) return null;
   const allSegments = await db.select().from(eventSegments).where(eq(eventSegments.eventId, event.id)).orderBy(asc(eventSegments.position), asc(eventSegments.startsAt));
   if (!inviteToken) return { event, invitation, guest: null, segments: allSegments, segmentRsvps: [] };
   const [guest] = await db.select().from(guests).where(and(eq(guests.eventId, event.id), eq(guests.inviteToken, inviteToken))).limit(1);
-  if (!guest) return { event, invitation, guest: null, segments: allSegments, segmentRsvps: [] };
+  if (!guest) return invitation.accessMode === "private" ? null : { event, invitation, guest: null, segments: allSegments, segmentRsvps: [] };
   const [membership] = await db.select().from(guestGroupMemberships).where(eq(guestGroupMemberships.guestId, guest.id)).limit(1);
   const directRules = await db.select().from(guestSegmentAccess).where(eq(guestSegmentAccess.guestId, guest.id));
   const groupRules = membership ? await db.select().from(guestSegmentAccess).where(eq(guestSegmentAccess.groupId, membership.groupId)) : [];
@@ -491,6 +493,7 @@ export async function saveRsvp(input: {
   const [event] = await db.select().from(events).where(eq(events.id, eventId)).limit(1);
   const [invitation] = await db.select().from(invitations).where(eq(invitations.eventId, eventId)).limit(1);
   if (!event || event.status !== "published" || !invitation?.rsvpEnabled) throw new Error("تأكيد الحضور غير متاح لهذه الدعوة");
+  if (invitation.accessMode === "private" && !input.inviteToken) throw new Error("هذه الدعوة الخاصة تحتاج رابط ضيف صالح");
   if (invitation.rsvpDeadline) {
     const deadline = new Date(`${invitation.rsvpDeadline}T23:59:59+03:00`);
     if (!Number.isNaN(deadline.getTime()) && Date.now() > deadline.getTime()) throw new Error("انتهى موعد تأكيد الحضور");
