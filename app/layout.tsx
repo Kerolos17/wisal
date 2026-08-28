@@ -10,11 +10,11 @@ import "@fontsource-variable/manrope";
 import "@fontsource-variable/cormorant-garamond";
 import "./globals.css";
 import "./wisal-atlas.css";
-
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://wisal-wedding.vercel.app";
+import { siteUrl } from "@/lib/site-url";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
+  alternates: { canonical: "/" },
   title: "Wisal | Digital Wedding Invitations",
   description: "Create a beautiful digital invitation, share it with the people you love, and manage every RSVP in one place.",
   icons: {
@@ -27,6 +27,7 @@ export const metadata: Metadata = {
   },
   manifest: "/manifest.webmanifest",
   openGraph: {
+    url: "/",
     title: "Wisal | Digital Wedding Invitations",
     description: "Create a beautiful digital invitation, share it with the people you love, and manage every RSVP in one place.",
     type: "website",

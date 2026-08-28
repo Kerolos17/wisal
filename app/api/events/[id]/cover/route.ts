@@ -1,6 +1,7 @@
 import { getCurrentOwnerEmail } from "@/lib/current-owner";
 import { getEventOverview, updateEvent } from "@/lib/wisal-data";
 import { getBucket } from "@/lib/wisal-storage";
+import { apiErrorResponse } from "@/lib/api-error";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +25,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     if (previousKey) await getBucket().delete(previousKey);
     return Response.json(updated);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "تعذر رفع صورة الغلاف";
-    return Response.json({ error: message }, { status: 500 });
+    return apiErrorResponse(error, { message: "تعذر رفع صورة الغلاف" });
   }
 }

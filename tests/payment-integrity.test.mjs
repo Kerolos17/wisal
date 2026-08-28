@@ -122,11 +122,11 @@ describe("manual payment integrity contracts", () => {
     assert.match(admin, /Payment receiving details/);
   });
 
-  it("does not gate public platform content on the admin owner secret", () => {
+  it("keeps public platform content read-only and independent from the admin owner secret", () => {
     const source = read("lib/admin-data.ts");
     const publicConfig = source.slice(source.indexOf("export async function getPublicPlatformConfig"));
-    assert.match(source, /async function ensurePublicPlatformData/);
-    assert.match(publicConfig, /ensurePublicPlatformData\(\)/);
+    assert.doesNotMatch(source, /async function ensurePublicPlatformData/);
+    assert.doesNotMatch(publicConfig, /\.insert\(|\.update\(|\.delete\(/);
     assert.doesNotMatch(publicConfig, /ensurePlatformData\(\)/);
   });
 });

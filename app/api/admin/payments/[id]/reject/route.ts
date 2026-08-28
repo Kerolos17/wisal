@@ -1,6 +1,7 @@
 import { getPlatformIdentity } from "@/lib/auth/identity";
-import { rejectPaymentRequest, paymentErrorStatus } from "@/lib/payments";
+import { rejectPaymentRequest } from "@/lib/payments";
 import { forbiddenUnless } from "@/lib/admin-auth";
+import { paymentApiErrorResponse } from "@/lib/payment-api-error";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +21,6 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const payment = await rejectPaymentRequest(identity, id, body.statusVersion, body.reason.trim());
     return Response.json({ payment });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to reject payment";
-    return Response.json({ error: message }, { status: paymentErrorStatus(error) });
+    return paymentApiErrorResponse(error, "Unable to reject payment");
   }
 }

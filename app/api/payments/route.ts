@@ -1,5 +1,6 @@
 import { getPlatformIdentity } from "@/lib/auth/identity";
-import { createPaymentRequest, paymentErrorStatus } from "@/lib/payments";
+import { createPaymentRequest } from "@/lib/payments";
+import { paymentApiErrorResponse } from "@/lib/payment-api-error";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,6 @@ export async function POST(request: Request) {
     const payment = await createPaymentRequest(identity, { planCode: body.planCode, idempotencyKey: body.idempotencyKey });
     return Response.json({ payment }, { status: 201 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to create payment request";
-    return Response.json({ error: message }, { status: paymentErrorStatus(error) });
+    return paymentApiErrorResponse(error, "Unable to create payment request");
   }
 }

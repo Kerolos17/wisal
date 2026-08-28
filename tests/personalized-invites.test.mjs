@@ -36,6 +36,18 @@ test("RSVP uses the personalized token and updates the exact guest", () => {
   assert.match(dataSource, /respondedAt: updatedAt/);
 });
 
+test("RSVP validates segment ownership and segment IDs before it mutates a guest", () => {
+  const firstGuestWrite = dataSource.indexOf("let savedGuest = personalizedGuest");
+  const segmentValidation = dataSource.indexOf("إحدى مراحل المناسبة غير صالحة");
+  const accessValidation = dataSource.indexOf("لا تملك هذه الدعوة صلاحية الرد على إحدى المراحل");
+
+  assert.ok(firstGuestWrite > 0);
+  assert.ok(segmentValidation > 0 && segmentValidation < firstGuestWrite);
+  assert.ok(accessValidation > 0 && accessValidation < firstGuestWrite);
+  assert.match(rsvpRouteSource, /"إحدى مراحل المناسبة غير صالحة"/);
+  assert.match(rsvpRouteSource, /"لا تملك هذه الدعوة صلاحية الرد على إحدى المراحل"/);
+});
+
 test("dashboard exposes copy, WhatsApp sharing, and invitation analytics", () => {
   assert.match(dashboardSource, /\?g=\$\{encodeURIComponent\(guest\.inviteToken\)\}/);
   assert.match(dashboardSource, /navigator\.clipboard\.writeText\(text\)/);

@@ -1,5 +1,6 @@
 import { getCurrentOwnerEmail } from "@/lib/current-owner";
 import { createMessage } from "@/lib/wisal-data";
+import { apiErrorResponse } from "@/lib/api-error";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +13,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const event = await createMessage(await getCurrentOwnerEmail(), id, payload);
     return event ? Response.json(event, { status: 201 }) : Response.json({ error: "المناسبة غير موجودة" }, { status: 404 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "تعذر حفظ الرسالة";
-    return Response.json({ error: message }, { status: 500 });
+    return apiErrorResponse(error, { message: "تعذر حفظ الرسالة" });
   }
 }

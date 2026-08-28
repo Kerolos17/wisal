@@ -1,5 +1,6 @@
 import { getCurrentOwnerEmail } from "@/lib/current-owner";
 import { importGuests } from "@/lib/wisal-data";
+import { apiErrorResponse } from "@/lib/api-error";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const event = await importGuests(await getCurrentOwnerEmail(), id, rows);
     return event ? Response.json(event, { status: 201 }) : Response.json({ error: "المناسبة غير موجودة" }, { status: 404 });
   } catch (error) {
-    return Response.json({ error: error instanceof Error ? error.message : "تعذر استيراد الضيوف" }, { status: (error as { code?: string }).code === "GUEST_LIMIT" || (error as { code?: string }).code === "CONFLICT" ? 409 : 500 });
+    return apiErrorResponse(error, {
+      message: "تعذر استيراد الضيوف",
+      messageByCode: { GUEST_LIMIT: "تجاوزت الحد الأقصى للضيوف في باقتك", CONFLICT: "يتضمن الملف ضيوفًا مكررين" },
+      statusByCode: { GUEST_LIMIT: 409, CONFLICT: 409 },
+    });
   }
 }

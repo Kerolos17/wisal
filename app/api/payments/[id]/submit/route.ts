@@ -1,8 +1,9 @@
 import { getPlatformIdentity } from "@/lib/auth/identity";
-import { getOwnPaymentSubmission, submitPaymentRequest, paymentErrorStatus } from "@/lib/payments";
+import { getOwnPaymentSubmission, submitPaymentRequest } from "@/lib/payments";
 import { deleteReceipt, MAX_RECEIPT_BYTES, storeReceipt } from "@/lib/payment-storage";
 import { listActivePaymentDestinations } from "@/lib/payment-destinations";
 import { submitStoredReceipt } from "@/lib/payment-receipt-submission";
+import { paymentApiErrorResponse } from "@/lib/payment-api-error";
 
 export const dynamic = "force-dynamic";
 
@@ -63,7 +64,6 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     });
     return Response.json({ payment: submittedPayment });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to submit payment";
-    return Response.json({ error: message }, { status: paymentErrorStatus(error) });
+    return paymentApiErrorResponse(error, "Unable to submit payment");
   }
 }

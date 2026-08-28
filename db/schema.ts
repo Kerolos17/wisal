@@ -1,7 +1,8 @@
 import { sql } from "drizzle-orm";
-import { boolean, check, date, index, integer, jsonb, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
+import { boolean, check, customType, date, index, integer, jsonb, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 
 const now = sql`now()`;
+const bytea = customType<{ data: Buffer }>({ dataType: () => "bytea" });
 
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -12,7 +13,20 @@ export const users = pgTable("users", {
   locale: text("locale").notNull().default("ar"),
   createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).notNull().default(now),
   updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).notNull().default(now),
-});
+}, (table) => [
+  check("users_role_check", sql`${table.role} in ('admin', 'support', 'content_manager', 'couple')`),
+  check("users_locale_check", sql`${table.locale} in ('ar', 'en')`),
+]);
+
+export const rateLimitWindows = pgTable("rate_limit_windows", {
+  key: text("key").primaryKey(),
+  count: integer("count").notNull().default(0),
+  resetAt: timestamp("reset_at", { withTimezone: true, mode: "string" }).notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).notNull().default(now),
+}, (table) => [
+  index("rate_limit_windows_reset_at_idx").on(table.resetAt),
+  check("rate_limit_windows_count_positive", sql`${table.count} >= 0`),
+]);
 
 export const events = pgTable("events", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -31,7 +45,11 @@ export const events = pgTable("events", {
   publishedAt: timestamp("published_at", { withTimezone: true, mode: "string" }),
   createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).notNull().default(now),
   updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).notNull().default(now),
-}, (table) => [index("events_owner_id_idx").on(table.ownerId)]);
+}, (table) => [
+  index("events_owner_id_idx").on(table.ownerId),
+  check("events_status_check", sql`${table.status} in ('draft', 'published', 'archived')`),
+  check("events_default_locale_check", sql`${table.defaultLocale} in ('ar', 'en')`),
+]);
 
 export const eventSegments = pgTable("event_segments", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -49,6 +67,7 @@ export const eventSegments = pgTable("event_segments", {
   updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).notNull().default(now),
 }, (table) => [
   index("event_segments_event_position_idx").on(table.eventId, table.position),
+  check("event_segments_kind_check", sql`${table.kind} in ('ceremony', 'reception', 'dinner', 'party', 'session', 'other')`),
 ]);
 
 export const guestGroups = pgTable("guest_groups", {
@@ -83,7 +102,11 @@ export const invitations = pgTable("invitations", {
   coverImageKey: text("cover_image_key"),
   createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).notNull().default(now),
   updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).notNull().default(now),
-}, (table) => [uniqueIndex("invitations_event_id_unique").on(table.eventId)]);
+}, (table) => [
+  uniqueIndex("invitations_event_id_unique").on(table.eventId),
+  check("invitations_opening_style_check", sql`${table.openingStyle} in ('envelope', 'card', 'curtain')`),
+  check("invitations_layout_style_check", sql`${table.layoutStyle} in ('classic', 'story', 'cinematic')`),
+]);
 
 export const platformTemplates = pgTable("platform_templates", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -145,7 +168,13 @@ export const supportTickets = pgTable("support_tickets", {
   resolution: text("resolution").notNull().default(""),
   createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).notNull().default(now),
   updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).notNull().default(now),
-}, (table) => [index("support_tickets_user_created_idx").on(table.userId, table.createdAt), index("support_tickets_status_priority_idx").on(table.status, table.priority)]);
+}, (table) => [
+  index("support_tickets_user_created_idx").on(table.userId, table.createdAt),
+  index("support_tickets_status_priority_idx").on(table.status, table.priority),
+  check("support_tickets_category_check", sql`${table.category} in ('account', 'invitation', 'guests', 'technical', 'billing', 'other')`),
+  check("support_tickets_priority_check", sql`${table.priority} in ('normal', 'high', 'urgent')`),
+  check("support_tickets_status_check", sql`${table.status} in ('open', 'in_progress', 'resolved', 'closed')`),
+]);
 
 export const userNotifications = pgTable("user_notifications", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -158,7 +187,11 @@ export const userNotifications = pgTable("user_notifications", {
   actionHref: text("action_href").notNull().default(""),
   readAt: timestamp("read_at", { withTimezone: true, mode: "string" }),
   createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).notNull().default(now),
-}, (table) => [index("user_notifications_user_created_idx").on(table.userId, table.createdAt), index("user_notifications_user_read_idx").on(table.userId, table.readAt)]);
+}, (table) => [
+  index("user_notifications_user_created_idx").on(table.userId, table.createdAt),
+  index("user_notifications_user_read_idx").on(table.userId, table.readAt),
+  check("user_notifications_kind_check", sql`${table.kind} in ('info', 'success', 'warning', 'support')`),
+]);
 
 export const guests = pgTable("guests", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -169,7 +202,13 @@ export const guests = pgTable("guests", {
   partySize: integer("party_size").notNull().default(1), meal: text("meal").notNull().default("—"), message: text("message").notNull().default(""),
   openedAt: timestamp("opened_at", { withTimezone: true, mode: "string" }), respondedAt: timestamp("responded_at", { withTimezone: true, mode: "string" }),
   createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).notNull().default(now), updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).notNull().default(now),
-}, (table) => [uniqueIndex("guests_event_name_unique").on(table.eventId, table.name), uniqueIndex("guests_invite_token_unique").on(table.inviteToken), index("guests_event_status_idx").on(table.eventId, table.status)]);
+}, (table) => [
+  uniqueIndex("guests_event_name_unique").on(table.eventId, table.name),
+  uniqueIndex("guests_invite_token_unique").on(table.inviteToken),
+  index("guests_event_status_idx").on(table.eventId, table.status),
+  check("guests_status_check", sql`${table.status} in ('yes', 'maybe', 'pending', 'no')`),
+  check("guests_party_size_positive", sql`${table.partySize} > 0`),
+]);
 
 export const guestGroupMemberships = pgTable("guest_group_memberships", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -210,6 +249,7 @@ export const segmentRsvps = pgTable("segment_rsvps", {
 }, (table) => [
   uniqueIndex("segment_rsvps_guest_segment_unique").on(table.guestId, table.segmentId),
   index("segment_rsvps_segment_status_idx").on(table.segmentId, table.status),
+  check("segment_rsvps_status_check", sql`${table.status} in ('yes', 'maybe', 'pending', 'no')`),
   check("segment_rsvps_party_size_positive", sql`${table.partySize} > 0`),
 ]);
 
@@ -224,9 +264,15 @@ export const messages = pgTable("messages", {
   title: text("title").notNull(), body: text("body").notNull(), audience: text("audience", { enum: ["all", "pending", "confirmed", "unopened", "opened_pending", "maybe", "declined"] }).notNull().default("all"),
   groupId: uuid("group_id").references(() => guestGroups.id, { onDelete: "set null" }),
   segmentId: uuid("segment_id").references(() => eventSegments.id, { onDelete: "set null" }),
-  status: text("status", { enum: ["draft", "scheduled"] }).notNull().default("draft"), scheduledAt: timestamp("scheduled_at", { withTimezone: true, mode: "string" }), sentAt: timestamp("sent_at", { withTimezone: true, mode: "string" }),
+  status: text("status", { enum: ["draft", "scheduled", "sent", "failed"] }).notNull().default("draft"), scheduledAt: timestamp("scheduled_at", { withTimezone: true, mode: "string" }), sentAt: timestamp("sent_at", { withTimezone: true, mode: "string" }),
   createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).notNull().default(now),
-}, (table) => [index("messages_event_created_idx").on(table.eventId, table.createdAt), index("messages_event_group_idx").on(table.eventId, table.groupId), index("messages_event_segment_idx").on(table.eventId, table.segmentId)]);
+}, (table) => [
+  index("messages_event_created_idx").on(table.eventId, table.createdAt),
+  index("messages_event_group_idx").on(table.eventId, table.groupId),
+  index("messages_event_segment_idx").on(table.eventId, table.segmentId),
+  check("messages_audience_check", sql`${table.audience} in ('all', 'pending', 'confirmed', 'unopened', 'opened_pending', 'maybe', 'declined')`),
+  check("messages_status_check", sql`${table.status} in ('draft', 'scheduled', 'sent', 'failed')`),
+]);
 
 // --- Phase 1: Manual payment domain ---
 
@@ -251,7 +297,10 @@ export const paymentDestinations = pgTable("payment_destinations", {
   position: integer("position").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).notNull().default(now),
   updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).notNull().default(now),
-}, (table) => [index("payment_destinations_active_position_idx").on(table.active, table.position)]);
+}, (table) => [
+  index("payment_destinations_active_position_idx").on(table.active, table.position),
+  check("payment_destinations_method_check", sql`${table.method} in ('instapay', 'vodafone_cash', 'orange_cash', 'etisalat_cash', 'bank_transfer')`),
+]);
 
 export const paymentRequests = pgTable("payment_requests", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -295,6 +344,8 @@ export const paymentRequests = pgTable("payment_requests", {
 }, (table) => [
   // Only one pending_review request per user at a time
   uniqueIndex("payment_requests_user_pending_idx").on(table.userId).where(sql`${table.status} = 'pending_review'`),
+  check("payment_requests_status_check", sql`${table.status} in ('draft', 'pending_review', 'needs_info', 'rejected', 'approved', 'cancelled')`),
+  check("payment_requests_method_check", sql`${table.paymentMethod} is null or ${table.paymentMethod} in ('instapay', 'vodafone_cash', 'orange_cash', 'etisalat_cash', 'bank_transfer')`),
 ]);
 
 export const subscriptionStatus = ["active", "expired", "cancelled", "suspended"] as const;
@@ -312,6 +363,7 @@ export const userSubscriptions = pgTable("user_subscriptions", {
 }, (table) => [
   index("user_subscriptions_user_status_idx").on(table.userId, table.status),
   uniqueIndex("user_subscriptions_one_active_idx").on(table.userId).where(sql`${table.status} = 'active'`),
+  check("user_subscriptions_status_check", sql`${table.status} in ('active', 'expired', 'cancelled', 'suspended')`),
 ]);
 
 export const paymentAuditLogs = pgTable("payment_audit_logs", {
@@ -325,4 +377,16 @@ export const paymentAuditLogs = pgTable("payment_audit_logs", {
 }, (table) => [
   index("payment_audit_logs_created_idx").on(table.createdAt),
   index("payment_audit_logs_payment_idx").on(table.paymentRequestId),
+]);
+
+export const mediaBlobs = pgTable("media_blobs", {
+  key: text("key").primaryKey(),
+  data: bytea("data").notNull(),
+  contentType: text("content_type").notNull().default("application/octet-stream"),
+  etag: text("etag").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).notNull().default(now),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).notNull().default(now),
+}, (table) => [
+  index("media_blobs_updated_at_idx").on(table.updatedAt),
+  check("media_blobs_size_limit", sql`octet_length(${table.data}) <= 5242880`),
 ]);

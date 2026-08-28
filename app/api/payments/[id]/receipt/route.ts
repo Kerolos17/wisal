@@ -1,6 +1,7 @@
 import { getPlatformIdentity } from "@/lib/auth/identity";
 import { getOwnPaymentRequest } from "@/lib/payments";
 import { readReceipt } from "@/lib/payment-storage";
+import { apiErrorResponse } from "@/lib/api-error";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +33,6 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       },
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to load receipt";
-    return new Response(message, { status: 500 });
+    return apiErrorResponse(error, { message: "Unable to load receipt" });
   }
 }

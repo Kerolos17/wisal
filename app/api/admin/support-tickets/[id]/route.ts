@@ -1,6 +1,7 @@
 import { forbiddenUnless } from "@/lib/admin-auth";
 import { getCurrentOwnerEmail } from "@/lib/current-owner";
 import { updateSupportTicket } from "@/lib/support-data";
+import { apiErrorResponse } from "@/lib/api-error";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -8,5 +9,5 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const { id } = await params;
     const ticket = await updateSupportTicket(await getCurrentOwnerEmail(), id, await request.json());
     return ticket ? Response.json(ticket) : Response.json({ error: "Ticket not found" }, { status: 404 });
-  } catch (error) { return Response.json({ error: error instanceof Error ? error.message : "Unable to update support ticket" }, { status: 400 }); }
+  } catch (error) { return apiErrorResponse(error, { message: "Unable to update support ticket", status: 400, publicMessages: ["Invalid ticket update"] }); }
 }

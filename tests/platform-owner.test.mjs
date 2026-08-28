@@ -189,6 +189,14 @@ test("account-data: owner email gets admin role on account creation", async () =
   assert.match(source, /isPlatformOwner\(email\) \? "admin" : "couple"/);
 });
 
+test("account-data: an existing owner is promoted before administration authorization", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const source = await readFile(new URL("../lib/account-data.ts", import.meta.url), "utf8");
+  const existingBranch = source.slice(source.indexOf("if (existing)"), source.indexOf("const [created]"));
+  assert.match(existingBranch, /isPlatformOwner\(email\) \? "admin" : existing\.role/);
+  assert.match(existingBranch, /set\(\{ displayName: identity\.displayName, role,/);
+});
+
 test("admin-auth: permission matrix covers all roles", async () => {
   const { readFile } = await import("node:fs/promises");
   const source = await readFile(new URL("../lib/admin-auth.ts", import.meta.url), "utf8");

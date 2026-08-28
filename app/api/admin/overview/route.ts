@@ -1,5 +1,6 @@
 import { getAdminOverview } from "@/lib/admin-data";
 import { forbiddenUnless } from "@/lib/admin-auth";
+import { apiErrorResponse } from "@/lib/api-error";
 
 export const dynamic = "force-dynamic";
 
@@ -8,6 +9,6 @@ export async function GET() {
     const forbidden = await forbiddenUnless("overview.read"); if (forbidden) return forbidden;
     return Response.json(await getAdminOverview());
   } catch (error) {
-    return Response.json({ error: error instanceof Error ? error.message : "Unable to load admin overview" }, { status: 500 });
+    return apiErrorResponse(error, { message: "Unable to load admin overview" });
   }
 }

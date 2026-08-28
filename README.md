@@ -34,4 +34,10 @@ npm run build
 
 The production project is deployed on Vercel from the `main` branch. Configure the variables listed in `.env.example` for Production, Preview, and Development as appropriate.
 
-Database migrations are stored under `db/neon-migrations/`. Apply them to an isolated Neon branch first, then to production after validation.
+The canonical fresh-database PostgreSQL history is under
+`db/postgres-migrations/` and can be checked with `npm run db:verify`. Production
+migration remains behind a safety gate until the baseline and legacy upgrade
+path are validated on isolated Neon branches. Do not bypass `npm run db:migrate`. Follow
+`docs/release/PHASE-1-DATABASE-MIGRATION-AUDIT.md`, validate the final ordered
+history on an isolated Neon branch, and obtain explicit approval before applying
+it to production.

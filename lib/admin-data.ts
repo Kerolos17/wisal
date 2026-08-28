@@ -7,47 +7,9 @@ import { getPlatformOwnerEmail, isPlatformOwner } from "@/lib/platform-owner";
 const allowedRoles = ["admin", "support", "content_manager", "couple"] as const;
 export type PlatformRole = typeof allowedRoles[number];
 
-const templateSeed = [
-  { code: "love-poem", nameAr: "أناقة التحرير", nameEn: "Élan Editorial", category: "classic" },
-  { code: "garden-night", nameAr: "حُلم الحديقة", nameEn: "Garden Reverie", category: "botanical" },
-  { code: "moonlight", nameAr: "قمر زجاجي", nameEn: "Glass Moon", category: "modern" },
-  { code: "golden-vows", nameAr: "الوعد المُذهّب", nameEn: "Gilded Promise", category: "luxury" },
-  { code: "white-story", nameAr: "سُكون", nameEn: "Still", category: "minimal" },
-  { code: "cinema-night", nameAr: "بعد الغروب", nameEn: "After Dark", category: "cinematic" },
-  { code: "rose-garden", nameAr: "وردة حالمة", nameEn: "Blush Botanica", category: "botanical" },
-  { code: "cathedral-light", nameAr: "الميثاق الملكي", nameEn: "The Royal Chapel", category: "classic" },
-  { code: "desert-sunset", nameAr: "صفحات الغروب", nameEn: "Sunlit Pages", category: "modern" },
-  { code: "velvet-night", nameAr: "العرض المخملي", nameEn: "Velvet Première", category: "luxury" },
-  { code: "coastal-breeze", nameAr: "عهود الساحل", nameEn: "Barefoot Vows", category: "minimal" },
-  { code: "modern-monogram", nameAr: "حروف النور", nameEn: "Noor Monogram", category: "cinematic" },
-];
-
-const planSeed = [
-  { code: "starter", nameAr: "البداية", nameEn: "Starter", priceEgp: 0, guestLimit: 50, position: 1, featuresAr: ["دعوة واحدة", "50 ضيفًا"], featuresEn: ["One invitation", "50 guests"] },
-  { code: "elegant", nameAr: "الأنيقة", nameEn: "Elegant", priceEgp: 899, guestLimit: 250, position: 2, featured: true, featuresAr: ["قوالب مميزة", "250 ضيفًا", "تقارير الحضور"], featuresEn: ["Premium templates", "250 guests", "RSVP reports"] },
-  { code: "signature", nameAr: "التوقيع", nameEn: "Signature", priceEgp: 1699, guestLimit: null, position: 3, featuresAr: ["ضيوف بلا حد", "تجربة سينمائية", "دعم أولوية"], featuresEn: ["Unlimited guests", "Cinematic experience", "Priority support"] },
-];
-
-const contentSeed = [
-  { key: "hero_eyebrow", groupName: "landing", valueAr: "دعوتكما، كما تستحق الحكاية", valueEn: "Your invitation, worthy of your story" },
-  { key: "hero_description", groupName: "landing", valueAr: "صمّما دعوة رقمية راقية، أديرا الضيوف والمواقع، وتابعا الردود بسهولة.", valueEn: "Create an elegant digital invitation, manage guests and venues, and track every RSVP." },
-  { key: "hero_primary_cta", groupName: "landing", valueAr: "ابدآ تصميم الدعوة", valueEn: "Start designing" },
-  { key: "support_email", groupName: "support", valueAr: "support@wisal.app", valueEn: "support@wisal.app" },
-];
-
-async function ensurePublicPlatformData() {
-  const db = getDb();
-  await Promise.all([
-    db.insert(platformTemplates).values(templateSeed).onConflictDoNothing({ target: platformTemplates.code }),
-    db.insert(platformPlans).values(planSeed).onConflictDoNothing({ target: platformPlans.code }),
-    db.insert(platformContent).values(contentSeed).onConflictDoNothing({ target: platformContent.key }),
-  ]);
-}
-
 async function ensurePlatformData() {
   const db = getDb();
   const ownerEmail = getPlatformOwnerEmail();
-  await ensurePublicPlatformData();
   await db.update(users).set({ role: "admin", updatedAt: new Date().toISOString() }).where(eq(users.email, ownerEmail));
 }
 
@@ -120,7 +82,7 @@ export async function updatePlatformContent(key: string, valueAr: string, valueE
 }
 
 export async function getPublicPlatformConfig() {
-  const db = getDb(); await ensurePublicPlatformData();
+  const db = getDb();
   const [content, plans, templates] = await Promise.all([
     db.select({ key: platformContent.key, valueAr: platformContent.valueAr, valueEn: platformContent.valueEn }).from(platformContent),
     db.select({ code: platformPlans.code, nameAr: platformPlans.nameAr, nameEn: platformPlans.nameEn, priceEgp: platformPlans.priceEgp, guestLimit: platformPlans.guestLimit, featured: platformPlans.featured, featuresAr: platformPlans.featuresAr, featuresEn: platformPlans.featuresEn }).from(platformPlans).where(eq(platformPlans.active, true)).orderBy(asc(platformPlans.position)),

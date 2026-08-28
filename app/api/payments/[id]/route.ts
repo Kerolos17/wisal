@@ -1,5 +1,6 @@
 import { getPlatformIdentity } from "@/lib/auth/identity";
-import { getOwnPaymentRequest, paymentErrorStatus } from "@/lib/payments";
+import { getOwnPaymentRequest } from "@/lib/payments";
+import { paymentApiErrorResponse } from "@/lib/payment-api-error";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +14,6 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     if (!payment) return Response.json({ error: "Payment request not found" }, { status: 404 });
     return Response.json({ payment });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to load payment request";
-    return Response.json({ error: message }, { status: paymentErrorStatus(error) });
+    return paymentApiErrorResponse(error, "Unable to load payment request");
   }
 }

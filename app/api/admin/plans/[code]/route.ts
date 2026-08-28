@@ -1,5 +1,6 @@
 import { updatePlatformPlan } from "@/lib/admin-data";
 import { forbiddenUnless } from "@/lib/admin-auth";
+import { apiErrorResponse } from "@/lib/api-error";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ code: string }> }) {
   try {
@@ -16,5 +17,5 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ co
     if (!Object.keys(changes).length) return Response.json({ error: "No valid changes" }, { status: 400 });
     const plan = await updatePlatformPlan(code, changes);
     return plan ? Response.json({ plan }) : Response.json({ error: "Plan not found" }, { status: 404 });
-  } catch (error) { return Response.json({ error: error instanceof Error ? error.message : "Unable to update plan" }, { status: 500 }); }
+  } catch (error) { return apiErrorResponse(error, { message: "Unable to update plan" }); }
 }

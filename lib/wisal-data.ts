@@ -501,6 +501,18 @@ export async function saveRsvp(input: {
     ? (await db.select().from(guests).where(and(eq(guests.eventId, eventId), eq(guests.inviteToken, input.inviteToken))).limit(1))[0]
     : null;
   if (input.inviteToken && !personalizedGuest) throw new Error("رابط الدعوة الشخصي غير صالح");
+  const eventSegmentRows = await db.select({ id: eventSegments.id }).from(eventSegments).where(eq(eventSegments.eventId, eventId));
+  const validSegmentIds = new Set(eventSegmentRows.map((segment) => segment.id));
+  const responses = (input.segmentResponses ?? []).filter((response) => validSegmentIds.has(response.segmentId));
+  if (input.segmentResponses && responses.length !== input.segmentResponses.length) throw new Error("إحدى مراحل المناسبة غير صالحة");
+  let effectiveRules: Array<typeof guestSegmentAccess.$inferSelect> = [];
+  if (personalizedGuest) {
+    const directRules = await db.select().from(guestSegmentAccess).where(eq(guestSegmentAccess.guestId, personalizedGuest.id));
+    const [membership] = await db.select().from(guestGroupMemberships).where(eq(guestGroupMemberships.guestId, personalizedGuest.id)).limit(1);
+    const groupRules = membership ? await db.select().from(guestSegmentAccess).where(eq(guestSegmentAccess.groupId, membership.groupId)) : [];
+    effectiveRules = directRules.length ? directRules : groupRules;
+    if (effectiveRules.length && responses.some((response) => !effectiveRules.some((rule) => rule.segmentId === response.segmentId && rule.invited))) throw new Error("لا تملك هذه الدعوة صلاحية الرد على إحدى المراحل");
+  }
   let savedGuest = personalizedGuest;
   if (personalizedGuest) {
     await db.update(guests).set({
@@ -524,18 +536,6 @@ export async function saveRsvp(input: {
     savedGuest = (await db.select().from(guests).where(and(eq(guests.eventId, eventId), eq(guests.name, input.name))).limit(1))[0];
   }
   if (!savedGuest) throw new Error("تعذر حفظ بيانات الضيف");
-  const eventSegmentRows = await db.select({ id: eventSegments.id }).from(eventSegments).where(eq(eventSegments.eventId, eventId));
-  const validSegmentIds = new Set(eventSegmentRows.map((segment) => segment.id));
-  const responses = (input.segmentResponses ?? []).filter((response) => validSegmentIds.has(response.segmentId));
-  if (input.segmentResponses && responses.length !== input.segmentResponses.length) throw new Error("إحدى مراحل المناسبة غير صالحة");
-  let effectiveRules: Array<typeof guestSegmentAccess.$inferSelect> = [];
-  if (personalizedGuest) {
-    const directRules = await db.select().from(guestSegmentAccess).where(eq(guestSegmentAccess.guestId, personalizedGuest.id));
-    const [membership] = await db.select().from(guestGroupMemberships).where(eq(guestGroupMemberships.guestId, personalizedGuest.id)).limit(1);
-    const groupRules = membership ? await db.select().from(guestSegmentAccess).where(eq(guestSegmentAccess.groupId, membership.groupId)) : [];
-    effectiveRules = directRules.length ? directRules : groupRules;
-    if (effectiveRules.length && responses.some((response) => !effectiveRules.some((rule) => rule.segmentId === response.segmentId && rule.invited))) throw new Error("لا تملك هذه الدعوة صلاحية الرد على إحدى المراحل");
-  }
   for (const response of responses) {
     const accessLimit = effectiveRules.find((rule) => rule.segmentId === response.segmentId)?.partyLimit ?? invitation.maxPartySize;
     const responsePartySize = response.status === "yes" ? Math.min(invitation.maxPartySize, accessLimit, Math.max(1, response.partySize)) : 1;

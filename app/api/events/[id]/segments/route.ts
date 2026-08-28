@@ -1,5 +1,6 @@
 import { getCurrentOwnerEmail } from "@/lib/current-owner";
 import { createEventSegment } from "@/lib/wisal-data";
+import { apiErrorResponse } from "@/lib/api-error";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +18,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const event = await createEventSegment(await getCurrentOwnerEmail(), id, payload);
     return event ? Response.json(event, { status: 201 }) : Response.json({ error: "المناسبة غير موجودة" }, { status: 404 });
   } catch (error) {
-    return Response.json({ error: error instanceof Error ? error.message : "تعذر إضافة المرحلة" }, { status: 500 });
+    return apiErrorResponse(error, { message: "تعذر إضافة المرحلة" });
   }
 }

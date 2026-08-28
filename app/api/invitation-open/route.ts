@@ -1,5 +1,6 @@
 import { trackInvitationOpen } from "@/lib/wisal-data";
 import { guardPublicJsonRequest, publicJson } from "@/lib/public-api-guard";
+import { apiErrorResponse } from "@/lib/api-error";
 
 export const dynamic = "force-dynamic";
 
@@ -14,8 +15,10 @@ export async function POST(request: Request) {
     await trackInvitationOpen(eventId, inviteToken);
     return publicJson({ tracked: true });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "تعذر تسجيل فتح الدعوة";
-    const expectedError = message === "الدعوة غير متاحة" || message === "رابط الدعوة الشخصي غير صالح";
-    return publicJson({ error: message }, { status: expectedError ? 400 : 500 });
+    const publicMessages = ["الدعوة غير متاحة", "رابط الدعوة الشخصي غير صالح"];
+    if (error instanceof Error && publicMessages.includes(error.message)) {
+      return apiErrorResponse(error, { message: "تعذر تسجيل فتح الدعوة", status: 400, publicMessages });
+    }
+    return apiErrorResponse(error, { message: "تعذر تسجيل فتح الدعوة" });
   }
 }

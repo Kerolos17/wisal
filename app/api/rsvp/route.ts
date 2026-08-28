@@ -1,5 +1,6 @@
 import { saveRsvp } from "@/lib/wisal-data";
 import { guardPublicJsonRequest, publicJson } from "@/lib/public-api-guard";
+import { apiErrorResponse } from "@/lib/api-error";
 
 export const dynamic = "force-dynamic";
 
@@ -28,8 +29,10 @@ export async function POST(request: Request) {
     const guest = await saveRsvp({ eventId, inviteToken: payload.inviteToken?.trim(), name, status: payload.status, partySize, meal: payload.meal?.trim() || "—", message: payload.message?.trim(), segmentResponses });
     return publicJson({ guest }, { status: 201 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "تعذر حفظ الرد";
-    const expectedError = message === "المناسبة مطلوبة" || message === "تأكيد الحضور غير متاح لهذه الدعوة" || message === "انتهى موعد تأكيد الحضور" || message === "رابط الدعوة الشخصي غير صالح";
-    return publicJson({ error: message }, { status: expectedError ? 400 : 500 });
+    const publicMessages = ["المناسبة مطلوبة", "تأكيد الحضور غير متاح لهذه الدعوة", "انتهى موعد تأكيد الحضور", "رابط الدعوة الشخصي غير صالح", "إحدى مراحل المناسبة غير صالحة", "لا تملك هذه الدعوة صلاحية الرد على إحدى المراحل"];
+    if (error instanceof Error && publicMessages.includes(error.message)) {
+      return apiErrorResponse(error, { message: "تعذر حفظ الرد", status: 400, publicMessages });
+    }
+    return apiErrorResponse(error, { message: "تعذر حفظ الرد" });
   }
 }

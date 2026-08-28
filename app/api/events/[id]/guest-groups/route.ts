@@ -1,5 +1,6 @@
 import { getCurrentOwnerEmail } from "@/lib/current-owner";
 import { createGuestGroup } from "@/lib/wisal-data";
+import { apiErrorResponse } from "@/lib/api-error";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +14,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const event = await createGuestGroup(await getCurrentOwnerEmail(), id, payload);
     return event ? Response.json(event, { status: 201 }) : Response.json({ error: "المناسبة غير موجودة" }, { status: 404 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "تعذر إضافة الفئة";
-    return Response.json({ error: message }, { status: message.includes("unique") ? 409 : 500 });
+    return apiErrorResponse(error, { message: "تعذر إضافة الفئة", messageByCode: { "23505": "اسم الفئة مستخدم بالفعل" }, statusByCode: { "23505": 409 } });
   }
 }

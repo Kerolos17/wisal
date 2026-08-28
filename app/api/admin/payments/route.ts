@@ -1,6 +1,7 @@
 import { getPlatformIdentity } from "@/lib/auth/identity";
-import { listPaymentRequests, paymentErrorStatus } from "@/lib/payments";
+import { listPaymentRequests } from "@/lib/payments";
 import { forbiddenUnless } from "@/lib/admin-auth";
+import { paymentApiErrorResponse } from "@/lib/payment-api-error";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,6 @@ export async function GET() {
     const payments = await listPaymentRequests(identity);
     return Response.json({ payments });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to list payments";
-    return Response.json({ error: message }, { status: paymentErrorStatus(error) });
+    return paymentApiErrorResponse(error, "Unable to list payments");
   }
 }

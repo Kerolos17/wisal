@@ -1,12 +1,10 @@
+import { getSql } from "@/db";
+
 type GuardOptions = {
   limit: number;
   windowMs?: number;
   maxBodyBytes?: number;
 };
-
-type RateWindow = { count: number; resetAt: number };
-
-const rateWindows = new Map<string, RateWindow>();
 
 const noStoreHeaders = { "Cache-Control": "no-store" };
 
@@ -15,11 +13,27 @@ function clientAddress(request: Request) {
   return request.headers.get("cf-connecting-ip")?.trim() || forwarded || "local";
 }
 
-function cleanupExpiredWindows(now: number) {
-  if (rateWindows.size < 2_000) return;
-  for (const [key, value] of rateWindows) {
-    if (value.resetAt <= now) rateWindows.delete(key);
-  }
+async function consumeSharedRateLimit(key: string, windowMs: number) {
+  const resetAt = Date.now() + windowMs;
+  const results = await getSql()`
+    WITH pruned AS (
+      DELETE FROM rate_limit_windows
+      WHERE reset_at < now() - interval '1 day'
+    ), upserted AS (
+      INSERT INTO rate_limit_windows AS windows (key, count, reset_at, updated_at)
+      VALUES (${key}, 1, to_timestamp(${resetAt} / 1000.0), now())
+      ON CONFLICT (key) DO UPDATE SET
+        count = CASE WHEN windows.reset_at <= now() THEN 1 ELSE windows.count + 1 END,
+        reset_at = CASE WHEN windows.reset_at <= now() THEN to_timestamp(${resetAt} / 1000.0) ELSE windows.reset_at END,
+        updated_at = now()
+      RETURNING count, extract(epoch FROM reset_at) * 1000 AS reset_at_ms
+    )
+    SELECT count, reset_at_ms FROM upserted
+  `;
+  const result = Array.isArray(results)
+    ? results[0] as { count?: number | string; reset_at_ms?: number | string } | undefined
+    : undefined;
+  return { count: Number(result?.count), resetAt: Number(result?.reset_at_ms) };
 }
 
 export async function guardPublicJsonRequest(request: Request, options: GuardOptions): Promise<Response | null> {
@@ -44,16 +58,19 @@ export async function guardPublicJsonRequest(request: Request, options: GuardOpt
     return Response.json({ error: "مصدر الطلب غير مسموح", code: "origin_not_allowed" }, { status: 403, headers: noStoreHeaders });
   }
 
-  const now = Date.now();
   const windowMs = options.windowMs ?? 60_000;
   const key = `${new URL(request.url).pathname}:${clientAddress(request)}`;
-  const current = rateWindows.get(key);
-  const next = !current || current.resetAt <= now ? { count: 1, resetAt: now + windowMs } : { count: current.count + 1, resetAt: current.resetAt };
-  rateWindows.set(key, next);
-  cleanupExpiredWindows(now);
+  let next: { count: number; resetAt: number };
+  try {
+    next = await consumeSharedRateLimit(key, windowMs);
+  } catch (error) {
+    const requestId = crypto.randomUUID();
+    console.error("public_rate_limit_unavailable", { requestId, errorName: error instanceof Error ? error.name : "UnknownError" });
+    return Response.json({ error: "الخدمة غير متاحة مؤقتًا. حاول مرة أخرى بعد قليل.", requestId }, { status: 503, headers: noStoreHeaders });
+  }
 
   if (next.count > options.limit) {
-    const retryAfter = Math.max(1, Math.ceil((next.resetAt - now) / 1_000));
+    const retryAfter = Math.max(1, Math.ceil((next.resetAt - Date.now()) / 1_000));
     return Response.json(
       { error: "محاولات كثيرة في وقت قصير. حاول مرة أخرى بعد قليل.", code: "rate_limited" },
       { status: 429, headers: { ...noStoreHeaders, "Retry-After": String(retryAfter) } },

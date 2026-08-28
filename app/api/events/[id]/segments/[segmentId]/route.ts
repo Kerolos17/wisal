@@ -1,5 +1,6 @@
 import { getCurrentOwnerEmail } from "@/lib/current-owner";
 import { deleteEventSegment, updateEventSegment } from "@/lib/wisal-data";
+import { apiErrorResponse } from "@/lib/api-error";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +12,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const event = await updateEventSegment(await getCurrentOwnerEmail(), id, segmentId, payload);
     return event ? Response.json(event) : Response.json({ error: "المناسبة أو المرحلة غير موجودة" }, { status: 404 });
   } catch (error) {
-    return Response.json({ error: error instanceof Error ? error.message : "تعذر تعديل المرحلة" }, { status: 500 });
+    return apiErrorResponse(error, { message: "تعذر تعديل المرحلة" });
   }
 }
 
@@ -21,7 +22,9 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
     const event = await deleteEventSegment(await getCurrentOwnerEmail(), id, segmentId);
     return event ? Response.json(event) : Response.json({ error: "المناسبة أو المرحلة غير موجودة" }, { status: 404 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "تعذر حذف المرحلة";
-    return Response.json({ error: message }, { status: message.includes("مرحلة واحدة") ? 400 : 500 });
+    if (error instanceof Error && error.message.includes("مرحلة واحدة")) {
+      return apiErrorResponse(error, { message: "تعذر حذف المرحلة", status: 400, publicMessages: [error.message] });
+    }
+    return apiErrorResponse(error, { message: "تعذر حذف المرحلة" });
   }
 }

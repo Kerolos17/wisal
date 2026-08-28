@@ -1,5 +1,6 @@
 import { getCurrentOwnerEmail } from "@/lib/current-owner";
 import { deleteGuestGroup, updateGuestGroup } from "@/lib/wisal-data";
+import { apiErrorResponse } from "@/lib/api-error";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +13,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const event = await updateGuestGroup(await getCurrentOwnerEmail(), id, groupId, payload);
     return event ? Response.json(event) : Response.json({ error: "المناسبة أو الفئة غير موجودة" }, { status: 404 });
   } catch (error) {
-    return Response.json({ error: error instanceof Error ? error.message : "تعذر تعديل الفئة" }, { status: 500 });
+    return apiErrorResponse(error, { message: "تعذر تعديل الفئة" });
   }
 }
 
@@ -22,6 +23,6 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
     const event = await deleteGuestGroup(await getCurrentOwnerEmail(), id, groupId);
     return event ? Response.json(event) : Response.json({ error: "المناسبة أو الفئة غير موجودة" }, { status: 404 });
   } catch (error) {
-    return Response.json({ error: error instanceof Error ? error.message : "تعذر حذف الفئة" }, { status: 500 });
+    return apiErrorResponse(error, { message: "تعذر حذف الفئة" });
   }
 }

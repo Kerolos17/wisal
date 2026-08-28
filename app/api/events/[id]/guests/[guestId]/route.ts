@@ -1,5 +1,6 @@
 import { getCurrentOwnerEmail } from "@/lib/current-owner";
 import { deleteGuest, updateGuest } from "@/lib/wisal-data";
+import { apiErrorResponse } from "@/lib/api-error";
 
 export const dynamic = "force-dynamic";
 
@@ -11,8 +12,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const event = await updateGuest(await getCurrentOwnerEmail(), id, guestId, payload);
     return event ? Response.json(event) : Response.json({ error: "المناسبة أو الضيف غير موجود" }, { status: 404 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "تعذر تعديل الضيف";
-    return Response.json({ error: message }, { status: 500 });
+    return apiErrorResponse(error, { message: "تعذر تعديل الضيف" });
   }
 }
 
@@ -22,7 +22,6 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
     const event = await deleteGuest(await getCurrentOwnerEmail(), id, guestId);
     return event ? Response.json(event) : Response.json({ error: "المناسبة أو الضيف غير موجود" }, { status: 404 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "تعذر حذف الضيف";
-    return Response.json({ error: message }, { status: 500 });
+    return apiErrorResponse(error, { message: "تعذر حذف الضيف" });
   }
 }

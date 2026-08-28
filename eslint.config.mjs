@@ -9,9 +9,17 @@ const eslintConfig = defineConfig([
   globalIgnores([
     // Default ignores of eslint-config-next:
     ".next/**",
+    "**/.next/**",
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Local tooling and isolated worktrees are not part of this checkout's source.
+    ".worktrees/**",
+    ".sites-runtime/**",
+    ".pnpm-store/**",
+    ".impeccable/**",
+    "graphify-out/**",
+    "02_Documents/**",
   ]),
 ]);
 

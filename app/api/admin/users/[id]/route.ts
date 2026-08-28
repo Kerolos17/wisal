@@ -1,5 +1,6 @@
 import { updateUserRole } from "@/lib/admin-data";
 import { forbiddenUnless } from "@/lib/admin-auth";
+import { apiErrorResponse } from "@/lib/api-error";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -10,7 +11,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const user = await updateUserRole(id, role);
     return user ? Response.json({ user }) : Response.json({ error: "User not found" }, { status: 404 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to update role";
-    return Response.json({ error: message }, { status: message.includes("Invalid") || message.includes("owner") ? 400 : 500 });
+    if (error instanceof Error && ["Invalid role", "The platform owner must remain an admin"].includes(error.message)) {
+      return apiErrorResponse(error, { message: "Unable to update role", status: 400, publicMessages: [error.message] });
+    }
+    return apiErrorResponse(error, { message: "Unable to update role" });
   }
 }

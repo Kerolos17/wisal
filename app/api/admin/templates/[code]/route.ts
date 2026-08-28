@@ -1,5 +1,6 @@
 import { updatePlatformTemplate } from "@/lib/admin-data";
 import { forbiddenUnless } from "@/lib/admin-auth";
+import { apiErrorResponse } from "@/lib/api-error";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ code: string }> }) {
   try {
@@ -10,6 +11,6 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ co
     const template = await updatePlatformTemplate(code, payload.active);
     return template ? Response.json({ template }) : Response.json({ error: "Template not found" }, { status: 404 });
   } catch (error) {
-    return Response.json({ error: error instanceof Error ? error.message : "Unable to update template" }, { status: 500 });
+    return apiErrorResponse(error, { message: "Unable to update template" });
   }
 }

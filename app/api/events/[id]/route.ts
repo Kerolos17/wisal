@@ -1,5 +1,6 @@
 import { getCurrentOwnerEmail } from "@/lib/current-owner";
 import { getEventOverview, updateEvent } from "@/lib/wisal-data";
+import { apiErrorResponse } from "@/lib/api-error";
 
 export const dynamic = "force-dynamic";
 
@@ -9,8 +10,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     const event = await getEventOverview(id, await getCurrentOwnerEmail());
     return event ? Response.json(event) : Response.json({ error: "المناسبة غير موجودة" }, { status: 404 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "تعذر تحميل المناسبة";
-    return Response.json({ error: message }, { status: 500 });
+    return apiErrorResponse(error, { message: "تعذر تحميل المناسبة" });
   }
 }
 
@@ -47,7 +47,6 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const event = await updateEvent(ownerEmail, id, payload);
     return event ? Response.json(event) : Response.json({ error: "المناسبة غير موجودة" }, { status: 404 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "تعذر حفظ التغييرات";
-    return Response.json({ error: message }, { status: 500 });
+    return apiErrorResponse(error, { message: "تعذر حفظ التغييرات" });
   }
 }

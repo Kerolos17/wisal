@@ -1,5 +1,6 @@
 import { forbiddenUnless } from "@/lib/admin-auth";
 import { listPaymentDestinations, parsePaymentDestination, savePaymentDestinations } from "@/lib/payment-destinations";
+import { apiErrorResponse } from "@/lib/api-error";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,6 @@ export async function PUT(request: Request) {
     if (unique.size !== destinations.length) return Response.json({ error: "Payment methods must be unique" }, { status: 400 });
     return Response.json({ destinations: await savePaymentDestinations(destinations) });
   } catch (error) {
-    return Response.json({ error: error instanceof Error ? error.message : "Unable to save payment destinations" }, { status: 400 });
+    return apiErrorResponse(error, { message: "Unable to save payment destinations", status: 400 });
   }
 }

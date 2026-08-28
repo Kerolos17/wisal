@@ -1,10 +1,10 @@
 import type { MetadataRoute } from "next";
+import { siteUrl } from "@/lib/site-url";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://wisal-wedding.vercel.app";
   return [
-    { url: base, changeFrequency: "weekly", priority: 1 },
-    { url: `${base}/privacy`, changeFrequency: "monthly", priority: 0.4 },
-    { url: `${base}/terms`, changeFrequency: "monthly", priority: 0.4 },
+    { url: siteUrl, changeFrequency: "weekly", priority: 1 },
+    { url: `${siteUrl}/privacy`, changeFrequency: "monthly", priority: 0.4 },
+    { url: `${siteUrl}/terms`, changeFrequency: "monthly", priority: 0.4 },
   ];
 }

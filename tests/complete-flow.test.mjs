@@ -36,7 +36,9 @@ test("public invitation handles deadline and server errors clearly", () => {
   assert.match(publicInviteSource, /انتهى موعد تأكيد الحضور/);
   assert.match(publicInviteSource, /saveError: "تعذر حفظ الرد/);
   assert.match(publicInviteSource, /result\?\.error \|\| t\.saveError/);
-  assert.match(rsvpRouteSource, /expectedError \? 400 : 500/);
+  assert.match(rsvpRouteSource, /publicMessages\.includes\(error\.message\)/);
+  assert.match(rsvpRouteSource, /status: 400, publicMessages/);
+  assert.match(rsvpRouteSource, /apiErrorResponse\(error, \{ message: "تعذر حفظ الرد" \}\)/);
   assert.match(dataSource, /Date\.now\(\) > deadline\.getTime\(\)/);
 });
 

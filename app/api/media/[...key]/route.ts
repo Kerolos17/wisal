@@ -6,9 +6,10 @@ export async function GET(_request: Request, { params }: { params: Promise<{ key
   const { key } = await params;
   const joined = key.join("/");
 
-  // SEC-R04: receipts must never be served from the public media route
-  if (joined === "receipts" || joined.startsWith("receipts/")) {
-    return new Response("Forbidden", { status: 403 });
+  // This is a public route: only application-generated cover keys may be read.
+  const isPublicCover = /^covers\/[0-9a-f-]{36}\/[0-9a-f-]{36}\.(jpg|png|webp)$/i.test(joined);
+  if (!isPublicCover) {
+    return new Response("Not found", { status: 404 });
   }
 
   const object = await getBucket().get(joined);
@@ -17,6 +18,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ key
     headers: {
       "content-type": object.httpMetadata?.contentType || "application/octet-stream",
       "cache-control": "public, max-age=31536000, immutable",
+      "x-content-type-options": "nosniff",
       ...(object.etag ? { etag: object.etag } : {}),
     },
   });

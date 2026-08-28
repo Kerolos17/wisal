@@ -47,6 +47,7 @@ next-env.d.ts
 .impeccable/
 graphify-out/
 .pnpm-store/
+/02_Documents/
 
 # auto-generated / reference artifacts (not source)
 AGENTS.md

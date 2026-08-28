@@ -9,7 +9,8 @@ export async function ensureAccount(identity: PlatformIdentity) {
   const email = identity.email.toLowerCase();
   const [existing] = await db.select().from(users).where(eq(users.email, email)).limit(1);
   if (existing) {
-    const [updated] = await db.update(users).set({ displayName: identity.displayName, updatedAt: new Date().toISOString() }).where(eq(users.id, existing.id)).returning();
+    const role = isPlatformOwner(email) ? "admin" : existing.role;
+    const [updated] = await db.update(users).set({ displayName: identity.displayName, role, updatedAt: new Date().toISOString() }).where(eq(users.id, existing.id)).returning();
     return { displayName: updated.displayName, email: updated.email, role: updated.role };
   }
   const [created] = await db.insert(users).values({ email, displayName: identity.displayName, role: isPlatformOwner(email) ? "admin" : "couple" }).returning();
