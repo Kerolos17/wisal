@@ -2,13 +2,14 @@ import { getPlatformIdentity } from "@/lib/auth/identity";
 import { forbiddenUnless } from "@/lib/admin-auth";
 import { readReceipt } from "@/lib/payment-storage";
 import { apiErrorResponse } from "@/lib/api-error";
+import { auditPaymentReceiptRead } from "@/lib/payments";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    // Receipts contain payer PII (name, reference). Restrict to full admins only.
-    const forbidden = await forbiddenUnless("users.manage");
+    // Receipts contain payer PII (name, reference). Require the dedicated review permission.
+    const forbidden = await forbiddenUnless("payments.review");
     if (forbidden) return forbidden;
 
     const identity = await getPlatformIdentity();
@@ -26,6 +27,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
 
     const receipt = await readReceipt(row.receiptKey);
     if (!receipt) return new Response("Not found", { status: 404 });
+    await auditPaymentReceiptRead(identity, id);
 
     return new Response(receipt.body, {
       headers: {

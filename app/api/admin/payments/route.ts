@@ -7,8 +7,8 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    // Payment requests contain payer PII; restrict to full admins only.
-    const forbidden = await forbiddenUnless("users.manage");
+    // Payment requests contain payer PII; require the dedicated review permission.
+    const forbidden = await forbiddenUnless("payments.review");
     if (forbidden) return forbidden;
 
     const identity = await getPlatformIdentity();

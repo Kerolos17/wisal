@@ -6,14 +6,14 @@ import { readJsonBody } from "@/lib/request-validation";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const forbidden = await forbiddenUnless("users.manage");
+  const forbidden = await forbiddenUnless("payments.review");
   if (forbidden) return forbidden;
   return Response.json({ destinations: await listPaymentDestinations() }, { headers: { "Cache-Control": "private, no-store" } });
 }
 
 export async function PUT(request: Request) {
   try {
-    const forbidden = await forbiddenUnless("users.manage");
+    const forbidden = await forbiddenUnless("payments.review");
     if (forbidden) return forbidden;
     const payload = await readJsonBody(request) as { destinations?: unknown };
     if (!Array.isArray(payload.destinations) || payload.destinations.length > 5) return Response.json({ error: "Invalid payment destinations" }, { status: 400 });

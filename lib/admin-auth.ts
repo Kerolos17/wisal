@@ -4,10 +4,10 @@ import { users } from "@/db/schema";
 import { getCurrentOwnerEmail } from "@/lib/current-owner";
 import type { PlatformRole } from "@/lib/admin-data";
 
-export type AdminPermission = "overview.read" | "users.manage" | "templates.manage" | "plans.manage" | "content.manage" | "support.manage";
+export type AdminPermission = "overview.read" | "users.manage" | "templates.manage" | "plans.manage" | "content.manage" | "support.manage" | "payments.review";
 
 const permissions: Record<PlatformRole, AdminPermission[]> = {
-  admin: ["overview.read", "users.manage", "templates.manage", "plans.manage", "content.manage", "support.manage"],
+  admin: ["overview.read", "users.manage", "templates.manage", "plans.manage", "content.manage", "support.manage", "payments.review"],
   support: ["overview.read", "support.manage"],
   content_manager: ["overview.read", "templates.manage", "content.manage"],
   couple: [],

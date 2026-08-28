@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const forbidden = await forbiddenUnless("users.manage");
+    const forbidden = await forbiddenUnless("payments.review");
     if (forbidden) return forbidden;
 
     const identity = await getPlatformIdentity();

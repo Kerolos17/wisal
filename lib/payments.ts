@@ -216,6 +216,17 @@ export async function listPaymentRequests(identity: PlatformIdentity) {
   return rows.map(serializePayment);
 }
 
+/** Records access to sensitive receipt material without storing its key or contents. */
+export async function auditPaymentReceiptRead(identity: PlatformIdentity, paymentRequestId: string) {
+  const db = getDb();
+  const admin = await requireUser(identity);
+  if (!isAdmin(admin.role)) throw new Error("Forbidden");
+  const [request] = await db.select({ userId: paymentRequests.userId })
+    .from(paymentRequests).where(eq(paymentRequests.id, paymentRequestId)).limit(1);
+  if (!request) return;
+  await audit(admin.id, "payment.receipt_viewed", paymentRequestId, request.userId);
+}
+
 // --- Admin: approve (pending_review -> approved, atomic subscription activation) ---
 
 export async function approvePaymentRequest(identity: PlatformIdentity, id: string, expectedVersion: number) {

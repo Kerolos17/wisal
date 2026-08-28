@@ -107,7 +107,7 @@ describe("manual payment integrity contracts", () => {
     assert.match(migration, /orange_cash/);
     assert.match(destinationRoute, /getPlatformIdentity/);
     assert.match(destinationRoute, /listActivePaymentDestinations/);
-    assert.match(adminDestinationRoute, /forbiddenUnless\("users\.manage"\)/);
+    assert.match(adminDestinationRoute, /forbiddenUnless\("payments\.review"\)/);
     assert.match(checkout, /destinations/);
     assert.match(checkout, /Copy transfer details/);
     assert.match(checkout, /paymentUrl/);
@@ -128,5 +128,20 @@ describe("manual payment integrity contracts", () => {
     assert.doesNotMatch(source, /async function ensurePublicPlatformData/);
     assert.doesNotMatch(publicConfig, /\.insert\(|\.update\(|\.delete\(/);
     assert.doesNotMatch(publicConfig, /ensurePlatformData\(\)/);
+  });
+
+  it("uses a dedicated payment-review permission instead of user management", () => {
+    const permissions = read("lib/admin-auth.ts");
+    const paymentsRoute = read("app/api/admin/payments/route.ts");
+    assert.match(permissions, /"payments\.review"/);
+    assert.match(paymentsRoute, /forbiddenUnless\("payments\.review"\)/);
+    assert.doesNotMatch(paymentsRoute, /forbiddenUnless\("users\.manage"\)/);
+  });
+
+  it("audits privileged receipt reads without retaining receipt identifiers", () => {
+    const payments = read("lib/payments.ts");
+    const receiptRoute = read("app/api/admin/payments/[id]/receipt/route.ts");
+    assert.match(payments, /payment\.receipt_viewed/);
+    assert.match(receiptRoute, /await auditPaymentReceiptRead\(identity, id\)/);
   });
 });
