@@ -18,3 +18,14 @@ test("payment state conflicts are reported as conflicts instead of generic valid
   const source = read("lib/payments.ts");
   assert.match(source, /message === "Payment request is not in a submittable state"\) return 409/);
 });
+
+test("payment status screen exposes a clear, responsive visual hierarchy", () => {
+  const source = read("app/checkout/[id]/status/status-client.tsx");
+  const styles = read("app/globals.css");
+  assert.match(source, /checkout-status-shell/);
+  assert.match(source, /checkout-status-progress/);
+  assert.match(source, /checkout-status-live/);
+  assert.match(styles, /\.checkout-status-card/);
+  assert.match(styles, /@media\(max-width:560px\)\{\.checkout-status-shell/);
+  assert.match(styles, /@media\(prefers-reduced-motion:reduce\)/);
+});

@@ -60,6 +60,38 @@ describe("manual payment integrity contracts", () => {
     assert.match(status, /plan=\$\{encodeURIComponent\(payment\.planCode\)\}/);
     assert.match(home, /const needsCustomerAction = \["draft", "needs_info"\]/);
     assert.match(home, /const awaitingReview = subscription\.latestPaymentStatus === "pending_review"/);
+    assert.match(status, /const checkoutHref = canResume \?/);
+    assert.match(status, /Updates automatically/);
+  });
+
+  it("routes reviewed payments to their status page instead of restarting checkout", () => {
+    const home = read("app/page.tsx");
+    assert.match(home, /const statusHref = subscription\.latestPaymentId/);
+    assert.match(home, /\/checkout\/\$\{encodeURIComponent\(subscription\.latestPaymentId\)\}\/status/);
+    assert.match(home, /awaitingReview && statusHref/);
+    assert.match(home, /requiresAction && checkoutHref/);
+  });
+
+  it("only exposes reviewer actions for requests waiting on review", () => {
+    const admin = read("app/admin-payments.tsx");
+    const payments = read("lib/payments.ts");
+    assert.match(admin, /const canReview = payment\.status === "pending_review"/);
+    assert.match(admin, /aria-required="true"/);
+    assert.match(admin, /try \{/);
+    assert.match(admin, /finally \{\s+setBusyId\(""\);/);
+    assert.match(payments, /request\.status !== "pending_review"/);
+    assert.match(payments, /message === "Payment request is not pending review"\) return 409/);
+  });
+
+  it("keeps payment administration aligned with full-admin permissions", () => {
+    const adminPage = read("app/admin/page.tsx");
+    const home = read("app/page.tsx");
+    const dashboard = read("app/admin-dashboard.tsx");
+    assert.match(adminPage, /canManagePayments=\{account\.role === "admin"\}/);
+    assert.match(home, /canManagePayments\?: boolean/);
+    assert.match(home, /canManagePayments=\{canManagePayments\}/);
+    assert.match(dashboard, /canManagePayments = false/);
+    assert.match(dashboard, /id !== "payments" \|\| canManagePayments/);
   });
 
   it("models configurable, authenticated payment destinations", () => {

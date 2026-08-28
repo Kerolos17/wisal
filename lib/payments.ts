@@ -32,6 +32,7 @@ export function paymentErrorStatus(error: unknown): number {
   const message = error instanceof Error ? error.message : "";
   if (message === "Forbidden" || message === "Referenced plan is unavailable" || message === "Plan price has changed since request") return 403;
   if (message === "Payment request is not in a submittable state") return 409;
+  if (message === "Payment request is not pending review") return 409;
   if (
     message === "Plan not found" ||
     message === "Plan is not available" ||

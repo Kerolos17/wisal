@@ -54,6 +54,15 @@ const STATUS_COPY: Record<PaymentStatus, { titleAr: string; titleEn: string; bod
   },
 };
 
+const STATUS_LABEL: Record<PaymentStatus, { ar: string; en: string }> = {
+  draft: { ar: "مسودة", en: "Draft" },
+  pending_review: { ar: "قيد المراجعة", en: "Under review" },
+  approved: { ar: "تم التفعيل", en: "Active" },
+  rejected: { ar: "مرفوض", en: "Rejected" },
+  needs_info: { ar: "معلومات مطلوبة", en: "Action needed" },
+  cancelled: { ar: "ملغي", en: "Cancelled" },
+};
+
 export default function CheckoutStatusClient({ id }: { id: string }) {
   const [locale] = useWisalLocale();
   const L = (ar: string, en: string) => (locale === "ar" ? ar : en);
@@ -87,11 +96,16 @@ export default function CheckoutStatusClient({ id }: { id: string }) {
 
   if (error) {
     return (
-      <section className="checkout-shell">
-        <div className="checkout-card">
-          <h1>Wisal</h1>
-          <p className="checkout-error">{error}</p>
-          <Link className="primary" href="/">{L("العودة للرئيسية", "Back to home")}</Link>
+      <section className="checkout-status-shell">
+        <div className="checkout-status-frame">
+          <StatusBrand locale={locale} />
+          <main className="checkout-status-card checkout-status-card-error">
+            <span className="checkout-status-symbol is-error" aria-hidden="true">!</span>
+            <span className="checkout-status-eyebrow">{L("حالة الطلب", "REQUEST STATUS")}</span>
+            <h1>{L("تعذر تحميل الحالة", "We could not load the status")}</h1>
+            <p>{error}</p>
+            <Link className="checkout-status-primary" href="/">{L("العودة للرئيسية", "Back to home")}</Link>
+          </main>
         </div>
       </section>
     );
@@ -99,10 +113,15 @@ export default function CheckoutStatusClient({ id }: { id: string }) {
 
   if (!payment) {
     return (
-      <section className="checkout-shell">
-        <div className="checkout-card">
-          <h1>Wisal</h1>
-          <p>{L("جارٍ التحميل…", "Loading…")}</p>
+      <section className="checkout-status-shell">
+        <div className="checkout-status-frame">
+          <StatusBrand locale={locale} />
+          <main className="checkout-status-card checkout-status-card-loading" aria-busy="true">
+            <span className="checkout-status-spinner" aria-hidden="true" />
+            <span className="checkout-status-eyebrow">{L("حالة الطلب", "REQUEST STATUS")}</span>
+            <h1>{L("نحمّل حالة طلبك", "Loading your request")}</h1>
+            <p>{L("لحظات ونظهر لك آخر تحديث.", "One moment while we fetch the latest update.")}</p>
+          </main>
         </div>
       </section>
     );
@@ -112,24 +131,42 @@ export default function CheckoutStatusClient({ id }: { id: string }) {
   const isApproved = payment.status === "approved";
   const isFinal = payment.status === "approved" || payment.status === "rejected" || payment.status === "cancelled";
   const canResume = payment.status === "draft" || payment.status === "needs_info";
-  const checkoutHref = canResume
-    ? `/checkout?plan=${encodeURIComponent(payment.planCode)}&paymentId=${encodeURIComponent(payment.id)}`
-    : `/checkout?plan=${encodeURIComponent(payment.planCode)}`;
+  const checkoutHref = canResume ? `/checkout?plan=${encodeURIComponent(payment.planCode)}&paymentId=${encodeURIComponent(payment.id)}` : null;
+  const statusLabel = STATUS_LABEL[payment.status];
+  const progressState = isApproved ? 2 : payment.status === "rejected" || payment.status === "cancelled" ? 1 : payment.status === "draft" ? 0 : 1;
 
   return (
-    <section className="checkout-shell">
-      <div className={`checkout-card ${isApproved ? "success" : ""}`}>
-        <span className={`checkout-icon ${isFinal ? (isApproved ? "" : "is-error") : "is-pending"}`}>{isApproved ? "✓" : isFinal ? "!" : "…"}</span>
-        <h1>{L(copy.titleAr, copy.titleEn)}</h1>
-        <p>{L(copy.bodyAr, copy.bodyEn)}</p>
-        {(payment.rejectionReason || payment.infoRequestReason) ? <p className="checkout-note">{L("ملاحظة المراجع: ", "Reviewer note: ")}{payment.rejectionReason || payment.infoRequestReason}</p> : null}
-        <div className="checkout-status-actions">
-          {isApproved
-            ? <Link className="primary" href="/workspace">{L("الذهاب إلى مناسبتي", "Go to my event")}</Link>
-            : <Link className="primary" href={checkoutHref}>{payment.status === "cancelled" || payment.status === "rejected" ? L("بدء طلب جديد", "Start a new request") : L("العودة للدفع", "Back to checkout")}</Link>}
-          <Link href="/">{L("الرئيسية", "Home")}</Link>
-        </div>
+    <section className="checkout-status-shell">
+      <div className="checkout-status-frame">
+        <StatusBrand locale={locale} />
+        <main className={`checkout-status-card checkout-status-card-${isApproved ? "approved" : isFinal ? "final" : "pending"}`}>
+          <div className="checkout-status-heading">
+            <span className={`checkout-status-symbol ${isApproved ? "is-success" : isFinal ? "is-error" : "is-pending"}`} aria-hidden="true">{isApproved ? "✓" : isFinal ? "!" : "…"}</span>
+            <div className="checkout-status-label-row"><span className="checkout-status-eyebrow">{L("حالة طلب الدفع", "PAYMENT REQUEST")}</span><span className={`checkout-status-pill ${isApproved ? "is-success" : isFinal ? "is-error" : "is-pending"}`}>{L(statusLabel.ar, statusLabel.en)}</span></div>
+            <h1>{L(copy.titleAr, copy.titleEn)}</h1>
+            <p>{L(copy.bodyAr, copy.bodyEn)}</p>
+          </div>
+          <div className="checkout-status-progress" aria-label={L("مراحل طلب الدفع", "Payment request progress")}>
+            {[L("تم الإرسال", "Submitted"), L("المراجعة", "Review"), L("التفعيل", "Activation")].map((step, index) => <div className={`checkout-status-step ${index < progressState ? "is-complete" : index === progressState ? "is-current" : ""}`} key={step}><span>{index < progressState ? "✓" : index + 1}</span><small>{step}</small></div>)}
+          </div>
+          {(payment.rejectionReason || payment.infoRequestReason) ? <div className="checkout-status-note"><span aria-hidden="true">i</span><p><b>{L("ملاحظة المراجع", "Reviewer note")}</b>{payment.rejectionReason || payment.infoRequestReason}</p></div> : null}
+          <div className="checkout-status-actions">
+            {isApproved
+              ? <Link className="checkout-status-primary" href="/workspace">{L("الذهاب إلى مناسبتي", "Go to my event")}<span aria-hidden="true">→</span></Link>
+              : canResume && checkoutHref
+                ? <Link className="checkout-status-primary" href={checkoutHref}>{L("استكمال طلب الدفع", "Continue payment request")}<span aria-hidden="true">→</span></Link>
+                : isFinal
+                  ? <Link className="checkout-status-primary" href={`/checkout?plan=${encodeURIComponent(payment.planCode)}`}>{L("بدء طلب جديد", "Start a new request")}<span aria-hidden="true">→</span></Link>
+                  : <span className="checkout-status-live"><i aria-hidden="true" />{L("يتم التحديث تلقائيًا", "Updates automatically")}</span>}
+            <Link className="checkout-status-secondary" href="/">{L("العودة للرئيسية", "Back to home")}</Link>
+          </div>
+          <p className="checkout-status-footnote">{L("يمكنك ترك هذه الصفحة؛ سنحتفظ بطلبك ونحدّث حالته تلقائيًا.", "You can leave this page. We’ll keep your request and update its status automatically.")}</p>
+        </main>
       </div>
     </section>
   );
+}
+
+function StatusBrand({ locale }: { locale: "ar" | "en" }) {
+  return <header className="checkout-status-brand"><Link href="/" aria-label={locale === "ar" ? "وِصال - الرئيسية" : "Wisal - Home"}><span className="checkout-status-brand-mark">W</span><span><b>{locale === "ar" ? "وِصال" : "Wisal"}</b><small>{locale === "ar" ? "دعوتكم كما تخيلتموها" : "Invitations, beautifully yours"}</small></span></Link><span className="checkout-status-secure"><i aria-hidden="true" />{locale === "ar" ? "دفع يدوي آمن" : "Secure manual payment"}</span></header>;
 }

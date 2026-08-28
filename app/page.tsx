@@ -285,6 +285,7 @@ function PlanCard({ locale, subscription, plans }: { locale: Locale; subscriptio
   const needsCustomerAction = ["draft", "needs_info"].includes(subscription.latestPaymentStatus ?? "");
   const awaitingReview = subscription.latestPaymentStatus === "pending_review";
   const checkoutHref = subscription.latestPaymentId && subscription.latestPaymentPlanCode ? `/checkout?plan=${encodeURIComponent(subscription.latestPaymentPlanCode)}&paymentId=${encodeURIComponent(subscription.latestPaymentId)}` : null;
+  const statusHref = subscription.latestPaymentId ? `/checkout/${encodeURIComponent(subscription.latestPaymentId)}/status` : null;
 
   if (needsCustomerAction || awaitingReview) {
     const requiresAction = needsCustomerAction;
@@ -295,7 +296,8 @@ function PlanCard({ locale, subscription, plans }: { locale: Locale; subscriptio
           <b>{requiresAction ? (ar ? "أكمل بيانات طلب الدفع" : "Complete your payment request") : (ar ? "طلب الدفع قيد المراجعة" : "Payment request under review")}</b>
           <p>{requiresAction ? (ar ? "لم يُرسل الطلب للمراجعة بعد. أضف الإيصال أو المعلومات المطلوبة للمتابعة." : "Your request has not reached review yet. Add the receipt or requested details to continue.") : (ar ? "سنفعّل باقتك بعد المراجعة. تابع الحالة من صفحة الدفع." : "Your plan activates after review. Track the status from checkout.")}</p>
         </div>
-        {checkoutHref ? <Link className="primary" href={checkoutHref}>{requiresAction ? (ar ? "إكمال الدفع" : "Complete payment") : (ar ? "تتبّع الطلب" : "Track request")}</Link> : null}
+        {requiresAction && checkoutHref ? <Link className="primary" href={checkoutHref}>{ar ? "إكمال الدفع" : "Complete payment"}</Link> : null}
+        {!requiresAction && awaitingReview && statusHref ? <Link className="primary" href={statusHref}>{ar ? "تتبّع الطلب" : "Track request"}</Link> : null}
       </section>
     );
   }
@@ -324,7 +326,7 @@ function PlanCard({ locale, subscription, plans }: { locale: Locale; subscriptio
 
 type AccountSummary = { displayName: string; email: string; role?: string };
 
-export default function Home({ initialView = "home", authenticated = false, account = null, isOwner = false }: { initialView?: View; authenticated?: boolean; account?: AccountSummary | null; isOwner?: boolean } = {}) {
+export default function Home({ initialView = "home", authenticated = false, account = null, isOwner = false, canManagePayments = false }: { initialView?: View; authenticated?: boolean; account?: AccountSummary | null; isOwner?: boolean; canManagePayments?: boolean } = {}) {
   const router = useRouter();
   const [locale, setLocale] = useWisalLocale();
   const [view, setView] = useState<View>(initialView);
@@ -610,7 +612,7 @@ export default function Home({ initialView = "home", authenticated = false, acco
       )}
       {view === "guest" && <Guest locale={locale} rsvp={rsvp} setRsvp={setRsvp} eventData={eventData} onSubmitted={async () => { await loadEvent(currentEventId); go("dashboard"); }} />}
       {view === "dashboard" && <><Dashboard locale={locale} filter={filter} setFilter={setFilter} eventData={eventData} eventList={eventList} currentEventId={currentEventId} onChooseEvent={chooseEvent} onCreate={() => setCreatingEvent(true)} onEdit={() => void openStudio()} onAddGuest={() => setGuestEditor({ mode: "add" })} onEditGuest={(guest) => setGuestEditor({ mode: "edit", guest })} onDataUpdated={setEventData} profileName={profileName} subscriptionCard={authenticated && subscription ? <PlanCard locale={locale} subscription={subscription} plans={publicPlans} /> : null} /></>}
-      {view === "admin" && <Suspense fallback={<BuilderLoading locale={locale} />}><AdminDashboard locale={locale} isOwner={isOwner} onOpenEvent={(id) => { void chooseEvent(id).then(() => go("dashboard")); }} /></Suspense>}
+      {view === "admin" && <Suspense fallback={<BuilderLoading locale={locale} />}><AdminDashboard locale={locale} isOwner={isOwner} canManagePayments={canManagePayments} onOpenEvent={(id) => { void chooseEvent(id).then(() => go("dashboard")); }} /></Suspense>}
       {creatingEvent && <CreateEventModal locale={locale} plan={selectedPlan} onClose={() => setCreatingEvent(false)} onCreate={createEvent} />}
       {guestEditor && <GuestModal locale={locale} mode={guestEditor.mode} guest={guestEditor.guest} onClose={() => setGuestEditor(null)} onSave={saveGuest} onDelete={removeGuest} />}
     </main>
