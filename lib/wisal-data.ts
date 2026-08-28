@@ -1,5 +1,5 @@
 import { and, asc, count, desc, eq, inArray, sql } from "drizzle-orm";
-import { getDb } from "@/db";
+import { getDb, getSql } from "@/db";
 import { activityLogs, eventSegments, events, guestGroupMemberships, guestGroups, guests, guestSegmentAccess, invitations, messages, segmentRsvps, users } from "@/db/schema";
 import { getActiveSubscription, getGuestLimitForOwnerEmail } from "@/lib/payments";
 import { isPaidPlanCode, isPremiumTemplateCode } from "@/lib/template-entitlements";
@@ -513,43 +513,65 @@ export async function saveRsvp(input: {
     effectiveRules = directRules.length ? directRules : groupRules;
     if (effectiveRules.length && responses.some((response) => !effectiveRules.some((rule) => rule.segmentId === response.segmentId && rule.invited))) throw new Error("لا تملك هذه الدعوة صلاحية الرد على إحدى المراحل");
   }
-  let savedGuest = personalizedGuest;
-  if (personalizedGuest) {
-    await db.update(guests).set({
-      status: input.status,
-      partySize,
-      meal: input.status === "yes" && invitation.mealQuestionEnabled ? input.meal : "—",
-      message: input.message ?? "",
-      openedAt: personalizedGuest.openedAt ?? updatedAt,
-      respondedAt: updatedAt,
-      updatedAt,
-    }).where(eq(guests.id, personalizedGuest.id));
-    await db.insert(activityLogs).values({ eventId, actor: personalizedGuest.name, action: "rsvp_submitted", details: { status: input.status, partySize, personalized: true } });
-    savedGuest = (await db.select().from(guests).where(eq(guests.id, personalizedGuest.id)).limit(1))[0];
-  } else {
-    const id = crypto.randomUUID();
-    await db.insert(guests).values({ id, eventId, inviteToken: createInviteToken(), name: input.name, status: input.status, partySize, meal: input.status === "yes" && invitation.mealQuestionEnabled ? input.meal : "—", message: input.message ?? "", openedAt: updatedAt, respondedAt: updatedAt, updatedAt }).onConflictDoUpdate({
-      target: [guests.eventId, guests.name],
-      set: { status: input.status, partySize, meal: input.status === "yes" && invitation.mealQuestionEnabled ? input.meal : "—", message: input.message ?? "", openedAt: updatedAt, respondedAt: updatedAt, updatedAt },
-    });
-    await db.insert(activityLogs).values({ eventId, actor: input.name, action: "rsvp_submitted", details: { status: input.status, partySize } });
-    savedGuest = (await db.select().from(guests).where(and(eq(guests.eventId, eventId), eq(guests.name, input.name))).limit(1))[0];
-  }
-  if (!savedGuest) throw new Error("تعذر حفظ بيانات الضيف");
-  for (const response of responses) {
+  const meal = input.status === "yes" && invitation.mealQuestionEnabled ? input.meal : "—";
+  const guestId = personalizedGuest?.id ?? crypto.randomUUID();
+  const guestName = personalizedGuest?.name ?? input.name;
+  const inviteToken = personalizedGuest?.inviteToken ?? createInviteToken();
+  const segmentRows = responses.map((response) => {
     const accessLimit = effectiveRules.find((rule) => rule.segmentId === response.segmentId)?.partyLimit ?? invitation.maxPartySize;
-    const responsePartySize = response.status === "yes" ? Math.min(invitation.maxPartySize, accessLimit, Math.max(1, response.partySize)) : 1;
-    await db.insert(segmentRsvps).values({
-      guestId: savedGuest.id,
+    return {
       segmentId: response.segmentId,
       status: response.status,
-      partySize: responsePartySize,
-      respondedAt: updatedAt,
-      updatedAt,
-    }).onConflictDoUpdate({
-      target: [segmentRsvps.guestId, segmentRsvps.segmentId],
-      set: { status: response.status, partySize: responsePartySize, respondedAt: updatedAt, updatedAt },
-    });
-  }
+      partySize: response.status === "yes" ? Math.min(invitation.maxPartySize, accessLimit, Math.max(1, response.partySize)) : 1,
+    };
+  });
+
+  // A single statement keeps the guest, activity log, and every segment reply in sync.
+  // If any write fails, Neon rolls all of them back together.
+  const sqlClient = getSql();
+  const [result] = await sqlClient.transaction([
+    sqlClient`
+      WITH saved_guest AS (
+        INSERT INTO public.guests (id, event_id, name, invite_token, status, party_size, meal, message, opened_at, responded_at, updated_at)
+        VALUES (${guestId}, ${eventId}, ${guestName}, ${inviteToken}, ${input.status}, ${partySize}, ${meal}, ${input.message ?? ""}, ${updatedAt}, ${updatedAt}, ${updatedAt})
+        ON CONFLICT (event_id, name) DO UPDATE SET
+          status = EXCLUDED.status,
+          party_size = EXCLUDED.party_size,
+          meal = EXCLUDED.meal,
+          message = EXCLUDED.message,
+          opened_at = COALESCE(public.guests.opened_at, EXCLUDED.opened_at),
+          responded_at = EXCLUDED.responded_at,
+          updated_at = EXCLUDED.updated_at
+        RETURNING id
+      ), activity AS (
+        INSERT INTO public.activity_logs (event_id, actor_label, action, details, created_at)
+        SELECT ${eventId}, ${guestName}, 'rsvp_submitted', jsonb_build_object(
+          'status', ${input.status},
+          'partySize', ${partySize},
+          'personalized', ${Boolean(personalizedGuest)},
+          'segmentCount', ${segmentRows.length}
+        ), ${updatedAt}
+        FROM saved_guest
+      ), segment_input AS (
+        SELECT segment_id, status, party_size
+        FROM jsonb_to_recordset(${JSON.stringify(segmentRows)}::jsonb) AS item(segment_id uuid, status text, party_size integer)
+      ), saved_segments AS (
+        INSERT INTO public.segment_rsvps (guest_id, segment_id, status, party_size, responded_at, updated_at)
+        SELECT saved_guest.id, segment_input.segment_id, segment_input.status, segment_input.party_size, ${updatedAt}, ${updatedAt}
+        FROM saved_guest CROSS JOIN segment_input
+        ON CONFLICT (guest_id, segment_id) DO UPDATE SET
+          status = EXCLUDED.status,
+          party_size = EXCLUDED.party_size,
+          responded_at = EXCLUDED.responded_at,
+          updated_at = EXCLUDED.updated_at
+      )
+      SELECT id FROM saved_guest
+    `,
+  ]);
+  const transactionRows = Array.isArray(result) ? result as Array<Record<string, unknown>> : [];
+  const savedGuestId = String(transactionRows[0]?.id ?? "");
+  if (!savedGuestId) throw new Error("تعذر حفظ بيانات الضيف");
+  const [savedGuest] = await db.select().from(guests).where(eq(guests.id, savedGuestId)).limit(1);
+  if (!savedGuest) throw new Error("تعذر حفظ بيانات الضيف");
   return savedGuest;
 }

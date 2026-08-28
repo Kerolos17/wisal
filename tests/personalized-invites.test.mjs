@@ -33,11 +33,12 @@ test("RSVP uses the personalized token and updates the exact guest", () => {
   assert.match(invitationClientSource, /inviteToken: guest\?\.inviteToken/);
   assert.match(rsvpRouteSource, /inviteToken: payload\.inviteToken\?\.trim\(\)/);
   assert.match(dataSource, /if \(input\.inviteToken && !personalizedGuest\)/);
-  assert.match(dataSource, /respondedAt: updatedAt/);
+  assert.match(dataSource, /const guestId = personalizedGuest\?\.id/);
+  assert.match(dataSource, /ON CONFLICT \(event_id, name\)/);
 });
 
 test("RSVP validates segment ownership and segment IDs before it mutates a guest", () => {
-  const firstGuestWrite = dataSource.indexOf("let savedGuest = personalizedGuest");
+  const firstGuestWrite = dataSource.indexOf("WITH saved_guest AS");
   const segmentValidation = dataSource.indexOf("إحدى مراحل المناسبة غير صالحة");
   const accessValidation = dataSource.indexOf("لا تملك هذه الدعوة صلاحية الرد على إحدى المراحل");
 
@@ -46,6 +47,14 @@ test("RSVP validates segment ownership and segment IDs before it mutates a guest
   assert.ok(accessValidation > 0 && accessValidation < firstGuestWrite);
   assert.match(rsvpRouteSource, /"إحدى مراحل المناسبة غير صالحة"/);
   assert.match(rsvpRouteSource, /"لا تملك هذه الدعوة صلاحية الرد على إحدى المراحل"/);
+});
+
+test("RSVP persists the guest, activity record, and every segment reply atomically", () => {
+  assert.match(dataSource, /const \[result\] = await sqlClient\.transaction\(\[/);
+  assert.match(dataSource, /WITH saved_guest AS/);
+  assert.match(dataSource, /INSERT INTO public\.activity_logs/);
+  assert.match(dataSource, /INSERT INTO public\.segment_rsvps/);
+  assert.match(dataSource, /FROM saved_guest CROSS JOIN segment_input/);
 });
 
 test("dashboard exposes copy, WhatsApp sharing, and invitation analytics", () => {

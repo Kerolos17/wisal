@@ -28,6 +28,6 @@ test("personalized invitations reveal only authorized segments", () => {
 test("RSVP is captured independently for every visible segment", () => {
   assert.match(invitationSource, /segmentResponses/);
   assert.match(invitationSource, /segmentAnswers/);
-  assert.match(dataSource, /db\.insert\(segmentRsvps\)/);
-  assert.match(dataSource, /segmentRsvps\.guestId, segmentRsvps\.segmentId/);
+  assert.match(dataSource, /INSERT INTO public\.segment_rsvps/);
+  assert.match(dataSource, /ON CONFLICT \(guest_id, segment_id\)/);
 });
