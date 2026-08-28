@@ -12,5 +12,5 @@ export default async function AdminPage() {
     return <main className="access-denied"><span>!</span><h1>Access denied</h1><p>This area is available only to the Wisal administration team.</p><a href="/workspace">Back to event dashboard</a></main>;
   }
   const isOwner = isPlatformOwnerConfigured() && isPlatformOwner(account.email);
-  return <Home initialView="admin" authenticated account={account} isOwner={isOwner} />;
+  return <Home initialView="admin" authenticated account={account} isOwner={isOwner} canManagePayments={account.role === "admin"} />;
 }

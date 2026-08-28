@@ -46,7 +46,7 @@ function PaymentCard({ locale, payment, busy, onAct }: {
 }) {
   const L = (ar: string, en: string) => (locale === "ar" ? ar : en);
   const [reason, setReason] = useState("");
-  const canReview = payment.status === "pending_review" || payment.status === "needs_info";
+  const canReview = payment.status === "pending_review";
   const money = `${payment.priceEgpSnapshot ?? 0} ${payment.currency}`;
   const submitted = payment.submittedAt ?? payment.createdAt;
 
@@ -78,13 +78,20 @@ function PaymentCard({ locale, payment, busy, onAct }: {
           <input
             className="admin-reason-input"
             value={reason}
+            id={`payment-review-reason-${payment.id}`}
+            aria-label={L("سبب الرفض أو طلب المعلومات", "Rejection or information request reason")}
+            aria-required="true"
+            aria-describedby={`payment-review-reason-help-${payment.id}`}
             placeholder={L("سبب الرفض أو طلب المعلومات (مطلوب للإجراءين الآخرين)", "Reject / info reason (required for those actions)")}
             onChange={(event) => setReason(event.target.value)}
           />
+          <small id={`payment-review-reason-help-${payment.id}`} className="admin-reason-hint">
+            {L("اكتب سببًا واضحًا قبل الرفض أو طلب معلومات إضافية.", "Add a clear reason before rejecting or requesting more information.")}
+          </small>
           <div className="admin-payment-buttons">
-            <button className="admin-approve" disabled={busy} onClick={() => onAct("approve", payment.statusVersion)}>{L("اعتماد", "Approve")}</button>
-            <button className="admin-reject" disabled={busy || !reason.trim()} onClick={() => onAct("reject", payment.statusVersion, reason.trim())}>{L("رفض", "Reject")}</button>
-            <button className="admin-request-info" disabled={busy || !reason.trim()} onClick={() => onAct("request-info", payment.statusVersion, reason.trim())}>{L("طلب معلومات", "Request info")}</button>
+            <button type="button" className="admin-approve" disabled={busy} onClick={() => onAct("approve", payment.statusVersion)}>{L("اعتماد", "Approve")}</button>
+            <button type="button" className="admin-reject" disabled={busy || !reason.trim()} onClick={() => onAct("reject", payment.statusVersion, reason.trim())}>{L("رفض", "Reject")}</button>
+            <button type="button" className="admin-request-info" disabled={busy || !reason.trim()} onClick={() => onAct("request-info", payment.statusVersion, reason.trim())}>{L("طلب معلومات", "Request info")}</button>
           </div>
         </div>
       )}
@@ -143,19 +150,24 @@ export default function AdminPayments({ locale, onReviewed }: { locale: Locale; 
 
   const act = async (action: "approve" | "reject" | "request-info", id: string, statusVersion: number, reason?: string) => {
     setBusyId(id);
-    const response = await fetch(`/api/admin/payments/${id}/${action}`, {
-      method: "PATCH",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(reason ? { statusVersion, reason } : { statusVersion }),
-    });
-    setBusyId("");
-    if (response.ok) {
-      const data = await response.json() as { payment: AdminPayment };
-      setPayments((prev) => (prev ? prev.map((item) => (item.id === id ? data.payment : item)) : prev));
-      onReviewed?.();
-    } else {
-      const data = await response.json().catch(() => ({})) as { error?: string };
-      setError(data.error || L("تعذر تنفيذ الإجراء", "Could not perform action"));
+    try {
+      const response = await fetch(`/api/admin/payments/${id}/${action}`, {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(reason ? { statusVersion, reason } : { statusVersion }),
+      });
+      if (response.ok) {
+        const data = await response.json() as { payment: AdminPayment };
+        setPayments((prev) => (prev ? prev.map((item) => (item.id === id ? data.payment : item)) : prev));
+        onReviewed?.();
+      } else {
+        const data = await response.json().catch(() => ({})) as { error?: string };
+        setError(data.error || L("تعذر تنفيذ الإجراء", "Could not perform action"));
+      }
+    } catch {
+      setError(L("تعذر الاتصال بالخادم. حاول مرة أخرى.", "Could not reach the server. Try again."));
+    } finally {
+      setBusyId("");
     }
   };
 

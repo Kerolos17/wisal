@@ -18,7 +18,7 @@ type AdminData = {
   support: Array<{ id: string; subject: string; message: string; category: string; priority: "normal" | "high" | "urgent"; status: "open" | "in_progress" | "resolved" | "closed"; resolution: string; createdAt: string; updatedAt: string; userName: string | null; userEmail: string | null; eventTitle: string | null }>;
 };
 
-export default function AdminDashboard({ locale, isOwner = false, onOpenEvent }: { locale: Locale; isOwner?: boolean; onOpenEvent: (id: string) => void }) {
+export default function AdminDashboard({ locale, isOwner = false, canManagePayments = false, onOpenEvent }: { locale: Locale; isOwner?: boolean; canManagePayments?: boolean; onOpenEvent: (id: string) => void }) {
   const L = (ar: string, en: string) => locale === "ar" ? ar : en;
   const [section, setSection] = useState<AdminSection>("overview");
   const [data, setData] = useState<AdminData | null>(null);
@@ -81,7 +81,7 @@ export default function AdminDashboard({ locale, isOwner = false, onOpenEvent }:
   if (state === "loading") return <section className="admin-state"><span /><h1>{L("نجهّز لوحة الإدارة…", "Preparing the admin dashboard…")}</h1></section>;
   if (state === "error" || !data) return <section className="admin-state"><b>!</b><h1>{L("تعذر تحميل لوحة الإدارة", "Could not load the admin dashboard")}</h1><button onClick={() => void load()}>{L("إعادة المحاولة", "Try again")}</button></section>;
 
-  const nav = [
+  const allNav = [
     { id: "overview" as AdminSection, ar: "نظرة عامة", en: "Overview", icon: LayoutDashboard },
     { id: "users" as AdminSection, ar: "المستخدمون", en: "Users", icon: UsersRound },
     { id: "events" as AdminSection, ar: "الدعوات", en: "Invitations", icon: CalendarDays },
@@ -93,6 +93,7 @@ export default function AdminDashboard({ locale, isOwner = false, onOpenEvent }:
     { id: "audit" as AdminSection, ar: "سجل العمليات", en: "Audit log", icon: History },
     { id: "payments" as AdminSection, ar: "المدفوعات", en: "Payments", icon: CreditCard },
   ];
+  const nav = allNav.filter(({ id }) => id !== "payments" || canManagePayments);
   const statusLabel = (value: string) => value === "published" ? L("منشورة", "Published") : value === "archived" ? L("مؤرشفة", "Archived") : L("مسودة", "Draft");
   const pct = (value: number) => data.stats.guests ? Math.round((value / data.stats.guests) * 100) : 0;
   const atelierTemplates = data.templates.slice(0, 6);
