@@ -7,7 +7,7 @@ The application supports an administrator-reviewed transfer workflow. This is a 
 - [x] Contract checks cover the checkout route, private receipt access, payment-state feedback, and configurable destinations.
 - [x] Receipt-storage unit tests cover unique upload keys and cleanup when submission fails.
 - [x] Runtime payment and guest-limit tests require `PAYMENT_TEST_MODE=enabled` and a `PAYMENT_TEST_DATABASE_URL` that is different from `DATABASE_URL`.
-- [ ] Run `npm run test:payments` against a dedicated staging database after creating `.env.test`. Never point it at production.
+- [x] Run `npm run test:payments` against a dedicated staging database after creating `.env.test` (28 August 2026). Never point it at production.
 - [ ] Run lint, TypeScript, and a production build from the release commit.
 
 ## Staging walkthrough
