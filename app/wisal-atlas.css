@@ -1252,6 +1252,30 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
 .atlas-template-stage-copy > span { margin-bottom: 26px; }
 .atlas-template-stage-copy .atlas-primary { margin-top: 0; }
 .atlas-template-stage-copy .atlas-primary b { margin-inline-start: 8px; font: inherit; }
+.atlas-template-directions {
+  width: min(100%, 430px);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin: 0 0 20px;
+  border-top: 1px solid rgba(239, 173, 118, .3);
+  border-bottom: 1px solid rgba(239, 173, 118, .3);
+}
+.atlas-template-directions div { min-width: 0; padding: 12px 10px 12px 0; }
+.atlas-template-directions div + div { padding-inline-start: 10px; border-inline-start: 1px solid rgba(239, 173, 118, .2); }
+.atlas-template-directions dt {
+  margin: 0 0 5px;
+  color: var(--atlas-copper-bright);
+  font: 700 8px/1 var(--font-ui);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.atlas-template-directions dd {
+  margin: 0;
+  color: rgba(255, 247, 238, .86);
+  font-size: 10px;
+  line-height: 1.35;
+}
 .atlas-template-path {
   width: min(100%, 390px);
   display: grid;
@@ -1296,6 +1320,10 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
 .atlas-template-stage-white-story .atlas-template-stage-copy p { color: #655c5b; }
 .atlas-template-stage-white-story .atlas-template-stage-copy > small,
 .atlas-template-stage-white-story .atlas-template-stage-copy > span { color: #7c3a42; }
+.atlas-template-stage-white-story .atlas-template-directions { border-color: rgba(87, 29, 40, .2); }
+.atlas-template-stage-white-story .atlas-template-directions div + div { border-color: rgba(87, 29, 40, .16); }
+.atlas-template-stage-white-story .atlas-template-directions dt { color: #7c3a42; }
+.atlas-template-stage-white-story .atlas-template-directions dd { color: #4f4848; }
 .atlas-template-stage-white-story .atlas-template-path {
   border-color: rgba(87, 29, 40, .22);
   background: rgba(87, 29, 40, .13);
@@ -1305,6 +1333,19 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
   color: #571d28;
 }
 .atlas-template-stage-white-story .atlas-template-stage-art::after { background: linear-gradient(90deg, rgba(255, 253, 248, .32), transparent 42%); }
+.atlas-template-stage-love-poem .atlas-template-stage-copy { background: radial-gradient(circle at 12% 18%, rgba(195, 140, 84, .2), transparent 34%), linear-gradient(145deg, #441723, #211016); }
+.atlas-template-stage-garden-night .atlas-template-stage-copy { background: radial-gradient(circle at 80% 9%, rgba(135, 159, 111, .2), transparent 30%), linear-gradient(145deg, #20342b, #141e1a); }
+.atlas-template-stage-garden-night .atlas-template-directions { border-color: rgba(212, 224, 188, .28); }
+.atlas-template-stage-garden-night .atlas-template-directions dt { color: #c7d7af; }
+.atlas-template-stage-moonlight .atlas-template-stage-copy { background: radial-gradient(circle at 24% 18%, rgba(169, 208, 223, .22), transparent 29%), linear-gradient(145deg, #183141, #0a151e); }
+.atlas-template-stage-moonlight .atlas-template-directions { border-color: rgba(166, 200, 216, .35); }
+.atlas-template-stage-moonlight .atlas-template-directions dt { color: #b8dce7; }
+.atlas-template-stage-golden-vows .atlas-template-stage-copy { background: radial-gradient(circle at 8% 80%, rgba(213, 169, 97, .2), transparent 38%), linear-gradient(145deg, #4a1827, #260e17); }
+.atlas-template-stage-golden-vows .atlas-template-directions { border-color: rgba(230, 194, 133, .34); }
+.atlas-template-stage-golden-vows .atlas-template-directions dt { color: #e7c78d; }
+.atlas-template-stage-cinema-night .atlas-template-stage-copy { background: radial-gradient(circle at 82% 15%, rgba(229, 133, 89, .17), transparent 34%), linear-gradient(145deg, #2b111a, #0d080d); }
+.atlas-template-stage-cinema-night .atlas-template-directions { border-color: rgba(224, 147, 110, .35); }
+.atlas-template-stage-cinema-night .atlas-template-directions dt { color: #efad86; }
 .atlas-template-grid {
   max-width: 1240px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1439,6 +1480,7 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
   .atlas-template-stage-copy { min-height: 335px; padding: 34px 24px 30px; }
   .atlas-template-stage-copy h3 { font-size: clamp(42px, 12vw, 58px); }
   .atlas-template-stage-copy p { font-size: 13px; }
+  .atlas-template-directions { margin-bottom: 18px; }
   .atlas-template-path { margin-bottom: 20px; }
   .atlas-template-stage-art { min-height: 410px; }
   .atlas-template-stage-art > img { object-position: center 24%; }
