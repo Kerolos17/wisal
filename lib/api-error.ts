@@ -6,7 +6,19 @@ type ApiErrorOptions = {
   statusByCode?: Readonly<Record<string, number>>;
 };
 
+function isRequestValidationError(error: unknown): error is { status: number; message: string; code: string } {
+  return error instanceof Error && error.name === "RequestValidationError" &&
+    typeof (error as { status?: unknown }).status === "number" &&
+    typeof (error as { code?: unknown }).code === "string";
+}
+
 export function apiErrorResponse(error: unknown, options: ApiErrorOptions) {
+  if (isRequestValidationError(error)) {
+    return Response.json(
+      { error: error.message, code: error.code },
+      { status: error.status, headers: { "Cache-Control": "private, no-store" } },
+    );
+  }
   const requestId = crypto.randomUUID();
   const errorName = error instanceof Error ? error.name : "UnknownError";
   const errorCode = typeof error === "object" && error !== null && "code" in error && typeof error.code === "string"

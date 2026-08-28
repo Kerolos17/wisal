@@ -1,6 +1,7 @@
 import { saveRsvp } from "@/lib/wisal-data";
 import { guardPublicJsonRequest, publicJson } from "@/lib/public-api-guard";
 import { apiErrorResponse } from "@/lib/api-error";
+import { readJsonBody } from "@/lib/request-validation";
 
 export const dynamic = "force-dynamic";
 
@@ -8,7 +9,7 @@ export async function POST(request: Request) {
   const blocked = await guardPublicJsonRequest(request, { limit: 10, maxBodyBytes: 16_384 });
   if (blocked) return blocked;
   try {
-    const payload = await request.json() as {
+    const payload = await readJsonBody(request) as {
       name?: string;
       status?: "yes" | "maybe" | "no";
       partySize?: number;

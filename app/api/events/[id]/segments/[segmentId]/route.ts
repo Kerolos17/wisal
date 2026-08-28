@@ -1,13 +1,14 @@
 import { getCurrentOwnerEmail } from "@/lib/current-owner";
 import { deleteEventSegment, updateEventSegment } from "@/lib/wisal-data";
 import { apiErrorResponse } from "@/lib/api-error";
+import { readJsonBody } from "@/lib/request-validation";
 
 export const dynamic = "force-dynamic";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string; segmentId: string }> }) {
   try {
     const { id, segmentId } = await params;
-    const payload = await request.json();
+    const payload = await readJsonBody(request);
     if (payload.startsAt && Number.isNaN(new Date(payload.startsAt).getTime())) return Response.json({ error: "موعد المرحلة غير صالح" }, { status: 400 });
     const event = await updateEventSegment(await getCurrentOwnerEmail(), id, segmentId, payload);
     return event ? Response.json(event) : Response.json({ error: "المناسبة أو المرحلة غير موجودة" }, { status: 404 });

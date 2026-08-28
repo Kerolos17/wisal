@@ -1,6 +1,7 @@
 import { getCurrentOwnerEmail } from "@/lib/current-owner";
 import { getEventOverview, updateEvent } from "@/lib/wisal-data";
 import { apiErrorResponse } from "@/lib/api-error";
+import { readJsonBody } from "@/lib/request-validation";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +18,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
-    const payload = await request.json();
+    const payload = await readJsonBody(request);
     if (payload.eventDate && Number.isNaN(new Date(payload.eventDate).getTime())) return Response.json({ error: "تاريخ الحفل غير صالح" }, { status: 400 });
     if (payload.status && !["draft", "published", "archived"].includes(payload.status)) return Response.json({ error: "حالة المناسبة غير صالحة" }, { status: 400 });
     if (payload.openingStyle && !["envelope", "card", "curtain"].includes(payload.openingStyle)) return Response.json({ error: "أسلوب فتح الدعوة غير صالح" }, { status: 400 });

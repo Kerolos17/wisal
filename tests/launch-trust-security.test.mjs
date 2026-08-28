@@ -10,6 +10,21 @@ const media = await readFile(new URL("../app/api/media/[...key]/route.ts", impor
 const legal = await readFile(new URL("../app/legal-document.tsx", import.meta.url), "utf8");
 const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
 const sitemap = await readFile(new URL("../app/sitemap.ts", import.meta.url), "utf8");
+const requestValidation = await readFile(new URL("../lib/request-validation.ts", import.meta.url), "utf8");
+
+const jsonRouteFiles = [
+  "admin/content/[key]/route.ts", "admin/payment-destinations/route.ts", "admin/plans/[code]/route.ts",
+  "admin/support-tickets/[id]/route.ts", "admin/templates/[code]/route.ts", "admin/users/[id]/route.ts",
+  "admin/payments/[id]/approve/route.ts", "admin/payments/[id]/reject/route.ts", "admin/payments/[id]/request-info/route.ts",
+  "events/route.ts", "events/[id]/route.ts", "events/[id]/guest-groups/route.ts", "events/[id]/guest-groups/[groupId]/route.ts",
+  "events/[id]/guests/route.ts", "events/[id]/guests/[guestId]/route.ts", "events/[id]/guests/import/route.ts",
+  "events/[id]/messages/route.ts", "events/[id]/segments/route.ts", "events/[id]/segments/[segmentId]/route.ts",
+  "invitation-open/route.ts", "payments/route.ts", "rsvp/route.ts", "support-tickets/route.ts",
+];
+const jsonRoutes = await Promise.all(jsonRouteFiles.map(async (file) => ({
+  file,
+  source: await readFile(new URL(`../app/api/${file}`, import.meta.url), "utf8"),
+})));
 
 test("public mutations reject oversized, cross-origin, and excessive requests", () => {
   assert.match(guard, /invalid_content_type/);
@@ -30,6 +45,17 @@ test("health check reports application and database state without configuration 
   assert.match(health, /status: "degraded"/);
   assert.match(health, /Cache-Control/);
   assert.doesNotMatch(health, /DATABASE_URL/);
+});
+
+test("every JSON endpoint uses the bounded object reader", () => {
+  assert.match(requestValidation, /DEFAULT_MAX_JSON_BYTES = 64 \* 1024/);
+  assert.match(requestValidation, /invalid_json/);
+  assert.match(requestValidation, /invalid_json_object/);
+  assert.match(requestValidation, /request\.text\(\)/);
+  for (const { file, source } of jsonRoutes) {
+    assert.match(source, /readJsonBody\(request\)/, file);
+    assert.doesNotMatch(source, /request\.json\(\)/, file);
+  }
 });
 
 test("public media is limited to generated invitation covers", () => {

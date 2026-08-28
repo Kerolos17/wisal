@@ -1,12 +1,13 @@
 import { updatePlatformPlan } from "@/lib/admin-data";
 import { forbiddenUnless } from "@/lib/admin-auth";
 import { apiErrorResponse } from "@/lib/api-error";
+import { readJsonBody } from "@/lib/request-validation";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ code: string }> }) {
   try {
     const forbidden = await forbiddenUnless("plans.manage"); if (forbidden) return forbidden;
     const { code } = await params;
-    const body = await request.json() as { priceEgp?: unknown; active?: unknown; featured?: unknown };
+    const body = await readJsonBody(request) as { priceEgp?: unknown; active?: unknown; featured?: unknown };
     const changes: { priceEgp?: number; active?: boolean; featured?: boolean } = {};
     if (body.priceEgp !== undefined) {
       if (!Number.isInteger(body.priceEgp) || Number(body.priceEgp) < 0) return Response.json({ error: "priceEgp must be a positive integer" }, { status: 400 });

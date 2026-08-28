@@ -1,13 +1,14 @@
 import { getCurrentOwnerEmail } from "@/lib/current-owner";
 import { deleteGuest, updateGuest } from "@/lib/wisal-data";
 import { apiErrorResponse } from "@/lib/api-error";
+import { readJsonBody } from "@/lib/request-validation";
 
 export const dynamic = "force-dynamic";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string; guestId: string }> }) {
   try {
     const { id, guestId } = await params;
-    const payload = await request.json();
+    const payload = await readJsonBody(request);
     if (payload.phone && !/^[+\d\s()-]{7,30}$/.test(payload.phone)) return Response.json({ error: "رقم واتساب غير صالح" }, { status: 400 });
     const event = await updateGuest(await getCurrentOwnerEmail(), id, guestId, payload);
     return event ? Response.json(event) : Response.json({ error: "المناسبة أو الضيف غير موجود" }, { status: 404 });

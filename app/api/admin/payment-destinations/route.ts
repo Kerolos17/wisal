@@ -1,6 +1,7 @@
 import { forbiddenUnless } from "@/lib/admin-auth";
 import { listPaymentDestinations, parsePaymentDestination, savePaymentDestinations } from "@/lib/payment-destinations";
 import { apiErrorResponse } from "@/lib/api-error";
+import { readJsonBody } from "@/lib/request-validation";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +15,7 @@ export async function PUT(request: Request) {
   try {
     const forbidden = await forbiddenUnless("users.manage");
     if (forbidden) return forbidden;
-    const payload = await request.json() as { destinations?: unknown };
+    const payload = await readJsonBody(request) as { destinations?: unknown };
     if (!Array.isArray(payload.destinations) || payload.destinations.length > 5) return Response.json({ error: "Invalid payment destinations" }, { status: 400 });
     const destinations = payload.destinations.map(parsePaymentDestination);
     const unique = new Set(destinations.map((destination) => destination.method));

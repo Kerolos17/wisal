@@ -2,6 +2,7 @@ import { getPlatformIdentity } from "@/lib/auth/identity";
 import { requestInfoPaymentRequest } from "@/lib/payments";
 import { forbiddenUnless } from "@/lib/admin-auth";
 import { paymentApiErrorResponse } from "@/lib/payment-api-error";
+import { readJsonBody } from "@/lib/request-validation";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +15,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     if (!identity) return Response.json({ error: "Authentication required" }, { status: 401 });
 
     const { id } = await params;
-    const body = await request.json() as { statusVersion?: unknown; reason?: unknown };
+    const body = await readJsonBody(request) as { statusVersion?: unknown; reason?: unknown };
     if (typeof body.statusVersion !== "number") return Response.json({ error: "statusVersion is required" }, { status: 400 });
     if (typeof body.reason !== "string" || !body.reason.trim()) return Response.json({ error: "Info request reason is required" }, { status: 400 });
 
