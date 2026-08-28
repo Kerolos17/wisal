@@ -2,6 +2,7 @@ import { describe, it, before, after } from "node:test";
 import { randomUUID } from "node:crypto";
 import assert from "node:assert/strict";
 import { configurePaymentTestEnvironment } from "./helpers/payment-test-environment.mjs";
+import { ensurePaymentTestPlans } from "./helpers/payment-test-data";
 
 configurePaymentTestEnvironment();
 
@@ -55,6 +56,7 @@ async function submitDraft(email: string, draft: Awaited<ReturnType<typeof creat
 
 describe("payment domain", () => {
   before(async () => {
+    await ensurePaymentTestPlans();
     const plans = await getDb().select().from(platformPlans);
     const plan = plans.find((item) => item.active && item.priceEgp > 0 && item.durationDays > 0);
     if (!plan) throw new Error("Payment tests require one active paid plan with a duration");
