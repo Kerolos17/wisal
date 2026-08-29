@@ -167,7 +167,7 @@ export default function CheckoutStatusClient({ id }: { id: string }) {
                   : <span className="checkout-status-live"><i aria-hidden="true" />{L("يتم التحديث تلقائيًا", "Updates automatically")}</span>}
             <Link className="checkout-status-secondary" href="/">{L("العودة للرئيسية", "Back to home")}</Link>
           </div>
-          <p className="checkout-status-footnote">{L("يمكنك ترك هذه الصفحة؛ سنحتفظ بطلبك ونحدّث حالته تلقائيًا.", "You can leave this page. We’ll keep your request and update its status automatically.")}</p>
+          <p className="checkout-status-footnote">{L("يمكنك ترك هذه الصفحة؛ سنحتفظ بطلبك ونحدّث حالته تلقائيًا.", "You can leave this page. We’ll keep your request and update its status automatically.")} <Link className="checkout-status-support" href="/workspace?section=support">{L("تحتاج مساعدة؟ افتح تذكرة دعم", "Need help? Open a support ticket")}</Link></p>
         </main>
       </div>
     </section>

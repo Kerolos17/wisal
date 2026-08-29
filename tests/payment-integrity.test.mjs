@@ -68,8 +68,10 @@ describe("manual payment integrity contracts", () => {
     assert.match(checkout, /policyAccepted/);
     assert.match(checkout, /mandatory consumer rights remain unaffected/);
     assert.match(checkout, /not a tax invoice or fiscal receipt/);
+    assert.match(checkout, /workspace\?section=support/);
     assert.match(status, /durationDaysSnapshot/);
     assert.match(status, /Active until/);
+    assert.match(status, /Need help\? Open a support ticket/);
     assert.match(payments, /reviewedAt: row\.reviewedAt/);
   });
 

@@ -972,3 +972,5 @@
 .plan-card-pending{border-color:#d9cdf0;background:linear-gradient(160deg,#fbf8ff,#fffdfa)}
 .plan-card-active{border-color:#cfe6d4}
 .plan-card-free a.primary{text-decoration:none}
+
+.checkout-policy-links{display:flex;gap:16px;flex-wrap:wrap}.checkout-policy-links>a{display:inline-flex;align-items:center;gap:5px;margin-top:11px;color:#7c3344;font-size:11px;font-weight:800;text-decoration:none}.checkout-policy-links>a:focus-visible{outline:3px solid #efad76;outline-offset:3px}.checkout-policy-links>a svg{width:14px}.checkout-status-support{display:inline-block;margin-top:8px;color:#7c3344;font-weight:800;text-decoration:underline;text-underline-offset:3px}
