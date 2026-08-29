@@ -12,6 +12,16 @@ import "./globals.css";
 import "./wisal-atlas.css";
 import { siteUrl } from "@/lib/site-url";
 
+const platformJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "Wisal",
+  url: siteUrl,
+  applicationCategory: "EventManagementApplication",
+  operatingSystem: "Web",
+  description: "Create a beautiful digital wedding invitation, share it with loved ones, and manage RSVPs in one place.",
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   alternates: { canonical: "/" },
@@ -51,6 +61,7 @@ export default function RootLayout({
   return (
     <html lang="en" dir="ltr">
       <body>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(platformJsonLd) }} />
         <template
           data-impeccable-contract="1917206f"
           dangerouslySetInnerHTML={{

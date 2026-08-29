@@ -87,3 +87,10 @@ test("bilingual trust pages explain privacy, terms, support, and payment status"
   assert.match(sitemap, /`\$\{siteUrl\}\/privacy`/);
   assert.match(sitemap, /`\$\{siteUrl\}\/terms`/);
 });
+
+test("structured data describes only the public platform, never private invitations", async () => {
+  assert.match(legal, /سياسة الخصوصية/);
+  assert.match(nextConfig, /Content-Security-Policy/);
+  assert.match(await readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"), /"@type": "WebApplication"/);
+  assert.doesNotMatch(await readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"), /WeddingEvent|Person/);
+});
