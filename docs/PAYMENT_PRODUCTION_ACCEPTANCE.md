@@ -14,18 +14,20 @@ The application supports an administrator-reviewed transfer workflow. This is a 
 
 - Neon staging project: `wisal-staging-tests` (`icy-credit-77217004`); no production data was copied.
 - Canonical database history: 6/6 migrations recorded by Drizzle and 23 public tables verified from PostgreSQL.
-- Runtime payment suite: 16/16 passing, including submit/approve, request-info/resubmit/reject, cancel, cross-account request isolation, concurrent approval, receipt cleanup, and sold-duration entitlement.
-- Repository gates: 170/170 contract tests, migration checksum verification, ESLint, TypeScript, and the Next.js production build passed.
+- Runtime payment suite: 20/20 passing, including submit/approve, request-info/resubmit/reject, cancel, expiry, cross-account request and receipt-metadata isolation, concurrent approval, receipt cleanup, and sold-duration entitlement.
+- Receipt storage matrix passed on staging for JPEG, PNG, WebP, and PDF round trips; spoofed content, unsupported MIME, and files over 5 MB were rejected. Cleanup verification found zero leftover test blobs and users.
+- Unauthenticated production probes returned 401 for payment status, receipt, and QR routes. QR assets are intentionally shared across authenticated customers because they represent the active receiving destination, not a customer-owned resource.
+- Repository gates: 171/171 contract tests, migration checksum verification, ESLint, TypeScript, and the Next.js production build passed. Private status and receipt responses now have an explicit `private, no-store` cache contract.
 
 ## Staging walkthrough
 
 - [ ] Sign in as a customer and select each paid plan; verify the exact amount, name, duration, and available receiving destination.
 - [ ] Open the payment link and QR image on phone and desktop; verify keyboard focus opens, traps, and returns from the QR dialog.
-- [ ] Upload a valid image and PDF receipt, then verify an invalid type and file over 5 MB are rejected.
+- [x] Upload valid JPEG, PNG, WebP, and PDF receipt payloads to staging storage, then verify spoofed content, an unsupported type, and a file over 5 MB are rejected and leave no orphan.
 - [ ] Approve one request and confirm the correct plan and exact expiry are visible in the customer workspace.
 - [ ] Request more information, resubmit the same request, and reject it; confirm the customer sees the reviewer reason and a working return-to-checkout link.
 - [ ] Cancel a draft request and confirm the status page does not crash.
-- [ ] Confirm an unauthorized account cannot read a receipt, payment status, or QR asset.
+- [x] Confirm another account cannot read payment status or receipt metadata, and an unauthenticated request cannot read status, receipt, or the shared QR asset.
 
 ## Production controls before charging customers
 

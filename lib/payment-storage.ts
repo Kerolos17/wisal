@@ -48,16 +48,17 @@ export async function readReceipt(key: string): Promise<{ body: Blob; contentTyp
 
 function verifyMagicBytes(buffer: Buffer, mime: string): boolean {
   if (buffer.byteLength < 4) return false;
-  const head = buffer.subarray(0, 8);
   switch (mime) {
     case "image/jpeg":
       return buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff;
     case "image/png":
       return buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47;
     case "image/webp":
-      return head.toString("ascii", 0, 4) === "RIFF" && head.toString("ascii", 4, 8) === "WEBP";
+      return buffer.byteLength >= 12
+        && buffer.toString("ascii", 0, 4) === "RIFF"
+        && buffer.toString("ascii", 8, 12) === "WEBP";
     case "application/pdf":
-      return head.toString("ascii", 0, 5) === "%PDF-";
+      return buffer.byteLength >= 5 && buffer.toString("ascii", 0, 5) === "%PDF-";
     default:
       return false;
   }

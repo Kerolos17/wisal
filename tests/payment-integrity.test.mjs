@@ -40,6 +40,15 @@ describe("manual payment integrity contracts", () => {
     assert.match(migration, /WHERE status = 'active'/);
   });
 
+  it("prevents caches from retaining private payment status and receipts", () => {
+    const statusRoute = read("app/api/payments/[id]/route.ts");
+    const receiptRoute = read("app/api/payments/[id]/receipt/route.ts");
+    const adminReceiptRoute = read("app/api/admin/payments/[id]/receipt/route.ts");
+    for (const source of [statusRoute, receiptRoute, adminReceiptRoute]) {
+      assert.match(source, /Cache-Control": "private, no-store"/);
+    }
+  });
+
   it("uses the sold payment snapshot for active guest entitlement", () => {
     const source = read("lib/payments.ts");
     const resolver = source.slice(source.indexOf("export async function getGuestLimitForUser"), source.indexOf("export async function getGuestLimitForOwnerEmail"));

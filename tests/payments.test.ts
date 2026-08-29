@@ -12,13 +12,14 @@ import {
   createPaymentRequest,
   getActiveSubscription,
   getOwnPaymentRequest,
+  getOwnPaymentSubmission,
   listPaymentRequests,
   rejectPaymentRequest,
   requestInfoPaymentRequest,
   submitPaymentRequest,
 } from "@/lib/payments";
 import { getDb } from "@/db";
-import { paymentRequests, platformPlans, users } from "@/db/schema";
+import { paymentRequests, platformPlans, userSubscriptions, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 const runId = randomUUID();
@@ -121,6 +122,38 @@ describe("payment domain", () => {
     assert.equal(cancelled.status, "cancelled");
     assert.equal(await getOwnPaymentRequest(fakeIdentity(otherUser.email), draft.id), null);
     await assert.rejects(() => submitDraft(owner.email, draft), /submittable state/);
+  });
+
+  it("hides a submitted payment and its receipt metadata from another account", async () => {
+    const owner = await createTestUser("Submitted owner");
+    const otherUser = await createTestUser("Submitted outsider");
+    const draft = await createDraft(owner.email);
+    const submitted = await submitDraft(owner.email, draft, "private-receipt");
+
+    assert.equal((await getOwnPaymentRequest(fakeIdentity(owner.email), submitted.id))?.hasReceipt, true);
+    assert.equal(await getOwnPaymentRequest(fakeIdentity(otherUser.email), submitted.id), null);
+    assert.equal(await getOwnPaymentSubmission(fakeIdentity(otherUser.email), submitted.id), null);
+  });
+
+  it("expires a subscription at read time and removes its entitlement", async () => {
+    const user = await createTestUser("Expired subscription");
+    const startsAt = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString();
+    const expiresAt = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const [subscription] = await getDb().insert(userSubscriptions).values({
+      userId: user.id,
+      planCode: paidPlan.code,
+      status: "active",
+      startsAt,
+      expiresAt,
+    }).returning({ id: userSubscriptions.id });
+
+    assert.ok(subscription);
+    assert.equal(await getActiveSubscription(user.id), null);
+    const [expired] = await getDb().select({ status: userSubscriptions.status })
+      .from(userSubscriptions)
+      .where(eq(userSubscriptions.id, subscription.id))
+      .limit(1);
+    assert.equal(expired?.status, "expired");
   });
 
   it("prevents a second request from entering review for the same user", async () => {
