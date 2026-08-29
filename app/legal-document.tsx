@@ -64,8 +64,8 @@ const termsSections = [
     icon: FileText,
     arTitle: "الخطط والدفع",
     enTitle: "Plans and payments",
-    arBody: "تُدفع الخطط يدويًا عبر وسيلة التحويل الموضحة في صفحة الدفع، ثم يرفع صاحب الحساب الإيصال للمراجعة. لا تُفعّل الباقة إلا بعد اعتماد الطلب، وتُعرض أي شروط إلغاء أو استرداد قبل الإرسال.",
-    enBody: "Plans are paid manually using the transfer method shown at checkout. The account owner uploads a receipt for review, and the plan is activated only after approval. Any cancellation or refund terms are shown before submission.",
+    arBody: "تُدفع الخطط يدويًا عبر وسيلة التحويل الموضحة في صفحة الدفع، ثم يرفع صاحب الحساب الإيصال للمراجعة. لا تُفعّل الباقة إلا بعد اعتماد الطلب، وتبدأ مدة الاشتراك المعروضة في صفحة الدفع من وقت الموافقة. تُعرض أي شروط إلغاء أو استرداد قبل الإرسال.",
+    enBody: "Plans are paid manually using the transfer method shown at checkout. The account owner uploads a receipt for review, and the plan is activated only after approval. The subscription period shown at checkout starts on approval. Any cancellation or refund terms are shown before submission.",
   },
 ];
 

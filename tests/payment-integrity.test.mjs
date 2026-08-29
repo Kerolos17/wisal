@@ -38,6 +38,22 @@ describe("manual payment integrity contracts", () => {
     assert.match(migration, /WHERE status = 'active'/);
   });
 
+  it("uses the sold payment snapshot for active guest entitlement", () => {
+    const source = read("lib/payments.ts");
+    const resolver = source.slice(source.indexOf("export async function getGuestLimitForUser"), source.indexOf("export async function getGuestLimitForOwnerEmail"));
+    assert.match(resolver, /sub\?\.paymentRequestId/);
+    assert.match(resolver, /paymentRequests\.guestLimitSnapshot/);
+    assert.ok(resolver.indexOf("paymentRequests.guestLimitSnapshot") < resolver.indexOf("platformPlans.guestLimit"));
+  });
+
+  it("presents paid plans consistently as time-bound subscriptions", () => {
+    const home = read("app/page.tsx");
+    const checkout = read("app/checkout/checkout-client.tsx");
+    assert.doesNotMatch(home, /EGP per event|جنيه للمناسبة/);
+    assert.match(home, /durationDays/);
+    assert.match(checkout, /days from approval/);
+  });
+
   it("supports resuming the same payment request from dashboard and status", () => {
     const home = read("app/page.tsx");
     const checkout = read("app/checkout/checkout-client.tsx");
@@ -128,6 +144,17 @@ describe("manual payment integrity contracts", () => {
     assert.doesNotMatch(source, /async function ensurePublicPlatformData/);
     assert.doesNotMatch(publicConfig, /\.insert\(|\.update\(|\.delete\(/);
     assert.doesNotMatch(publicConfig, /ensurePlatformData\(\)/);
+  });
+
+  it("writes cancel, reject, request-info, and their audit records atomically", () => {
+    const source = read("lib/payments.ts");
+    for (const action of ["payment.cancelled", "payment.rejected", "payment.info_requested"]) {
+      const actionIndex = source.indexOf(`'${action}'`);
+      assert.ok(actionIndex > 0, action);
+      const transactionIndex = source.lastIndexOf("sqlClient.transaction([", actionIndex);
+      const claimedIndex = source.lastIndexOf("WITH claimed AS", actionIndex);
+      assert.ok(transactionIndex >= 0 && claimedIndex > transactionIndex, `${action} transaction`);
+    }
   });
 
   it("uses a dedicated payment-review permission instead of user management", () => {

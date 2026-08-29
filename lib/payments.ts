@@ -171,13 +171,29 @@ export async function cancelPaymentRequest(identity: PlatformIdentity, id: strin
     throw new Error("Payment request cannot be cancelled");
   }
 
-  const [updated] = await db.update(paymentRequests)
-    .set({ status: "cancelled", statusVersion: sql`${paymentRequests.statusVersion} + 1`, updatedAt: nowIso() })
-    .where(and(eq(paymentRequests.id, id), eq(paymentRequests.status, request.status), eq(paymentRequests.statusVersion, request.statusVersion)))
-    .returning();
-  if (!updated) throw Object.assign(new Error("Another process changed this payment request"), { code: "CONFLICT" });
-  await audit(user.id, "payment.cancelled", updated.id, user.id);
-  return serializePayment(updated);
+  const changedAt = nowIso();
+  const sqlClient = getSql();
+  const [auditRows] = await sqlClient.transaction([
+    sqlClient`
+      WITH claimed AS (
+        UPDATE public.payment_requests AS pr
+        SET status = 'cancelled', status_version = pr.status_version + 1, updated_at = ${changedAt}
+        WHERE pr.id = ${id}
+          AND pr.user_id = ${user.id}
+          AND pr.status = ${request.status}
+          AND pr.status_version = ${request.statusVersion}
+        RETURNING pr.id, pr.user_id
+      )
+      INSERT INTO public.payment_audit_logs (actor_user_id, action, payment_request_id, user_id, metadata)
+      SELECT ${user.id}, 'payment.cancelled', claimed.id, claimed.user_id, '{}'::jsonb
+      FROM claimed
+      RETURNING id
+    `,
+  ]);
+  if (!Array.isArray(auditRows) || auditRows.length === 0) {
+    throw Object.assign(new Error("Another process changed this payment request"), { code: "CONFLICT" });
+  }
+  return serializePayment({ ...request, status: "cancelled", statusVersion: request.statusVersion + 1, updatedAt: changedAt });
 }
 
 // --- Customer: get own ---
@@ -320,13 +336,25 @@ export async function rejectPaymentRequest(identity: PlatformIdentity, id: strin
   if (request.status !== "pending_review") throw new Error("Payment request is not pending review");
   if (request.statusVersion !== expectedVersion) throw Object.assign(new Error("Another admin reviewed this request"), { code: "CONFLICT" });
 
-  const [updated] = await db.update(paymentRequests)
-    .set({ status: "rejected", rejectionReason: reason, reviewedBy: admin.id, reviewedAt: nowIso(), statusVersion: sql`${paymentRequests.statusVersion} + 1`, updatedAt: nowIso() })
-    .where(and(eq(paymentRequests.id, id), eq(paymentRequests.statusVersion, expectedVersion)))
-    .returning();
-  if (!updated) throw Object.assign(new Error("Another admin reviewed this request"), { code: "CONFLICT" });
-  await audit(admin.id, "payment.rejected", updated.id, request.userId, { reason });
-  return serializePayment(updated);
+  const reviewedAt = nowIso();
+  const sqlClient = getSql();
+  const [auditRows] = await sqlClient.transaction([
+    sqlClient`
+      WITH claimed AS (
+        UPDATE public.payment_requests AS pr
+        SET status = 'rejected', rejection_reason = ${reason}, reviewed_by = ${admin.id}, reviewed_at = ${reviewedAt},
+            status_version = pr.status_version + 1, updated_at = ${reviewedAt}
+        WHERE pr.id = ${id} AND pr.status = 'pending_review' AND pr.status_version = ${expectedVersion}
+        RETURNING pr.id, pr.user_id
+      )
+      INSERT INTO public.payment_audit_logs (actor_user_id, action, payment_request_id, user_id, metadata)
+      SELECT ${admin.id}, 'payment.rejected', claimed.id, claimed.user_id, jsonb_build_object('reason', ${reason})
+      FROM claimed
+      RETURNING id
+    `,
+  ]);
+  if (!Array.isArray(auditRows) || auditRows.length === 0) throw Object.assign(new Error("Another admin reviewed this request"), { code: "CONFLICT" });
+  return serializePayment({ ...request, status: "rejected", rejectionReason: reason, reviewedBy: admin.id, reviewedAt, statusVersion: expectedVersion + 1, updatedAt: reviewedAt });
 }
 
 // --- Admin: request info ---
@@ -341,13 +369,25 @@ export async function requestInfoPaymentRequest(identity: PlatformIdentity, id: 
   if (request.status !== "pending_review") throw new Error("Payment request is not pending review");
   if (request.statusVersion !== expectedVersion) throw Object.assign(new Error("Another admin reviewed this request"), { code: "CONFLICT" });
 
-  const [updated] = await db.update(paymentRequests)
-    .set({ status: "needs_info", infoRequestReason: reason, reviewedBy: admin.id, reviewedAt: nowIso(), statusVersion: sql`${paymentRequests.statusVersion} + 1`, updatedAt: nowIso() })
-    .where(and(eq(paymentRequests.id, id), eq(paymentRequests.statusVersion, expectedVersion)))
-    .returning();
-  if (!updated) throw Object.assign(new Error("Another admin reviewed this request"), { code: "CONFLICT" });
-  await audit(admin.id, "payment.info_requested", updated.id, request.userId, { reason });
-  return serializePayment(updated);
+  const reviewedAt = nowIso();
+  const sqlClient = getSql();
+  const [auditRows] = await sqlClient.transaction([
+    sqlClient`
+      WITH claimed AS (
+        UPDATE public.payment_requests AS pr
+        SET status = 'needs_info', info_request_reason = ${reason}, reviewed_by = ${admin.id}, reviewed_at = ${reviewedAt},
+            status_version = pr.status_version + 1, updated_at = ${reviewedAt}
+        WHERE pr.id = ${id} AND pr.status = 'pending_review' AND pr.status_version = ${expectedVersion}
+        RETURNING pr.id, pr.user_id
+      )
+      INSERT INTO public.payment_audit_logs (actor_user_id, action, payment_request_id, user_id, metadata)
+      SELECT ${admin.id}, 'payment.info_requested', claimed.id, claimed.user_id, jsonb_build_object('reason', ${reason})
+      FROM claimed
+      RETURNING id
+    `,
+  ]);
+  if (!Array.isArray(auditRows) || auditRows.length === 0) throw Object.assign(new Error("Another admin reviewed this request"), { code: "CONFLICT" });
+  return serializePayment({ ...request, status: "needs_info", infoRequestReason: reason, reviewedBy: admin.id, reviewedAt, statusVersion: expectedVersion + 1, updatedAt: reviewedAt });
 }
 
 // --- Subscription helpers ---
@@ -366,12 +406,20 @@ export async function getActiveSubscription(userId: string) {
 }
 
 /**
- * Resolves the guest limit (from platformPlans) for a user's active subscription.
+ * Resolves the guest limit from the immutable payment snapshot for a paid
+ * subscription, so later plan edits cannot change a sold entitlement.
  * Returns `null` for unlimited plans (e.g. signature).
  * When the user has no active subscription, defaults to the free "starter" plan.
  */
 export async function getGuestLimitForUser(userId: string): Promise<number | null> {
   const sub = await getActiveSubscription(userId);
+  if (sub?.paymentRequestId) {
+    const [snapshot] = await getDb().select({ guestLimit: paymentRequests.guestLimitSnapshot })
+      .from(paymentRequests)
+      .where(eq(paymentRequests.id, sub.paymentRequestId))
+      .limit(1);
+    if (snapshot) return snapshot.guestLimit ?? null;
+  }
   const planCode = sub?.planCode ?? "starter";
   const [plan] = await getDb().select({ guestLimit: platformPlans.guestLimit })
     .from(platformPlans)

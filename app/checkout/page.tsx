@@ -43,6 +43,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
     nameEn: planRow.nameEn,
     priceEgp: existingPayment?.priceEgpSnapshot ?? planRow.priceEgp,
     guestLimit: existingPayment?.guestLimitSnapshot ?? planRow.guestLimit,
+    durationDays: existingPayment?.durationDaysSnapshot ?? planRow.durationDays,
     featuresAr: planRow.featuresAr,
     featuresEn: planRow.featuresEn,
   };

@@ -15,7 +15,7 @@ type View = "home" | "studio" | "guest" | "dashboard" | "admin";
 type DataState = "loading" | "ready" | "empty" | "error";
 type MessageAudience = "all" | "pending" | "confirmed" | "unopened" | "opened_pending" | "maybe" | "declined";
 type PlanCode = string;
-type PublicPlan = { code: string; nameAr: string; nameEn: string; priceEgp: number; guestLimit: number | null; featured: boolean; featuresAr: string[]; featuresEn: string[] };
+type PublicPlan = { code: string; nameAr: string; nameEn: string; priceEgp: number; guestLimit: number | null; durationDays: number; featured: boolean; featuresAr: string[]; featuresEn: string[] };
 type PublicContent = Record<string, { ar: string; en: string }>;
 type TemplateArt = "editorial" | "botanical" | "glass" | "royal" | "minimal" | "cinematic" | "coastal" | "arabic";
 type PublicTemplate = { code: string; name: string; enName: string; tag: string; enTag: string; category: string; color: string; openingStyle: "envelope" | "card" | "curtain"; layoutStyle: "classic" | "story" | "cinematic"; art: TemplateArt; description: string; enDescription: string; previewImage?: string };
@@ -198,9 +198,9 @@ const layoutStyles = [
 ] as const;
 
 const defaultPlans: PublicPlan[] = [
-  { code: "starter", nameAr: "البداية", nameEn: "Starter", priceEgp: 0, guestLimit: 50, featured: false, featuresAr: ["دعوة واحدة", "50 ضيفًا"], featuresEn: ["One invitation", "50 guests"] },
-  { code: "elegant", nameAr: "الأنيقة", nameEn: "Elegant", priceEgp: 899, guestLimit: 250, featured: true, featuresAr: ["قوالب مميزة", "250 ضيفًا", "تقارير الحضور"], featuresEn: ["Premium templates", "250 guests", "RSVP reports"] },
-  { code: "signature", nameAr: "التوقيع", nameEn: "Signature", priceEgp: 1699, guestLimit: null, featured: false, featuresAr: ["ضيوف بلا حد", "تجربة سينمائية", "دعم أولوية"], featuresEn: ["Unlimited guests", "Cinematic experience", "Priority support"] },
+  { code: "starter", nameAr: "البداية", nameEn: "Starter", priceEgp: 0, guestLimit: 50, durationDays: 365, featured: false, featuresAr: ["دعوة واحدة", "50 ضيفًا"], featuresEn: ["One invitation", "50 guests"] },
+  { code: "elegant", nameAr: "الأنيقة", nameEn: "Elegant", priceEgp: 899, guestLimit: 250, durationDays: 365, featured: true, featuresAr: ["قوالب مميزة", "250 ضيفًا", "تقارير الحضور"], featuresEn: ["Premium templates", "250 guests", "RSVP reports"] },
+  { code: "signature", nameAr: "التوقيع", nameEn: "Signature", priceEgp: 1699, guestLimit: null, durationDays: 365, featured: false, featuresAr: ["ضيوف بلا حد", "تجربة سينمائية", "دعم أولوية"], featuresEn: ["Unlimited guests", "Cinematic experience", "Priority support"] },
 ];
 
 const mediaUrl = (key: string) => `/api/media/${key.split("/").map(encodeURIComponent).join("/")}`;
@@ -755,7 +755,7 @@ function Landing({ locale, plans, templates, content, onStart, onGuest, onChoose
           {plans.map((plan) => <article className={plan.featured ? "is-featured" : ""} key={plan.code}>
             <div><h3>{ar ? plan.nameAr : plan.nameEn}</h3><p>{plan.guestLimit ? (ar ? `حتى ${plan.guestLimit} ضيفًا` : `Up to ${plan.guestLimit} guests`) : (ar ? "ضيوف بلا حد" : "Unlimited guests")}</p></div>
             <ul>{(ar ? plan.featuresAr : plan.featuresEn).map((feature) => <li key={feature}><CircleCheckBig aria-hidden="true" />{feature}</li>)}</ul>
-            <div className="atlas-plan-action"><span><b>{plan.priceEgp}</b><small>{ar ? "جنيه للمناسبة" : "EGP per event"}</small></span><button onClick={() => onChoosePlan(plan.code)}>{ar ? "اختيار الخطة" : "Choose plan"}</button></div>
+            <div className="atlas-plan-action"><span><b>{plan.priceEgp}</b><small>{ar ? `جنيه · اشتراك ${plan.durationDays} يومًا` : `EGP · ${plan.durationDays}-day subscription`}</small></span><button onClick={() => onChoosePlan(plan.code)}>{ar ? "اختيار الخطة" : "Choose plan"}</button></div>
           </article>)}
         </div>
       </section>

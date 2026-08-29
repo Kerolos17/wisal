@@ -85,7 +85,7 @@ export async function getPublicPlatformConfig() {
   const db = getDb();
   const [content, plans, templates] = await Promise.all([
     db.select({ key: platformContent.key, valueAr: platformContent.valueAr, valueEn: platformContent.valueEn }).from(platformContent),
-    db.select({ code: platformPlans.code, nameAr: platformPlans.nameAr, nameEn: platformPlans.nameEn, priceEgp: platformPlans.priceEgp, guestLimit: platformPlans.guestLimit, featured: platformPlans.featured, featuresAr: platformPlans.featuresAr, featuresEn: platformPlans.featuresEn }).from(platformPlans).where(eq(platformPlans.active, true)).orderBy(asc(platformPlans.position)),
+    db.select({ code: platformPlans.code, nameAr: platformPlans.nameAr, nameEn: platformPlans.nameEn, priceEgp: platformPlans.priceEgp, guestLimit: platformPlans.guestLimit, durationDays: platformPlans.durationDays, featured: platformPlans.featured, featuresAr: platformPlans.featuresAr, featuresEn: platformPlans.featuresEn }).from(platformPlans).where(eq(platformPlans.active, true)).orderBy(asc(platformPlans.position)),
     db.select({ code: platformTemplates.code, nameAr: platformTemplates.nameAr, nameEn: platformTemplates.nameEn, category: platformTemplates.category }).from(platformTemplates).where(eq(platformTemplates.active, true)).orderBy(asc(platformTemplates.createdAt)),
   ]);
   return { content, plans, templates };
