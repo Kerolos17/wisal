@@ -60,9 +60,17 @@ describe("manual payment integrity contracts", () => {
   it("presents paid plans consistently as time-bound subscriptions", () => {
     const home = read("app/page.tsx");
     const checkout = read("app/checkout/checkout-client.tsx");
+    const status = read("app/checkout/[id]/status/status-client.tsx");
+    const payments = read("lib/payments.ts");
     assert.doesNotMatch(home, /EGP per event|جنيه للمناسبة/);
     assert.match(home, /durationDays/);
     assert.match(checkout, /days from approval/);
+    assert.match(checkout, /policyAccepted/);
+    assert.match(checkout, /mandatory consumer rights remain unaffected/);
+    assert.match(checkout, /not a tax invoice or fiscal receipt/);
+    assert.match(status, /durationDaysSnapshot/);
+    assert.match(status, /Active until/);
+    assert.match(payments, /reviewedAt: row\.reviewedAt/);
   });
 
   it("supports resuming the same payment request from dashboard and status", () => {

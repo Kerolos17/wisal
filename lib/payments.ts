@@ -459,6 +459,7 @@ export type SerializedPayment = {
   payerPhoneMasked: string | null;
   hasReceipt: boolean;
   reviewedBy: string | null;
+  reviewedAt: string | null;
   rejectionReason: string | null;
   adminNotes: string | null;
   infoRequestReason: string | null;
@@ -487,6 +488,7 @@ function serializePayment(row: typeof paymentRequests.$inferSelect): SerializedP
     payerPhoneMasked: row.payerPhoneMasked,
     hasReceipt: Boolean(row.receiptKey),
     reviewedBy: row.reviewedBy,
+    reviewedAt: row.reviewedAt,
     rejectionReason: row.rejectionReason,
     adminNotes: row.adminNotes,
     infoRequestReason: row.infoRequestReason,

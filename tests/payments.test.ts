@@ -92,6 +92,7 @@ describe("payment domain", () => {
     const submitted = await submitDraft(user.email, draft);
     const approved = await approvePaymentRequest(fakeIdentity(adminEmail) as never, draft.id, submitted.statusVersion);
     assert.equal(approved.status, "approved");
+    assert.ok(approved.reviewedAt);
 
     const subscription = await getActiveSubscription(draft.userId);
     assert.equal(subscription?.planCode, paidPlan.code);

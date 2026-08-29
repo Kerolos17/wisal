@@ -64,8 +64,8 @@ const termsSections = [
     icon: FileText,
     arTitle: "الخطط والدفع",
     enTitle: "Plans and payments",
-    arBody: "تُدفع الخطط يدويًا عبر وسيلة التحويل الموضحة في صفحة الدفع، ثم يرفع صاحب الحساب الإيصال للمراجعة. لا تُفعّل الباقة إلا بعد اعتماد الطلب، وتبدأ مدة الاشتراك المعروضة في صفحة الدفع من وقت الموافقة. تُعرض أي شروط إلغاء أو استرداد قبل الإرسال.",
-    enBody: "Plans are paid manually using the transfer method shown at checkout. The account owner uploads a receipt for review, and the plan is activated only after approval. The subscription period shown at checkout starts on approval. Any cancellation or refund terms are shown before submission.",
+    arBody: "تُدفع الخطط يدويًا عبر وسيلة التحويل الموضحة في صفحة الدفع، ثم يرفع صاحب الحساب إثبات التحويل للمراجعة. لا تُفعّل الباقة إلا بعد اعتماد الطلب، وتبدأ مدة الاشتراك المعروضة من وقت الموافقة. يمكن إلغاء الطلب قبل الموافقة. إذا تم التحويل أو طُلب استرداد بعد الموافقة، تُفتح تذكرة دعم للمراجعة مع عدم الانتقاص من الحقوق الإلزامية للمستهلك. إثبات التحويل ليس فاتورة أو إيصالًا ضريبيًا؛ يجب تأكيد نوع المستند المالي المتاح عبر الدعم قبل الدفع.",
+    enBody: "Plans are paid manually using the transfer method shown at checkout, then the account owner uploads transfer proof for review. The plan activates only after approval, and the displayed subscription term starts at approval. A request can be cancelled before approval. If funds were transferred or a refund is requested after approval, a support ticket is reviewed without limiting mandatory consumer rights. Transfer proof is not a tax invoice or fiscal receipt; confirm the available financial document with support before payment.",
   },
 ];
 
@@ -77,6 +77,9 @@ export default function LegalDocument({ type }: { type: DocumentType }) {
   const description = type === "privacy"
     ? (ar ? "كيف تتعامل وِصال مع بيانات أصحاب المناسبات والضيوف وتحميها." : "How Wisal handles and protects event-owner and guest data.")
     : (ar ? "القواعد الأساسية لاستخدام منصة وِصال خلال المرحلة التجريبية." : "The essential rules for using Wisal during its beta stage.");
+  const updatedAt = type === "terms"
+    ? { dateTime: "2026-08-29", label: ar ? "آخر تحديث: ٢٩ أغسطس ٢٠٢٦" : "Last updated: 29 August 2026" }
+    : { dateTime: "2026-08-20", label: ar ? "آخر تحديث: ٢٠ أغسطس ٢٠٢٦" : "Last updated: 20 August 2026" };
   const BackIcon = ar ? ArrowRight : ArrowLeft;
 
   return (
@@ -88,7 +91,7 @@ export default function LegalDocument({ type }: { type: DocumentType }) {
 
       <section className="legal-hero">
         <span>{type === "privacy" ? <ShieldCheck aria-hidden="true" /> : <Scale aria-hidden="true" />}</span>
-        <div><small>{ar ? "مستندات الثقة" : "Trust center"}</small><h1>{title}</h1><p>{description}</p><time dateTime="2026-08-20">{ar ? "آخر تحديث: ٢٠ أغسطس ٢٠٢٦" : "Last updated: 20 August 2026"}</time></div>
+        <div><small>{ar ? "مستندات الثقة" : "Trust center"}</small><h1>{title}</h1><p>{description}</p><time dateTime={updatedAt.dateTime}>{updatedAt.label}</time></div>
       </section>
 
       <section className="legal-content">

@@ -17,7 +17,9 @@ The application supports an administrator-reviewed transfer workflow. This is a 
 - Runtime payment suite: 20/20 passing, including submit/approve, request-info/resubmit/reject, cancel, expiry, cross-account request and receipt-metadata isolation, concurrent approval, receipt cleanup, and sold-duration entitlement.
 - Receipt storage matrix passed on staging for JPEG, PNG, WebP, and PDF round trips; spoofed content, unsupported MIME, and files over 5 MB were rejected. Cleanup verification found zero leftover test blobs and users.
 - Unauthenticated production probes returned 401 for payment status, receipt, and QR routes. QR assets are intentionally shared across authenticated customers because they represent the active receiving destination, not a customer-owned resource.
-- Repository gates: 171/171 contract tests, migration checksum verification, ESLint, TypeScript, and the Next.js production build passed. Private status and receipt responses now have an explicit `private, no-store` cache contract.
+- Repository gates: 172/172 contract tests, migration checksum verification, ESLint, TypeScript, and the Next.js production build passed. Private status and receipt responses now have an explicit `private, no-store` cache contract.
+- Checkout now requires an explicit acknowledgement that the paid term starts on reviewer approval, refund requests are reviewed through support without limiting mandatory consumer rights, and uploaded transfer proof is not itself a tax invoice or fiscal receipt. The approved status view shows the snapshotted plan, approval date, and calculated expiry.
+- The in-app browser runtime was unavailable during this pass, so the unchecked visual walkthrough items remain release gates; automated checks are not being presented as visual acceptance.
 
 ## Staging walkthrough
 
@@ -47,3 +49,12 @@ PAYMENT_TEST_DATABASE_URL=postgresql://...dedicated-staging-database...
 ```
 
 `PAYMENT_TEST_DATABASE_URL` must never equal the app's `DATABASE_URL`. The runtime suite fails closed if either guard is missing.
+
+Before running the suite, verify that the URL belongs to `wisal-staging-tests` and branch `br-aged-truth-auwpoj1k`. A stale local `.env.test` can still satisfy the isolation guard while pointing to an older test schema; the canonical branch must report all six migrations before its results are accepted.
+
+## Legal-review references
+
+The checkout disclosure is a conservative implementation baseline, not legal or tax approval. Counsel or the responsible accountant must approve the final market-specific wording before payments are accepted.
+
+- Egyptian Tax Authority: [electronic invoice and electronic receipt FAQ](https://portal.eta.gov.eg/ar/alasylt-alshayt?category_id=111) and [electronic receipt services](https://www.eta.gov.eg/ar/content/e-receipt-services).
+- Consumer Protection Agency: [required invoice data](https://cpa.gov.eg/ar-eg/%D8%A8%D9%8A%D8%A7%D9%86%D8%A7%D8%AA-%D8%A7%D8%B9%D9%84%D8%A7%D9%85%D9%8A%D8%A9/ArtMID/654/ArticleID/6789), [refund and exchange policy guidance](https://cpa.gov.eg/ar-eg/%D8%A8%D9%8A%D8%A7%D9%86%D8%A7%D8%AA-%D8%A7%D8%B9%D9%84%D8%A7%D9%85%D9%8A%D8%A9/ArtMID/654/ArticleID/6790), and [consumer/service definitions](https://cpa.gov.eg/ar-eg/%D8%AA%D8%B9%D8%B1%D9%8A%D9%81%D8%A7%D8%AA).

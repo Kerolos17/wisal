@@ -10,6 +10,9 @@ type Payment = {
   id: string;
   status: PaymentStatus;
   planCode: string;
+  planNameSnapshot: string;
+  durationDaysSnapshot: number;
+  reviewedAt: string | null;
   updatedAt: string;
   rejectionReason: string | null;
   infoRequestReason: string | null;
@@ -134,6 +137,9 @@ export default function CheckoutStatusClient({ id }: { id: string }) {
   const checkoutHref = canResume ? `/checkout?plan=${encodeURIComponent(payment.planCode)}&paymentId=${encodeURIComponent(payment.id)}` : null;
   const statusLabel = STATUS_LABEL[payment.status];
   const progressState = isApproved ? 2 : payment.status === "rejected" || payment.status === "cancelled" ? 1 : payment.status === "draft" ? 0 : 1;
+  const approvedAt = isApproved && payment.reviewedAt ? new Date(payment.reviewedAt) : null;
+  const expiresAt = approvedAt ? new Date(approvedAt.getTime() + payment.durationDaysSnapshot * 24 * 60 * 60 * 1000) : null;
+  const formatDate = (date: Date) => new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-GB", { dateStyle: "long" }).format(date);
 
   return (
     <section className="checkout-status-shell">
@@ -149,6 +155,7 @@ export default function CheckoutStatusClient({ id }: { id: string }) {
           <div className="checkout-status-progress" aria-label={L("مراحل طلب الدفع", "Payment request progress")}>
             {[L("تم الإرسال", "Submitted"), L("المراجعة", "Review"), L("التفعيل", "Activation")].map((step, index) => <div className={`checkout-status-step ${index < progressState ? "is-complete" : index === progressState ? "is-current" : ""}`} key={step}><span>{index < progressState ? "✓" : index + 1}</span><small>{step}</small></div>)}
           </div>
+          {approvedAt && expiresAt ? <dl className="checkout-status-entitlement" aria-label={L("تفاصيل الاشتراك", "Subscription details")}><div><dt>{L("الباقة", "Plan")}</dt><dd>{payment.planNameSnapshot}</dd></div><div><dt>{L("بدأت في", "Started")}</dt><dd>{formatDate(approvedAt)}</dd></div><div><dt>{L("سارية حتى", "Active until")}</dt><dd>{formatDate(expiresAt)}</dd></div></dl> : null}
           {(payment.rejectionReason || payment.infoRequestReason) ? <div className="checkout-status-note"><span aria-hidden="true">i</span><p><b>{L("ملاحظة المراجع", "Reviewer note")}</b>{payment.rejectionReason || payment.infoRequestReason}</p></div> : null}
           <div className="checkout-status-actions">
             {isApproved
