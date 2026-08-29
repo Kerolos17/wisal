@@ -10,6 +10,7 @@
 - WhatsApp sharing uses each guest's personal invitation URL; saved message audiences calculate their live recipient count before saving.
 - Privacy and terms are available in Arabic and English from both the marketing site and the public invitation.
 - Public RSVP and invitation-open endpoints reject cross-origin, oversized, non-JSON, and excessive requests.
+- Public mutation rate limits use the shared Neon-backed `rate_limit_windows` table; if that store is unavailable, requests fail closed with a retryable 503 response.
 - `/api/health` reports application and database availability without exposing connection details.
 
 ## Required before public launch
@@ -20,7 +21,7 @@
 - Create a production owner account, a support account, and test guest accounts; do not use demo identities.
 - Verify RSVP, a personalized link, CSV import/export, an image upload, Arabic/English switching, and mobile layout on the production domain.
 - Complete counsel review of the privacy policy, terms, retention policy, and local tax/invoice requirements before selling plans.
-- Replace the current per-instance API rate limiter with a durable edge or shared-store limit before a broad public launch.
+- Reassess the shared database rate-limit capacity, retention, and alerting thresholds before expanding beyond the controlled-beta cohort.
 - Enable uptime/error monitoring and analytics, then test an alert and an error-recovery path.
 - Do not accept customer payment until the manual-payment acceptance checklist has been completed in staging and production: receiving destinations, receipt review, approval, rejection/resubmission, expiry, customer support, and refund/invoice policy.
 

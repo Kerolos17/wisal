@@ -19,12 +19,13 @@ The application supports an administrator-reviewed transfer workflow. This is a 
 - Unauthenticated production probes returned 401 for payment status, receipt, and QR routes. QR assets are intentionally shared across authenticated customers because they represent the active receiving destination, not a customer-owned resource.
 - Repository gates: 172/172 contract tests, migration checksum verification, ESLint, TypeScript, and the Next.js production build passed. Private status and receipt responses now have an explicit `private, no-store` cache contract.
 - Checkout now requires an explicit acknowledgement that the paid term starts on reviewer approval, refund requests are reviewed through support without limiting mandatory consumer rights, and uploaded transfer proof is not itself a tax invoice or fiscal receipt. The approved status view shows the snapshotted plan, approval date, and calculated expiry.
-- The in-app browser runtime was unavailable during this pass, so the unchecked visual walkthrough items remain release gates; automated checks are not being presented as visual acceptance.
+- Browser walkthrough evidence is now recorded below; the remaining unchecked items are release gates and are not being presented as completed by automated checks.
 
 ## Staging walkthrough
 
-- [ ] Sign in as a customer and select each paid plan; verify the exact amount, name, duration, and available receiving destination.
-- [ ] Open the payment link and QR image on phone and desktop; verify keyboard focus opens, traps, and returns from the QR dialog.
+- [x] Sign in as a customer and select each paid plan; verify the exact amount, name, duration, and available receiving destination. Verified on 29 August 2026: Elegant (599 EGP, 250 guests, 365 days) and Signature (1699 EGP, unlimited guests, 365 days), both with InstaPay and Vodafone Cash.
+- [x] Open the QR image on phone and desktop; verify keyboard focus opens, traps, and returns from the QR dialog. Verified at 390px mobile width and desktop on 29 August 2026; no horizontal overflow was observed.
+- [ ] Open the external payment link on phone and desktop. This remains separate from the QR accessibility check because it requires a live third-party payment surface and must not be confused with a completed transfer.
 - [x] Upload valid JPEG, PNG, WebP, and PDF receipt payloads to staging storage, then verify spoofed content, an unsupported type, and a file over 5 MB are rejected and leave no orphan.
 - [ ] Approve one request and confirm the correct plan and exact expiry are visible in the customer workspace.
 - [ ] Request more information, resubmit the same request, and reject it; confirm the customer sees the reviewer reason and a working return-to-checkout link.
@@ -51,6 +52,12 @@ PAYMENT_TEST_DATABASE_URL=postgresql://...dedicated-staging-database...
 `PAYMENT_TEST_DATABASE_URL` must never equal the app's `DATABASE_URL`. The runtime suite fails closed if either guard is missing.
 
 Before running the suite, verify that the URL belongs to `wisal-staging-tests` and branch `br-aged-truth-auwpoj1k`. A stale local `.env.test` can still satisfy the isolation guard while pointing to an older test schema; the canonical branch must report all six migrations before its results are accepted.
+
+## Visual browser evidence — 29 August 2026
+
+- Checkout rendered the policy acknowledgement, payment-document disclosure, and direct support-ticket link for an authenticated customer.
+- The support-ticket destination (`/workspace?section=support`) rendered the support form without a React hydration error after the production fix `57f5654`.
+- The external payment URL was intentionally not opened as part of this application walkthrough; opening a payment surface is not evidence of a transfer and requires separate operational verification.
 
 ## Legal-review references
 

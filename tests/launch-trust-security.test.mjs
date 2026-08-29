@@ -12,6 +12,7 @@ const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8")
 const sitemap = await readFile(new URL("../app/sitemap.ts", import.meta.url), "utf8");
 const nextConfig = await readFile(new URL("../next.config.ts", import.meta.url), "utf8");
 const requestValidation = await readFile(new URL("../lib/request-validation.ts", import.meta.url), "utf8");
+const sharedRateLimitMigration = await readFile(new URL("../db/postgres-migrations/0004_shared-rate-limits.sql", import.meta.url), "utf8");
 
 const jsonRouteFiles = [
   "admin/content/[key]/route.ts", "admin/payment-destinations/route.ts", "admin/plans/[code]/route.ts",
@@ -36,7 +37,12 @@ test("public mutations reject oversized, cross-origin, and excessive requests", 
   assert.match(guard, /request\.clone\(\)\.text\(\)/);
   assert.match(guard, /getSql\(\)/);
   assert.match(guard, /INSERT INTO rate_limit_windows AS windows/);
+  assert.match(guard, /shared_rate_limit_unavailable/);
+  assert.match(guard, /status: 503/);
   assert.doesNotMatch(guard, /new Map<string, RateWindow>/);
+  assert.match(sharedRateLimitMigration, /CREATE TABLE "rate_limit_windows"/);
+  assert.match(sharedRateLimitMigration, /PRIMARY KEY/);
+  assert.match(sharedRateLimitMigration, /rate_limit_windows_reset_at_idx/);
   assert.match(rsvp, /await guardPublicJsonRequest\(request, \{ limit: 10/);
   assert.match(invitationOpen, /await guardPublicJsonRequest\(request, \{ limit: 30/);
 });
