@@ -10,6 +10,7 @@ const media = await readFile(new URL("../app/api/media/[...key]/route.ts", impor
 const legal = await readFile(new URL("../app/legal-document.tsx", import.meta.url), "utf8");
 const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
 const sitemap = await readFile(new URL("../app/sitemap.ts", import.meta.url), "utf8");
+const nextConfig = await readFile(new URL("../next.config.ts", import.meta.url), "utf8");
 const requestValidation = await readFile(new URL("../lib/request-validation.ts", import.meta.url), "utf8");
 
 const jsonRouteFiles = [
@@ -45,6 +46,15 @@ test("health check reports application and database state without configuration 
   assert.match(health, /status: "degraded"/);
   assert.match(health, /Cache-Control/);
   assert.doesNotMatch(health, /DATABASE_URL/);
+});
+
+test("security headers include a production CSP scoped to application resources", () => {
+  assert.match(nextConfig, /Content-Security-Policy/);
+  assert.match(nextConfig, /default-src 'self'/);
+  assert.match(nextConfig, /connect-src 'self'/);
+  assert.match(nextConfig, /frame-src 'self'/);
+  assert.match(nextConfig, /object-src 'none'/);
+  assert.match(nextConfig, /process\.env\.NODE_ENV === "development"/);
 });
 
 test("every JSON endpoint uses the bounded object reader", () => {
