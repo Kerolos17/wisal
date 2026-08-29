@@ -36,6 +36,8 @@ test("user and administration dashboards expose support, notifications, and repo
   assert.match(page, /const AccountCenter = lazy\(\(\) => import\("\.\/account-center"\)\)/);
   assert.match(page, /<AccountCenter locale=\{locale\} mode="notifications"/);
   assert.match(page, /<AccountCenter locale=\{locale\} mode="support"/);
+  assert.match(page, /useState<"overview" \| "guests" \| "messages" \| "notifications" \| "support" \| "activity" \| "settings">\("overview"\)/);
+  assert.match(page, /new URLSearchParams\(window\.location\.search\)\.get\("section"\) === "support"/);
   assert.match(accountCenter, /Notification center/);
   assert.match(accountCenter, /New support request/);
   assert.match(admin, /Operational reports/);

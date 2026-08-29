@@ -1060,7 +1060,13 @@ function Guest({ locale, rsvp, setRsvp, eventData, onSubmitted }: { locale: Loca
 function Dashboard({ locale, filter, setFilter, eventData, eventList, currentEventId, onChooseEvent, onCreate, onEdit, onAddGuest, onEditGuest, onDataUpdated, profileName, subscriptionCard }: { locale: Locale; filter: string; setFilter: (v: string) => void; eventData: EventOverview | null; eventList: EventSummary[]; currentEventId: string; onChooseEvent: (id: string) => Promise<void>; onCreate: () => void; onEdit: () => void; onAddGuest: () => void; onEditGuest: (guest: GuestRecord) => void; onDataUpdated: (event: EventOverview) => void; profileName: string; subscriptionCard: React.ReactNode }) {
   const router = useRouter();
   const L = (arabic: string, english: string) => tr(locale, arabic, english);
-  const [section, setSection] = useState<"overview" | "guests" | "messages" | "notifications" | "support" | "activity" | "settings">(() => typeof window === "undefined" ? "overview" : new URLSearchParams(window.location.search).get("section") === "support" ? "support" : "overview");
+  const [section, setSection] = useState<"overview" | "guests" | "messages" | "notifications" | "support" | "activity" | "settings">("overview");
+  useEffect(() => {
+    const sectionTimer = window.setTimeout(() => {
+      if (new URLSearchParams(window.location.search).get("section") === "support") setSection("support");
+    }, 0);
+    return () => window.clearTimeout(sectionTimer);
+  }, []);
   const [composeOpen, setComposeOpen] = useState(false);
   const [composeAudience, setComposeAudience] = useState<MessageAudience>("pending");
   const [composeGroupId, setComposeGroupId] = useState<string | null>(null);
