@@ -120,7 +120,7 @@ export const platformTemplates = pgTable("platform_templates", {
   usageCount: integer("usage_count").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).notNull().default(now),
   updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).notNull().default(now),
-}, (table) => [uniqueIndex("platform_templates_code_unique").on(table.code)]);
+});
 
 export const platformPlans = pgTable("platform_plans", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -137,7 +137,7 @@ export const platformPlans = pgTable("platform_plans", {
   featuresEn: jsonb("features_en").$type<string[]>().notNull().default([]),
   createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).notNull().default(now),
   updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).notNull().default(now),
-}, (table) => [uniqueIndex("platform_plans_code_unique").on(table.code)]);
+});
 
 export const platformContent = pgTable("platform_content", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -146,7 +146,7 @@ export const platformContent = pgTable("platform_content", {
   valueAr: text("value_ar").notNull(),
   valueEn: text("value_en").notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).notNull().default(now),
-}, (table) => [uniqueIndex("platform_content_key_unique").on(table.key)]);
+});
 
 export const adminAuditLogs = pgTable("admin_audit_logs", {
   id: uuid("id").primaryKey().defaultRandom(),

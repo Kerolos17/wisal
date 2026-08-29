@@ -348,7 +348,7 @@ export async function rejectPaymentRequest(identity: PlatformIdentity, id: strin
         RETURNING pr.id, pr.user_id
       )
       INSERT INTO public.payment_audit_logs (actor_user_id, action, payment_request_id, user_id, metadata)
-      SELECT ${admin.id}, 'payment.rejected', claimed.id, claimed.user_id, jsonb_build_object('reason', ${reason})
+      SELECT ${admin.id}, 'payment.rejected', claimed.id, claimed.user_id, jsonb_build_object('reason', ${reason}::text)
       FROM claimed
       RETURNING id
     `,
@@ -381,7 +381,7 @@ export async function requestInfoPaymentRequest(identity: PlatformIdentity, id: 
         RETURNING pr.id, pr.user_id
       )
       INSERT INTO public.payment_audit_logs (actor_user_id, action, payment_request_id, user_id, metadata)
-      SELECT ${admin.id}, 'payment.info_requested', claimed.id, claimed.user_id, jsonb_build_object('reason', ${reason})
+      SELECT ${admin.id}, 'payment.info_requested', claimed.id, claimed.user_id, jsonb_build_object('reason', ${reason}::text)
       FROM claimed
       RETURNING id
     `,

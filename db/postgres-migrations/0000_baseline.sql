@@ -352,9 +352,6 @@ CREATE INDEX "payment_audit_logs_created_idx" ON "payment_audit_logs" USING btre
 CREATE INDEX "payment_audit_logs_payment_idx" ON "payment_audit_logs" USING btree ("payment_request_id");--> statement-breakpoint
 CREATE INDEX "payment_destinations_active_position_idx" ON "payment_destinations" USING btree ("active","position");--> statement-breakpoint
 CREATE UNIQUE INDEX "payment_requests_user_pending_idx" ON "payment_requests" USING btree ("user_id") WHERE "payment_requests"."status" = 'pending_review';--> statement-breakpoint
-CREATE UNIQUE INDEX "platform_content_key_unique" ON "platform_content" USING btree ("key");--> statement-breakpoint
-CREATE UNIQUE INDEX "platform_plans_code_unique" ON "platform_plans" USING btree ("code");--> statement-breakpoint
-CREATE UNIQUE INDEX "platform_templates_code_unique" ON "platform_templates" USING btree ("code");--> statement-breakpoint
 CREATE UNIQUE INDEX "segment_rsvps_guest_segment_unique" ON "segment_rsvps" USING btree ("guest_id","segment_id");--> statement-breakpoint
 CREATE INDEX "segment_rsvps_segment_status_idx" ON "segment_rsvps" USING btree ("segment_id","status");--> statement-breakpoint
 CREATE INDEX "support_tickets_user_created_idx" ON "support_tickets" USING btree ("user_id","created_at");--> statement-breakpoint

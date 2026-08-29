@@ -1,7 +1,7 @@
 {
   "algorithm": "sha256",
   "files": {
-    "0000_baseline.sql": "1863ab3a2bddd26d1c1506385d960d8bc4fd267d91c87cd565d95626df228c48",
+    "0000_baseline.sql": "c9a47d3191f348a082dca6050694a2137f38d22c5ae5e4f41f9c940c0993b4b3",
     "0001_domain-checks.sql": "15cbde303ab0b0cc65dce95ebd9995c41decf47be104932a12f78c67a1e3ca77",
     "0002_media-blobs.sql": "439df11ae5ee1b5503dcd5cb5a5d58a14c0423865ee7c70260f7b7a42f821d89",
     "0003_account-message-domains.sql": "5f6ed97caddcb9a1cef3cff358ac47c9161925111decc3e123552933c7b40cc0",

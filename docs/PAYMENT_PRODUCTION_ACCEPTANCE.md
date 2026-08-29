@@ -7,8 +7,15 @@ The application supports an administrator-reviewed transfer workflow. This is a 
 - [x] Contract checks cover the checkout route, private receipt access, payment-state feedback, and configurable destinations.
 - [x] Receipt-storage unit tests cover unique upload keys and cleanup when submission fails.
 - [x] Runtime payment and guest-limit tests require `PAYMENT_TEST_MODE=enabled` and a `PAYMENT_TEST_DATABASE_URL` that is different from `DATABASE_URL`.
-- [x] Run `npm run test:payments` against a dedicated staging database after creating `.env.test` (28 August 2026). Never point it at production.
-- [ ] Run lint, TypeScript, and a production build from the release commit.
+- [x] Run `npm run test:payments` against the dedicated `wisal-staging-tests` Neon project (29 August 2026). Never point it at production.
+- [x] Run lint, TypeScript, and a production build from the release candidate.
+
+### Automated evidence — 29 August 2026
+
+- Neon staging project: `wisal-staging-tests` (`icy-credit-77217004`); no production data was copied.
+- Canonical database history: 6/6 migrations recorded by Drizzle and 23 public tables verified from PostgreSQL.
+- Runtime payment suite: 16/16 passing, including submit/approve, request-info/resubmit/reject, cancel, cross-account request isolation, concurrent approval, receipt cleanup, and sold-duration entitlement.
+- Repository gates: 170/170 contract tests, migration checksum verification, ESLint, TypeScript, and the Next.js production build passed.
 
 ## Staging walkthrough
 

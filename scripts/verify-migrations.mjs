@@ -28,4 +28,19 @@ for (const [relativePath, expected] of Object.entries({ ...manifest.files, ...ma
   assert.equal(actual, expected, `Checksum mismatch: ${relativePath}`);
 }
 
+const uniqueConstraintNames = new Set();
+const explicitUniqueIndexNames = new Set();
+for (const file of sqlFiles) {
+  const sql = await readFile(join(migrationsDir, file), "utf8");
+  for (const match of sql.matchAll(/CONSTRAINT\s+"([^"]+)"\s+UNIQUE\b/g)) uniqueConstraintNames.add(match[1]);
+  for (const match of sql.matchAll(/CREATE\s+UNIQUE\s+INDEX\s+"([^"]+)"/g)) explicitUniqueIndexNames.add(match[1]);
+}
+
+const duplicateUniqueNames = [...uniqueConstraintNames].filter((name) => explicitUniqueIndexNames.has(name));
+assert.deepEqual(
+  duplicateUniqueNames,
+  [],
+  `Unique constraints must not be recreated as same-name indexes: ${duplicateUniqueNames.join(", ")}`,
+);
+
 console.log(`Verified ${sqlFiles.length} PostgreSQL migrations and ${Object.keys(manifest.seeds).length} explicit seed.`);
