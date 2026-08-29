@@ -36,6 +36,26 @@ async function consumeSharedRateLimit(key: string, windowMs: number) {
   return { count: Number(result?.count), resetAt: Number(result?.reset_at_ms) };
 }
 
+export async function guardSharedRateLimit(key: string, options: Pick<GuardOptions, "limit" | "windowMs">): Promise<Response | null> {
+  const windowMs = options.windowMs ?? 60_000;
+  let next: { count: number; resetAt: number };
+  try {
+    next = await consumeSharedRateLimit(key, windowMs);
+  } catch (error) {
+    const requestId = crypto.randomUUID();
+    console.error("shared_rate_limit_unavailable", { requestId, errorName: error instanceof Error ? error.name : "UnknownError" });
+    return Response.json({ error: "الخدمة غير متاحة مؤقتًا. حاول مرة أخرى بعد قليل.", requestId }, { status: 503, headers: noStoreHeaders });
+  }
+  if (next.count > options.limit) {
+    const retryAfter = Math.max(1, Math.ceil((next.resetAt - Date.now()) / 1_000));
+    return Response.json(
+      { error: "محاولات كثيرة في وقت قصير. حاول مرة أخرى بعد قليل.", code: "rate_limited" },
+      { status: 429, headers: { ...noStoreHeaders, "Retry-After": String(retryAfter) } },
+    );
+  }
+  return null;
+}
+
 export async function guardPublicJsonRequest(request: Request, options: GuardOptions): Promise<Response | null> {
   const contentType = request.headers.get("content-type")?.toLowerCase() ?? "";
   if (!contentType.startsWith("application/json")) {
@@ -58,26 +78,8 @@ export async function guardPublicJsonRequest(request: Request, options: GuardOpt
     return Response.json({ error: "مصدر الطلب غير مسموح", code: "origin_not_allowed" }, { status: 403, headers: noStoreHeaders });
   }
 
-  const windowMs = options.windowMs ?? 60_000;
   const key = `${new URL(request.url).pathname}:${clientAddress(request)}`;
-  let next: { count: number; resetAt: number };
-  try {
-    next = await consumeSharedRateLimit(key, windowMs);
-  } catch (error) {
-    const requestId = crypto.randomUUID();
-    console.error("public_rate_limit_unavailable", { requestId, errorName: error instanceof Error ? error.name : "UnknownError" });
-    return Response.json({ error: "الخدمة غير متاحة مؤقتًا. حاول مرة أخرى بعد قليل.", requestId }, { status: 503, headers: noStoreHeaders });
-  }
-
-  if (next.count > options.limit) {
-    const retryAfter = Math.max(1, Math.ceil((next.resetAt - Date.now()) / 1_000));
-    return Response.json(
-      { error: "محاولات كثيرة في وقت قصير. حاول مرة أخرى بعد قليل.", code: "rate_limited" },
-      { status: 429, headers: { ...noStoreHeaders, "Retry-After": String(retryAfter) } },
-    );
-  }
-
-  return null;
+  return guardSharedRateLimit(key, options);
 }
 
 export function publicJson(data: unknown, init: ResponseInit = {}) {

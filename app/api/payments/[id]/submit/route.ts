@@ -4,6 +4,7 @@ import { deleteReceipt, MAX_RECEIPT_BYTES, storeReceipt } from "@/lib/payment-st
 import { listActivePaymentDestinations } from "@/lib/payment-destinations";
 import { submitStoredReceipt } from "@/lib/payment-receipt-submission";
 import { paymentApiErrorResponse } from "@/lib/payment-api-error";
+import { guardSharedRateLimit } from "@/lib/public-api-guard";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +14,11 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     if (!identity) return Response.json({ error: "Authentication required" }, { status: 401 });
 
     const { id } = await params;
+    const payment = await getOwnPaymentSubmission(identity, id);
+    if (!payment) return Response.json({ error: "Payment request not found" }, { status: 404 });
+    const rateLimited = await guardSharedRateLimit(`payment-receipt:${payment.userId}`, { limit: 6, windowMs: 15 * 60_000 });
+    if (rateLimited) return rateLimited;
+
     const declaredLength = Number(request.headers.get("content-length") ?? 0);
     if (Number.isFinite(declaredLength) && declaredLength > MAX_RECEIPT_BYTES + 512 * 1024) {
       return Response.json({ error: "Receipt upload is too large" }, { status: 413 });
@@ -37,8 +43,6 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const amount = Number(amountPaid);
     if (!Number.isInteger(amount) || amount < 0) return Response.json({ error: "Valid amount is required" }, { status: 400 });
 
-    const payment = await getOwnPaymentSubmission(identity, id);
-    if (!payment) return Response.json({ error: "Payment request not found" }, { status: 404 });
     if (amount !== payment.priceEgpSnapshot) return Response.json({ error: "Payment amount does not match plan price" }, { status: 400 });
 
     const arrayBuffer = await file.arrayBuffer();

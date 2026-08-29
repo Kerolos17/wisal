@@ -16,6 +16,8 @@ describe("manual payment integrity contracts", () => {
     assert.match(source, /storeReceipt\(payment\.userId, id/);
     assert.match(source, /submitStoredReceipt/);
     assert.match(source, /discard: deleteReceipt/);
+    assert.match(source, /guardSharedRateLimit\(`payment-receipt:\$\{payment\.userId\}`/);
+    assert.ok(source.indexOf("getOwnPaymentSubmission(identity, id)") < source.indexOf("request.formData()"));
   });
 
   it("uses a transaction and status guards for approval", () => {
