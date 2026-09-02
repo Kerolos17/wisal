@@ -34,6 +34,7 @@ test("invitation responses prevent indexing and referrer leakage", () => {
   assert.match(nextConfig, /source: "\/invite\/:path\*"/);
   assert.match(nextConfig, /X-Robots-Tag.*noindex, nofollow, noimageindex/);
   assert.match(nextConfig, /Referrer-Policy.*no-referrer/);
+  assert.ok(nextConfig.indexOf('source: "/:path*"') < nextConfig.indexOf('source: "/invite/:path*"'));
   assert.match(invitationClient, /body: JSON\.stringify\(\{ eventId: event\.id, inviteToken: guest\.inviteToken \}\)/);
   assert.doesNotMatch(openRoute, /console\.|request\.url|request\.nextUrl/);
 });
