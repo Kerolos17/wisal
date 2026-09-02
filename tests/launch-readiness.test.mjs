@@ -23,7 +23,7 @@ test("dashboard gives event owners a concrete launch-readiness checklist", () =>
 test("production metadata supports discovery without indexing private routes", () => {
   assert.match(layout, /metadataBase: new URL/);
   assert.match(layout, /openGraph:/);
-  assert.match(robots, /disallow: \["\/admin", "\/workspace", "\/api\/"\]/);
+  assert.match(robots, /disallow: \["\/admin", "\/workspace", "\/api\/", "\/invite\/"\]/);
 });
 
 test("edge headers and route recovery states improve launch resilience", () => {

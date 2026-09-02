@@ -33,8 +33,14 @@ test("RSVP uses the personalized token and updates the exact guest", () => {
   assert.match(invitationClientSource, /inviteToken: guest\?\.inviteToken/);
   assert.match(rsvpRouteSource, /inviteToken: payload\.inviteToken\?\.trim\(\)/);
   assert.match(dataSource, /if \(input\.inviteToken && !personalizedGuest\)/);
-  assert.match(dataSource, /const guestId = personalizedGuest\?\.id/);
-  assert.match(dataSource, /ON CONFLICT \(event_id, name\)/);
+  const rsvpSource = dataSource.slice(dataSource.indexOf("export async function saveRsvp"));
+  assert.match(rsvpSource, /const guestId = personalizedGuest\?\.id/);
+  assert.match(rsvpSource, /const guestWrite = personalizedGuest/);
+  assert.match(rsvpSource, /AND invite_token = \$\{input\.inviteToken!/);
+  assert.doesNotMatch(rsvpSource, /ON CONFLICT \(event_id, name\)/);
+  assert.match(rsvpSource, /current_count < \$\{guestLimit\}/);
+  assert.match(rsvpRouteSource, /RSVP_NAME_CONFLICT/);
+  assert.match(rsvpRouteSource, /statusByCode: \{ GUEST_LIMIT: 409/);
 });
 
 test("private invitations require a personalized guest token for viewing and RSVP", () => {
@@ -48,7 +54,7 @@ test("private invitations require a personalized guest token for viewing and RSV
 });
 
 test("RSVP validates segment ownership and segment IDs before it mutates a guest", () => {
-  const firstGuestWrite = dataSource.indexOf("WITH saved_guest AS");
+  const firstGuestWrite = dataSource.indexOf("const guestWrite = personalizedGuest");
   const segmentValidation = dataSource.indexOf("إحدى مراحل المناسبة غير صالحة");
   const accessValidation = dataSource.indexOf("لا تملك هذه الدعوة صلاحية الرد على إحدى المراحل");
 
@@ -60,11 +66,12 @@ test("RSVP validates segment ownership and segment IDs before it mutates a guest
 });
 
 test("RSVP persists the guest, activity record, and every segment reply atomically", () => {
-  assert.match(dataSource, /const \[result\] = await sqlClient\.transaction\(\[/);
-  assert.match(dataSource, /WITH saved_guest AS/);
+  assert.match(dataSource, /transactionResults = await sqlClient\.transaction\(\[/);
+  assert.match(dataSource, /SELECT id FROM public\.events WHERE id = \$\{eventId\} FOR UPDATE/);
+  assert.match(dataSource, /const guestWrite = personalizedGuest/);
   assert.match(dataSource, /INSERT INTO public\.activity_logs/);
   assert.match(dataSource, /INSERT INTO public\.segment_rsvps/);
-  assert.match(dataSource, /FROM saved_guest CROSS JOIN segment_input/);
+  assert.match(dataSource, /WHERE EXISTS \(SELECT 1 FROM public\.guests WHERE id = \$\{guestId\}/);
 });
 
 test("dashboard exposes copy, WhatsApp sharing, and invitation analytics", () => {

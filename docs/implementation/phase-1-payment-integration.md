@@ -27,10 +27,10 @@
 ### D1 — Subscription is the single source of truth
 `getActiveSubscription(userId)` (`lib/payments.ts:274`) is the ONLY way the app learns a user's plan. It returns the active `userSubscriptions` row (planCode + expiresAt). No other module may infer plan from role, email, or UI state.
 
-### D2 — Free vs paid plans
-- **Starter** (`priceEgp: 0`, `guestLimit: 50`): no payment. Auto-activated.
-- **Elegant** (`899`, `250`) / **Signature** (`1699`, unlimited): require payment request + admin approval.
-- Default when no subscription exists: treat as **Starter** (free, 50 guests) so pre-payment beta users are not blocked. Paid benefits unlock only after approval.
+### D2 — Catalog pricing and default entitlements
+- **Starter** (`199 EGP`, `50` guests), **Elegant** (`599 EGP`, `250` guests), and **Signature** (`1,699 EGP`, unlimited) are the approved public catalog prices. The platform database is the runtime source of truth for these values.
+- All catalog purchases use the payment request + admin approval workflow. Existing accounts without an active subscription retain Starter-level limits during the controlled beta so they are not blocked before payment acceptance is enabled.
+- Paid benefits unlock only after approval; payment requests store an immutable plan-price and entitlement snapshot.
 
 ### D3 — Payment flow (paid plans)
 ```
@@ -91,7 +91,7 @@ Client shows the limit in the dashboard and disables "add guest" past the cap.
 
 ## 5. Definition of done
 - A user can pick a paid plan, upload a receipt, and an admin can approve it; the subscription then gates guest limits.
-- Free plan works with zero payment.
+- Accounts without an active subscription retain Starter-level limits during the controlled beta.
 - `getActiveSubscription` is the only plan resolver; no hardcoded plan logic elsewhere.
 - All 10 API routes have UI consumers.
 - `node --test tests/*.test.mjs` + `tests/payments.test.ts` green; `tsc --noEmit` clean; `eslint` clean; `next build` passes.

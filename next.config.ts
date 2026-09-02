@@ -22,6 +22,13 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        source: "/invite/:path*",
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, nofollow, noimageindex" },
+          { key: "Referrer-Policy", value: "no-referrer" },
+        ],
+      },
+      {
         source: "/:path*",
         headers: [
           { key: "X-Content-Type-Options", value: "nosniff" },

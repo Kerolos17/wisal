@@ -827,6 +827,18 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
   border-top: 1px solid var(--atlas-line);
 }
 
+.atlas-plan-unavailable {
+  display: grid;
+  min-height: 140px;
+  place-items: center;
+  padding: 28px 24px;
+  border-top: 1px solid var(--atlas-line);
+  border-bottom: 1px solid var(--atlas-line-soft);
+  color: var(--atlas-muted);
+  font-size: 13px;
+  text-align: center;
+}
+
 .atlas-plan-list article {
   display: grid;
   grid-template-columns: minmax(190px, .6fr) minmax(330px, 1fr) minmax(210px, .55fr);

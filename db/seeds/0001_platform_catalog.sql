@@ -20,8 +20,8 @@ ON CONFLICT (code) DO NOTHING;
 INSERT INTO public.platform_plans
   (code, name_ar, name_en, price_egp, guest_limit, position, featured, features_ar, features_en)
 VALUES
-  ('starter', 'البداية', 'Starter', 0, 50, 1, false, '["دعوة واحدة","50 ضيفًا"]'::jsonb, '["One invitation","50 guests"]'::jsonb),
-  ('elegant', 'الأنيقة', 'Elegant', 899, 250, 2, true, '["قوالب مميزة","250 ضيفًا","تقارير الحضور"]'::jsonb, '["Premium templates","250 guests","RSVP reports"]'::jsonb),
+  ('starter', 'البداية', 'Starter', 199, 50, 1, false, '["دعوة واحدة","50 ضيفًا"]'::jsonb, '["One invitation","50 guests"]'::jsonb),
+  ('elegant', 'الأنيقة', 'Elegant', 599, 250, 2, true, '["قوالب مميزة","250 ضيفًا","تقارير الحضور"]'::jsonb, '["Premium templates","250 guests","RSVP reports"]'::jsonb),
   ('signature', 'التوقيع', 'Signature', 1699, NULL, 3, false, '["ضيوف بلا حد","تجربة سينمائية","دعم أولوية"]'::jsonb, '["Unlimited guests","Cinematic experience","Priority support"]'::jsonb)
 ON CONFLICT (code) DO NOTHING;
 

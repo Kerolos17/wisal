@@ -9,6 +9,6 @@
     "0005_invitation-access-mode.sql": "304d4e7d72c9f16c43f626fc2c531cc5b15916899219db718fe9537e00afbb56"
   },
   "seeds": {
-    "../seeds/0001_platform_catalog.sql": "5a27486872b4f084e8d710a6f23ebbb38f7ed0e9aefb53c200e2161802540027"
+    "../seeds/0001_platform_catalog.sql": "b2ba7cf52780e2c590badfd8e482be0fb01bd02428b778c1d4042ed6b7c91c33"
   }
 }

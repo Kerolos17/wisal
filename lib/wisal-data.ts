@@ -1,7 +1,7 @@
 import { and, asc, count, desc, eq, inArray, sql } from "drizzle-orm";
 import { getDb, getSql } from "@/db";
 import { activityLogs, eventSegments, events, guestGroupMemberships, guestGroups, guests, guestSegmentAccess, invitations, messages, segmentRsvps, users } from "@/db/schema";
-import { getActiveSubscription, getGuestLimitForOwnerEmail } from "@/lib/payments";
+import { getActiveSubscription, getGuestLimitForOwnerEmail, getGuestLimitForUser } from "@/lib/payments";
 import { isPaidPlanCode, isPremiumTemplateCode } from "@/lib/template-entitlements";
 
 function createInviteToken() {
@@ -520,6 +520,7 @@ export async function saveRsvp(input: {
   const guestId = personalizedGuest?.id ?? crypto.randomUUID();
   const guestName = personalizedGuest?.name ?? input.name;
   const inviteToken = personalizedGuest?.inviteToken ?? createInviteToken();
+  const guestLimit = personalizedGuest ? null : await getGuestLimitForUser(event.ownerId);
   const segmentRows = responses.map((response) => {
     const accessLimit = effectiveRules.find((rule) => rule.segmentId === response.segmentId)?.partyLimit ?? invitation.maxPartySize;
     return {
@@ -529,24 +530,47 @@ export async function saveRsvp(input: {
     };
   });
 
-  // A single statement keeps the guest, activity log, and every segment reply in sync.
-  // If any write fails, Neon rolls all of them back together.
+  // Keep the guest, activity log, and every segment reply in one transaction.
+  // A public RSVP must never use the managed-guest name as an upsert key: names
+  // are not an identity. The event row lock serializes anonymous capacity checks.
   const sqlClient = getSql();
-  const [result] = await sqlClient.transaction([
-    sqlClient`
-      WITH saved_guest AS (
-        INSERT INTO public.guests (id, event_id, name, invite_token, status, party_size, meal, message, opened_at, responded_at, updated_at)
-        VALUES (${guestId}, ${eventId}, ${guestName}, ${inviteToken}, ${input.status}, ${partySize}, ${meal}, ${input.message ?? ""}, ${updatedAt}, ${updatedAt}, ${updatedAt})
-        ON CONFLICT (event_id, name) DO UPDATE SET
-          status = EXCLUDED.status,
-          party_size = EXCLUDED.party_size,
-          meal = EXCLUDED.meal,
-          message = EXCLUDED.message,
-          opened_at = COALESCE(public.guests.opened_at, EXCLUDED.opened_at),
-          responded_at = EXCLUDED.responded_at,
-          updated_at = EXCLUDED.updated_at
+  const guestWrite = personalizedGuest
+    ? sqlClient`
+        UPDATE public.guests
+        SET status = ${input.status},
+            party_size = ${partySize},
+            meal = ${meal},
+            message = ${input.message ?? ""},
+            opened_at = COALESCE(opened_at, ${updatedAt}),
+            responded_at = ${updatedAt},
+            updated_at = ${updatedAt}
+        WHERE id = ${guestId} AND event_id = ${eventId} AND invite_token = ${input.inviteToken!}
         RETURNING id
-      ), activity AS (
+      `
+    : guestLimit === null
+      ? sqlClient`
+          INSERT INTO public.guests (id, event_id, name, invite_token, status, party_size, meal, message, opened_at, responded_at, updated_at)
+          VALUES (${guestId}, ${eventId}, ${guestName}, ${inviteToken}, ${input.status}, ${partySize}, ${meal}, ${input.message ?? ""}, ${updatedAt}, ${updatedAt}, ${updatedAt})
+          RETURNING id
+        `
+      : sqlClient`
+          WITH capacity AS (
+            SELECT COUNT(*)::integer AS current_count
+            FROM public.guests
+            WHERE event_id = ${eventId}
+          )
+          INSERT INTO public.guests (id, event_id, name, invite_token, status, party_size, meal, message, opened_at, responded_at, updated_at)
+          SELECT ${guestId}, ${eventId}, ${guestName}, ${inviteToken}, ${input.status}, ${partySize}, ${meal}, ${input.message ?? ""}, ${updatedAt}, ${updatedAt}, ${updatedAt}
+          FROM capacity
+          WHERE current_count < ${guestLimit}
+          RETURNING id
+        `;
+  let transactionResults: unknown[];
+  try {
+    transactionResults = await sqlClient.transaction([
+      sqlClient`SELECT id FROM public.events WHERE id = ${eventId} FOR UPDATE`,
+      guestWrite,
+      sqlClient`
         INSERT INTO public.activity_logs (event_id, actor_label, action, details, created_at)
         SELECT ${eventId}, ${guestName}, 'rsvp_submitted', jsonb_build_object(
           'status', ${input.status},
@@ -554,25 +578,33 @@ export async function saveRsvp(input: {
           'personalized', ${Boolean(personalizedGuest)},
           'segmentCount', ${segmentRows.length}
         ), ${updatedAt}
-        FROM saved_guest
-      ), segment_input AS (
-        SELECT segment_id, status, party_size
-        FROM jsonb_to_recordset(${JSON.stringify(segmentRows)}::jsonb) AS item(segment_id uuid, status text, party_size integer)
-      ), saved_segments AS (
+        WHERE EXISTS (SELECT 1 FROM public.guests WHERE id = ${guestId} AND event_id = ${eventId})
+      `,
+      sqlClient`
         INSERT INTO public.segment_rsvps (guest_id, segment_id, status, party_size, responded_at, updated_at)
-        SELECT saved_guest.id, segment_input.segment_id, segment_input.status, segment_input.party_size, ${updatedAt}, ${updatedAt}
-        FROM saved_guest CROSS JOIN segment_input
+        SELECT ${guestId}, item.segment_id, item.status, item.party_size, ${updatedAt}, ${updatedAt}
+        FROM jsonb_to_recordset(${JSON.stringify(segmentRows)}::jsonb) AS item(segment_id uuid, status text, party_size integer)
+        WHERE EXISTS (SELECT 1 FROM public.guests WHERE id = ${guestId} AND event_id = ${eventId})
         ON CONFLICT (guest_id, segment_id) DO UPDATE SET
           status = EXCLUDED.status,
           party_size = EXCLUDED.party_size,
           responded_at = EXCLUDED.responded_at,
           updated_at = EXCLUDED.updated_at
-      )
-      SELECT id FROM saved_guest
-    `,
-  ]);
-  const transactionRows = Array.isArray(result) ? result as Array<Record<string, unknown>> : [];
+      `,
+    ]) as unknown[];
+  } catch (error) {
+    const code = typeof error === "object" && error !== null && "code" in error ? (error as { code?: unknown }).code : undefined;
+    if (!personalizedGuest && code === "23505") {
+      throw Object.assign(new Error("هذا الاسم مسجل بالفعل، استخدم رابط الدعوة الشخصي"), { code: "RSVP_NAME_CONFLICT" });
+    }
+    throw error;
+  }
+  const guestResult = transactionResults[1];
+  const transactionRows = Array.isArray(guestResult) ? guestResult as Array<Record<string, unknown>> : [];
   const savedGuestId = String(transactionRows[0]?.id ?? "");
+  if (!savedGuestId && !personalizedGuest) {
+    throw Object.assign(new Error("تجاوزت الدعوة الحد الأقصى للضيوف في باقتك"), { code: "GUEST_LIMIT" });
+  }
   if (!savedGuestId) throw new Error("تعذر حفظ بيانات الضيف");
   const [savedGuest] = await db.select().from(guests).where(eq(guests.id, savedGuestId)).limit(1);
   if (!savedGuest) throw new Error("تعذر حفظ بيانات الضيف");

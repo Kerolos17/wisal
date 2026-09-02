@@ -13,6 +13,7 @@ const AccountCenter = lazy(() => import("./account-center"));
 
 type View = "home" | "studio" | "guest" | "dashboard" | "admin";
 type DataState = "loading" | "ready" | "empty" | "error";
+type CatalogState = "loading" | "ready" | "unavailable";
 type MessageAudience = "all" | "pending" | "confirmed" | "unopened" | "opened_pending" | "maybe" | "declined";
 type PlanCode = string;
 type PublicPlan = { code: string; nameAr: string; nameEn: string; priceEgp: number; guestLimit: number | null; durationDays: number; featured: boolean; featuresAr: string[]; featuresEn: string[] };
@@ -197,12 +198,6 @@ const layoutStyles = [
   { value: "cinematic", name: "سينمائي", enName: "Cinematic", description: "مشاهد واسعة وتباين فاخر", enDescription: "Wide scenes with luxurious contrast" },
 ] as const;
 
-const defaultPlans: PublicPlan[] = [
-  { code: "starter", nameAr: "البداية", nameEn: "Starter", priceEgp: 0, guestLimit: 50, durationDays: 365, featured: false, featuresAr: ["دعوة واحدة", "50 ضيفًا"], featuresEn: ["One invitation", "50 guests"] },
-  { code: "elegant", nameAr: "الأنيقة", nameEn: "Elegant", priceEgp: 899, guestLimit: 250, durationDays: 365, featured: true, featuresAr: ["قوالب مميزة", "250 ضيفًا", "تقارير الحضور"], featuresEn: ["Premium templates", "250 guests", "RSVP reports"] },
-  { code: "signature", nameAr: "التوقيع", nameEn: "Signature", priceEgp: 1699, guestLimit: null, durationDays: 365, featured: false, featuresAr: ["ضيوف بلا حد", "تجربة سينمائية", "دعم أولوية"], featuresEn: ["Unlimited guests", "Cinematic experience", "Priority support"] },
-];
-
 const mediaUrl = (key: string) => `/api/media/${key.split("/").map(encodeURIComponent).join("/")}`;
 
 async function copyText(text: string) {
@@ -342,7 +337,8 @@ export default function Home({ initialView = "home", authenticated = false, acco
   const [profileName, setProfileName] = useState(account?.displayName || "Layla Ahmed");
   const [creatingEvent, setCreatingEvent] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<PlanCode>(() => typeof window === "undefined" ? "elegant" : new URLSearchParams(window.location.search).get("plan") || "elegant");
-  const [publicPlans, setPublicPlans] = useState<PublicPlan[]>(defaultPlans);
+  const [publicPlans, setPublicPlans] = useState<PublicPlan[]>([]);
+  const [catalogState, setCatalogState] = useState<CatalogState>("loading");
   const [publicContent, setPublicContent] = useState<PublicContent>({});
   const [publicTemplates, setPublicTemplates] = useState<PublicTemplate[]>(atelierTemplates);
   const [activePlanCode, setActivePlanCode] = useState<string | null>(null);
@@ -410,15 +406,27 @@ export default function Home({ initialView = "home", authenticated = false, acco
         setDataState("empty");
       }
       void fetch("/api/platform-content", { cache: "no-store" })
-        .then((response) => response.ok ? response.json() : null)
+        .then((response) => {
+          if (!response.ok) throw new Error("Catalog unavailable");
+          return response.json();
+        })
         .then((config: { content?: Array<{ key: string; valueAr: string; valueEn: string }>; plans?: PublicPlan[]; templates?: Array<{ code: string; nameAr: string; nameEn: string; category: string }> } | null) => {
-          if (!config) return;
-          if (config.plans?.length) setPublicPlans(config.plans);
+          if (!config) throw new Error("Catalog unavailable");
+          if (config.plans?.length) {
+            setPublicPlans(config.plans);
+            setCatalogState("ready");
+          } else {
+            throw new Error("Catalog unavailable");
+          }
           if (config.templates?.length) {
             const availableTemplates = mergePublicTemplates(config.templates);
             if (availableTemplates.length) setPublicTemplates(availableTemplates);
           }
           if (config.content) setPublicContent(Object.fromEntries(config.content.map((item) => [item.key, { ar: item.valueAr, en: item.valueEn }])));
+        })
+        .catch(() => {
+          setPublicPlans([]);
+          setCatalogState("unavailable");
         });
     }, 0);
     return () => window.clearTimeout(timer);
@@ -588,7 +596,7 @@ export default function Home({ initialView = "home", authenticated = false, acco
         <button className={view === "dashboard" ? "active" : ""} onClick={() => authenticated ? go("dashboard") : router.push("/auth/sign-in?returnTo=%2Fworkspace")}><LayoutDashboard aria-hidden="true" />{locale === "ar" ? "اللوحة" : "Dashboard"}</button>
       </nav>
 
-      {view === "home" && <Landing locale={locale} plans={publicPlans} templates={publicTemplates} content={publicContent} onStart={() => void openStudio()} onGuest={() => go("guest")} onChoosePlan={choosePlan} onChooseTemplate={(code) => void chooseTemplateFromHome(code)} />}
+      {view === "home" && <Landing locale={locale} plans={publicPlans} catalogState={catalogState} templates={publicTemplates} content={publicContent} onStart={() => void openStudio()} onGuest={() => go("guest")} onChoosePlan={choosePlan} onChooseTemplate={(code) => void chooseTemplateFromHome(code)} />}
       {view === "studio" && dataState === "loading" && <BuilderLoading locale={locale} />}
       {view === "studio" && dataState === "error" && <BuilderUnavailable locale={locale} message={dataError} onRetry={() => void loadEvents()} onCreate={() => setCreatingEvent(true)} />}
       {view === "studio" && dataState === "empty" && <BuilderUnavailable locale={locale} message={tr(locale, "لا توجد دعوة بعد. ابدأ بإضافة بيانات المناسبة الأساسية.", "There is no invitation yet. Start with the essential event details.")} onRetry={() => void loadEvents()} onCreate={() => setCreatingEvent(true)} />}
@@ -619,7 +627,7 @@ export default function Home({ initialView = "home", authenticated = false, acco
   );
 }
 
-function Landing({ locale, plans, templates, content, onStart, onGuest, onChoosePlan, onChooseTemplate }: { locale: Locale; plans: PublicPlan[]; templates: PublicTemplate[]; content: PublicContent; onStart: () => void; onGuest: () => void; onChoosePlan: (plan: PlanCode) => void; onChooseTemplate: (code: string) => void }) {
+function Landing({ locale, plans, catalogState, templates, content, onStart, onGuest, onChoosePlan, onChooseTemplate }: { locale: Locale; plans: PublicPlan[]; catalogState: CatalogState; templates: PublicTemplate[]; content: PublicContent; onStart: () => void; onGuest: () => void; onChoosePlan: (plan: PlanCode) => void; onChooseTemplate: (code: string) => void }) {
   const ar = locale === "ar";
   const copy = (key: string, fallbackAr: string, fallbackEn: string) => content[key]?.[ar ? "ar" : "en"] || (ar ? fallbackAr : fallbackEn);
   const showcaseTemplates = ["love-poem", "garden-night", "moonlight", "golden-vows", "white-story", "cinema-night"].map((code) => templates.find((template) => template.code === code) ?? atelierTemplates.find((template) => template.code === code)).filter(Boolean) as PublicTemplate[];
@@ -751,13 +759,13 @@ function Landing({ locale, plans, templates, content, onStart, onGuest, onChoose
           <h2>{ar ? "خطة تناسب حجم احتفالكم" : "A plan shaped for your celebration"}</h2>
           <p>{ar ? "اختر باقتك وادفع بأمان عبر إيصال التحويل، ثم تفعّل باقتك بعد المراجعة." : "Choose your plan and pay securely via transfer receipt, then your plan activates after review."}</p>
         </header>
-        <div className="atlas-plan-list">
+        {catalogState === "loading" ? <div className="atlas-plan-unavailable" role="status">{ar ? "جارٍ تحميل الباقات والأسعار…" : "Loading plans and pricing…"}</div> : catalogState === "unavailable" ? <div className="atlas-plan-unavailable" role="alert">{ar ? "الباقات والأسعار غير متاحة مؤقتًا. حاولوا مرة أخرى بعد قليل." : "Plans and pricing are temporarily unavailable. Please try again shortly."}</div> : <div className="atlas-plan-list">
           {plans.map((plan) => <article className={plan.featured ? "is-featured" : ""} key={plan.code}>
             <div><h3>{ar ? plan.nameAr : plan.nameEn}</h3><p>{plan.guestLimit ? (ar ? `حتى ${plan.guestLimit} ضيفًا` : `Up to ${plan.guestLimit} guests`) : (ar ? "ضيوف بلا حد" : "Unlimited guests")}</p></div>
             <ul>{(ar ? plan.featuresAr : plan.featuresEn).map((feature) => <li key={feature}><CircleCheckBig aria-hidden="true" />{feature}</li>)}</ul>
             <div className="atlas-plan-action"><span><b>{plan.priceEgp}</b><small>{ar ? `جنيه · اشتراك ${plan.durationDays} يومًا` : `EGP · ${plan.durationDays}-day subscription`}</small></span><button onClick={() => onChoosePlan(plan.code)}>{ar ? "اختيار الخطة" : "Choose plan"}</button></div>
           </article>)}
-        </div>
+        </div>}
       </section>
 
       <section className="atlas-final">
