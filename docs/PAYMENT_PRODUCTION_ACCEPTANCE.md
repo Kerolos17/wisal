@@ -40,6 +40,14 @@ The application supports an administrator-reviewed transfer workflow. This is a 
 - [ ] Configure error monitoring and a support route for failed transfers or missing receipts.
 - [ ] Capture the test evidence, date, reviewer, and release commit in the launch record.
 
+### Production technical evidence — 2 September 2026
+
+- `GET /api/health` returned 200 with application and database status `ok`.
+- Unauthenticated requests to `GET /api/payment-destinations`, `GET /api/payment-destinations/instapay/qr`, and `GET /api/payments/not-a-real-payment` each returned 401 with `Cache-Control: private, no-store`.
+- The production catalog has two active receiving methods. InstaPay has a configured recipient and account identifier, a stored QR asset, and an HTTPS payment link whose host returned HTTP 200 to a non-interactive `HEAD` check. Vodafone Cash has a configured recipient and account identifier; it intentionally has no payment link or QR asset.
+- The payment runtime suite was re-run against the isolated Neon test database: 20/20 tests passed, covering approval, reviewer feedback, rejection, cancellation, isolation, receipt validation/storage, expiry, concurrency, and guest limits. The test database was missing the additive `media_blobs` and `invitations.access_mode` schema changes; only those two required additive changes were applied to the test database before the successful rerun. Production was not migrated.
+- Remaining release controls are operational: the account owner must confirm ownership of every receiving destination, assign two trained reviewers, approve Egyptian invoice/refund wording with counsel or an accountant, and configure monitored support escalation before customer charges begin.
+
 ## Test-database setup
 
 Create a local `.env.test` file (ignored by Git):
