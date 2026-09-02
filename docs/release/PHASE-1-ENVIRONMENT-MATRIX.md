@@ -15,7 +15,7 @@ and validates formats without printing values. For local checks, run
 | `NEON_AUTH_BASE_URL` | Not configured | Required | Required | Must belong to the matching Neon branch and trusted origin |
 | `NEON_AUTH_COOKIE_SECRET` | Not configured | Required | Required | Server-only random secret, minimum 32 characters, unique per trust boundary |
 | `PLATFORM_OWNER_EMAIL` | Not configured | Required before admin acceptance | Required | Canonical owner account; never place the real address in source control |
-| `NEXT_PUBLIC_SITE_URL` | Optional; safe fallback exists | `https://wisal-self.vercel.app` until a custom Preview domain is adopted | Not externally verified; currently served aliases are Vercel-owned | Must be an HTTPS origin with no path; it drives metadata, canonical, robots, and sitemap |
+| `NEXT_PUBLIC_SITE_URL` | Optional; safe fallback exists | `https://wisal-self.vercel.app` | `https://wisal-self.vercel.app` — owner-approved production hostname | Must be an HTTPS origin with no path; it drives metadata, canonical, robots, and sitemap |
 | `PAYMENT_TEST_MODE` | Disabled by default | Disabled | Disabled | Opt-in guard for database-mutating payment tests only |
 | `PAYMENT_TEST_DATABASE_URL` | Not configured | Not applicable | Must never be configured | Isolated disposable database only; must not equal `DATABASE_URL` |
 
@@ -58,12 +58,17 @@ release gates, not assumptions.
   GitHub `Kerolos17/wisal` branch `main` at commit `658267e`.
 - The production aliases are `wisal-self.vercel.app`,
   `wisal-kerolos17s-projects.vercel.app`, and
-  `wisal-git-main-kerolos17s-projects.vercel.app`. They are Vercel-owned
-  hostnames; no custom final domain is connected yet.
+  `wisal-git-main-kerolos17s-projects.vercel.app`. The owner approved
+  `wisal-self.vercel.app` as the current production hostname; a custom domain
+  is not required for this release.
+- Live verification returned HTTP 200 and an HSTS policy with preload. The
+  canonical URL, Open Graph URL, JSON-LD URL, robots sitemap reference, and
+  all sitemap entries use `https://wisal-self.vercel.app`.
 - Vercel project inspection does not expose environment-variable values or
   scopes through the available read-only interface. Before a custom-domain cutover,
   an owner must confirm the Production and Preview scopes for all required rows
   above, including distinct database targets and matching Neon Auth trusted origins.
 
-This establishes the current baseline for TASK-006. It does not complete the
-final-domain cutover or authorize public paid launch.
+This completes the hostname and public-metadata portion of TASK-006. It does
+not verify the remaining Auth and Preview/Production separation gates or
+authorize public paid launch.
