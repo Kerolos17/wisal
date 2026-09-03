@@ -1,4 +1,5 @@
 import { getSql } from "@/db";
+import { logger } from "./logger";
 
 type GuardOptions = {
   limit: number;
@@ -43,7 +44,7 @@ export async function guardSharedRateLimit(key: string, options: Pick<GuardOptio
     next = await consumeSharedRateLimit(key, windowMs);
   } catch (error) {
     const requestId = crypto.randomUUID();
-    console.error("shared_rate_limit_unavailable", { requestId, errorName: error instanceof Error ? error.name : "UnknownError" });
+    logger.error("shared_rate_limit_unavailable", { requestId, errorName: error instanceof Error ? error.name : "UnknownError" });
     return Response.json({ error: "الخدمة غير متاحة مؤقتًا. حاول مرة أخرى بعد قليل.", requestId }, { status: 503, headers: noStoreHeaders });
   }
   if (next.count > options.limit) {

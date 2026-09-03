@@ -1,3 +1,5 @@
+import { logger } from "./logger";
+
 type ApiErrorOptions = {
   message: string;
   status?: number;
@@ -29,7 +31,7 @@ export function apiErrorResponse(error: unknown, options: ApiErrorOptions) {
     || (options.publicMessages?.includes(rawMessage) ? rawMessage : options.message);
   const status = (errorCode && options.statusByCode?.[errorCode]) || options.status || 500;
 
-  console.error("api_request_failed", { requestId, errorName, errorCode });
+  logger.error("api_request_failed", { requestId, errorName, errorCode });
   return Response.json(
     { error: publicMessage, requestId },
     { status, headers: { "Cache-Control": "private, no-store" } },
