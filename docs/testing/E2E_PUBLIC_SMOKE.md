@@ -24,12 +24,14 @@ provided. That override is permitted only for this read-only smoke suite.
   invitation URL.
 - A private invitation URL keeps all robots metadata `noindex` and strips a
   query token from the canonical URL.
+- Sign-in and recovery pages render without caching, while an external callback
+  destination is rejected. These checks never submit a credential or email.
 
 ## Evidence — 3 September 2026
 
 The suite ran against the approved production hostname in its explicit
-read-only mode. Chromium and mobile Chromium both passed all three checks:
-6/6 total. The suite also provides traces, screenshots, and video only when a
+read-only mode. Chromium and mobile Chromium passed all public checks. The
+suite also provides traces, screenshots, and video only when a
 test fails, under `output/playwright/`.
 
 ## Next expansion
