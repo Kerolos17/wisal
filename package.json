@@ -11,6 +11,7 @@
     "start": "next start",
     "test": "node --env-file=.env --test tests/*.test.mjs",
     "test:payments": "tsx --env-file=.env.test --test tests/payments.test.ts tests/guest-limit.test.ts tests/payment-receipt-submission.test.ts tests/payment-storage-key.test.ts",
+    "test:e2e": "playwright test",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "env:check": "node scripts/check-environment.mjs --target=production",
     "db:generate": "drizzle-kit generate",
@@ -36,6 +37,7 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.37.1",
+    "@playwright/test": "1.51.1",
     "@tailwindcss/postcss": "4.2.1",
     "@types/node": "22.19.19",
     "@types/react": "19.2.14",
