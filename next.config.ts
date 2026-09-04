@@ -1,13 +1,25 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const scriptSources = ["'self'", "'unsafe-inline'", ...(process.env.NODE_ENV === "development" ? ["'unsafe-eval'"] : [])];
+const sentryIngestOrigin = (() => {
+  const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
+
+  if (!dsn) return undefined;
+
+  try {
+    return new URL(dsn).origin;
+  } catch {
+    return undefined;
+  }
+})();
 const contentSecurityPolicy = [
   "default-src 'self'",
   `script-src ${scriptSources.join(" ")}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self' data:",
-  "connect-src 'self'",
+  `connect-src 'self'${sentryIngestOrigin ? ` ${sentryIngestOrigin}` : ""}`,
   "media-src 'self' blob:",
   "frame-src 'self'",
   "worker-src 'self' blob:",
@@ -43,4 +55,11 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  // Runtime event delivery does not require a build token. Keep source-map
+  // upload disabled until an owner deliberately configures one in Vercel.
+  sourcemaps: { disable: !process.env.SENTRY_AUTH_TOKEN },
+  telemetry: false,
+  silent: true,
+  treeshake: { removeDebugLogging: true, removeTracing: true },
+});

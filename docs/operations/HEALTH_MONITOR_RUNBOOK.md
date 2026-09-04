@@ -23,8 +23,9 @@ configuration values.
 
 ## Remaining setup
 
-- Assign a named on-call owner and confirm GitHub failure notifications reach
-  that person.
+- The primary GitHub account is the initial sole responder. In GitHub
+  notification settings, enable **Email** and **Only notify for failed
+  workflows** for Actions, then confirm the first failed test alert arrives.
 - Add error aggregation, route-level latency/error dashboards, and alerts for
   auth, RSVP, invitation resolution, and payment transitions.
 - Set and approve SLO/error-budget thresholds, then run and acknowledge one
