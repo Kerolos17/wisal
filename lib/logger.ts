@@ -15,7 +15,7 @@ const REDACTED = "[REDACTED]";
 function redactSensitiveData(data: Record<string, unknown>): Record<string, unknown> {
   const redactedData = { ...data };
   const sensitiveKeys = ["token", "password", "phone", "name", "email", "message", "receipt", "inviteToken"];
-  
+
   for (const key of Object.keys(redactedData)) {
     if (sensitiveKeys.some((sensitiveKey) => key.toLowerCase().includes(sensitiveKey))) {
       redactedData[key] = REDACTED;
@@ -36,13 +36,13 @@ export const logger = {
 function log(level: LogLevel, event: string, context?: Record<string, unknown>) {
   const timestamp = new Date().toISOString();
   let logEntry = { timestamp, level, event };
-  
+
   if (context) {
     logEntry = { ...logEntry, ...redactSensitiveData(context) };
   }
-  
+
   const serialized = JSON.stringify(logEntry);
-  
+
   if (level === "error") {
     console.error(serialized);
   } else if (level === "warn") {

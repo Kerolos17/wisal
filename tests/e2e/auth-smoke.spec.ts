@@ -19,9 +19,9 @@ test.describe("authentication public smoke", () => {
     await expect(page.getByRole("button", { name: /send|إرسال/i })).toBeVisible();
   });
 
-  test("rejects an external callback destination", async ({ page }) => {
+  test("rejects an external callback destination", async ({ page, baseURL }) => {
     await page.goto("/auth/callback?returnTo=%2F%2Fexample.com", { waitUntil: "domcontentloaded" });
 
-    await expect(page).toHaveURL(/wisal-self\.vercel\.app\/$/);
+    await expect(page).toHaveURL(new URL("/", baseURL).href);
   });
 });

@@ -1,0 +1,40 @@
+name: Production health monitor
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  health:
+    name: Verify application and database health
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    env:
+      WISAL_HEALTH_URL: https://wisal-self.vercel.app/api/health
+    steps:
+      - name: Check production health contract
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Fail on unavailable application or database
+        run: |
+          node --input-type=module <<'EOF'
+          const response = await fetch(process.env.WISAL_HEALTH_URL, {
+            headers: { accept: "application/json" },
+            signal: AbortSignal.timeout(15_000),
+          });
+          const payload = await response.json().catch(() => null);
+          const healthy = response.status === 200
+            && payload?.status === "ok"
+            && payload?.services?.application === "ok"
+            && payload?.services?.database === "ok";
+
+          if (!healthy) {
+            throw new Error(`Health check failed with HTTP ${response.status}.`);
+          }
+          EOF
