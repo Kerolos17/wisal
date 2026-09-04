@@ -61,5 +61,8 @@ export default withSentryConfig(nextConfig, {
   sourcemaps: { disable: !process.env.SENTRY_AUTH_TOKEN },
   telemetry: false,
   silent: true,
-  treeshake: { removeDebugLogging: true, removeTracing: true },
+  bundleSizeOptimizations: {
+    excludeDebugStatements: true,
+    excludeTracing: true,
+  },
 });
