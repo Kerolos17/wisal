@@ -17,13 +17,20 @@ email addresses, or phone numbers to error messages or Sentry tags.
 2. In Vercel Production environment variables, add `NEXT_PUBLIC_SENTRY_DSN`
    using the DSN supplied by that project. This value is public by design, but
    must still be entered in Vercel rather than committed to this repository.
-3. Redeploy production, then trigger one controlled test error in a preview
-   environment. Verify that the issue arrives without customer data.
-4. Optionally add the server-only `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, and
+3. Add the same `NEXT_PUBLIC_SENTRY_DSN` to Vercel **Preview** only, then add
+   a unique `SENTRY_SMOKE_TEST_TOKEN` to Preview only. Never set this token in
+   Production.
+4. Redeploy Preview and make one authenticated `POST` request to
+   `/api/ops/sentry-smoke` with `Authorization: Bearer <SENTRY_SMOKE_TEST_TOKEN>`.
+   The route is deliberately unavailable outside Vercel Preview and reports a
+   single synthetic error without customer data.
+5. Verify the issue and alert arrive, then resolve the synthetic issue in
+   Sentry. Do not run this check against production.
+6. Optionally add the server-only `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, and
    `SENTRY_PROJECT` variables in Vercel to upload source maps. Create a token
    with the narrowest release/upload permissions and never copy it into code,
    chat, or documentation.
-5. Create an alert for a new unresolved production issue and direct it to the
+7. Create an alert for a new unresolved production issue and direct it to the
    same owner who receives GitHub Actions failures. Acknowledge one synthetic
    alert and record the result in the launch record.
 
