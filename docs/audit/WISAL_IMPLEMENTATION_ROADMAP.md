@@ -19,8 +19,8 @@ This file is the single source of truth for the next development cycle. Do not s
 
 | ID | Task | Problem → solution | Priority | Complexity | Dependencies | Likely files/modules | Acceptance criteria |
 |---|---|---|---|---|---|---|---|
-| WIS-001 | Safe Google account linking/recovery | Password users cannot continue with Google. Select a provider-supported verified linking flow or explicit reset/password-first recovery; do not auto-link by email. | P0 | M | Neon Auth capability decision; test OAuth tenant | `app/auth/*`, `lib/auth/*`, provider configuration, E2E | New Google and existing-password cases are documented, tested, and never create/merge the wrong account; invalid state/callback is safe. |
-| WIS-003 | Multi-identity security E2E | Source checks cannot prove tenant isolation. Create Owner A/B, admin/support/content/couple, public/private guests and run negative API/UI tests. | P0 | L | Isolated test DB/auth identities | `tests/e2e`, API routes, fixtures | All object substitutions return 403/404 without PII; private token/segment tests pass. |
+| WIS-001 | Safe Google account linking/recovery | Implemented: password-first recovery and authenticated linking handoff are deployed. Keep provider callback/revocation/state regression coverage. | P1 | M | Test OAuth tenant | `app/auth/*`, `lib/auth/*`, provider configuration, E2E | New Google and existing-password cases are documented, tested, and never create/merge the wrong account; invalid state/callback is safe. |
+| WIS-003 | Multi-identity security E2E | Preliminary production check and source contracts confirm owner scoping, but source checks cannot prove every tenant boundary. Create Owner A/B, admin/support/content/couple, public/private guests and run negative API/UI tests. | P0 | L | Isolated test DB/auth identities | `tests/e2e`, API routes, fixtures | All object substitutions return 403/404 without PII; private token/segment tests pass. |
 | WIS-004 | Production auth/config verification | Env/callback/cookie/provider configuration was unavailable to audit. Add a non-secret deploy verification runbook/check. | P0 | M | Vercel/Neon access | `.env.example`, docs, Vercel settings | Required vars present; prod/preview separated; callback URLs/cookies/reset mail verified; no secret logs. |
 
 ## Phase 1 — Core product stability
@@ -108,7 +108,7 @@ Priority: P0
 Area: Security / QA  
 Complexity: Large
 
-Description: Prove every sensitive API/UI path denies cross-owner and role-inappropriate access.
+Description: Prove every sensitive API/UI path denies cross-owner and role-inappropriate access. A 12 September 2026 controlled production check verified two distinct accounts, separate event context and the owner-scoped implementation, but direct `/api/*` substitution was blocked by the cloud-browser policy; automated negative HTTP coverage is still required.
 
 Acceptance Criteria:
 
