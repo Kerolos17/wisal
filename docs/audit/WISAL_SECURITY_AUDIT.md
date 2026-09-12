@@ -2,15 +2,15 @@
 
 ## Assessment boundary
 
-This is a source-assisted security audit, not a penetration test. The code was reviewed and static contract tests passed. Production secrets, OAuth provider settings, database data, storage contents, and two independent authenticated identities were not available; those controls are therefore **unverified**, not assumed secure.
+This is a source-assisted security audit, not a penetration test. The code was reviewed and static contract tests passed. A controlled production check on 12 September 2026 created two independent test identities and a draft event; it confirmed sign-in, workspace isolation at the product level, and the server-side ownership pattern. Direct authenticated API substitution could not be issued from the cloud test browser because that environment blocks `/api/*` navigation, so the complete negative HTTP matrix remains **unverified**, not assumed secure.
 
 ## Risk register
 
 | Severity | Finding | Evidence | Required action |
 |---|---|---|---|
 | Critical | No confirmed critical vulnerability found in reviewed source | Owner-scoped event queries, UUID tokens, role checks, validation and tests are present | Complete authenticated negative testing before declaring this closed |
-| High | Existing email account cannot safely use Google sign-in/linking | `app/auth/sign-in/page.tsx` explicitly reports the provider cannot link it | WIS-001: define and verify a safe provider-supported account-linking/recovery flow |
-| High | Production authorization has not been tested across two identities | Source checks are good but tests are predominantly source/contract tests | WIS-003: automated owner A / owner B / admin / guest-token E2E matrix |
+| High | Google linking needs a final provider-callback regression record | A deployed password-first recovery and authenticated linking page prevent unsafe automatic email matching | Retain WIS-001 as a release regression: provider callback, revoke and expired-state cases |
+| High | Production authorization has not been fully tested across two identities | Two controlled identities were created; every reviewed event route/service is owner-scoped, but direct authenticated API substitution was blocked by the cloud-browser URL policy | WIS-003: automated owner A / owner B / admin / guest-token E2E matrix |
 | High | Payment receipt and cover blobs live in primary PostgreSQL | `lib/wisal-storage.ts`; 5 MB uploads are accepted | WIS-006: retention/backup sizing now; migrate to object storage before scale |
 | Medium | Upload accepts browser-declared MIME type without decode/re-encode or dimension validation | Cover upload accepts JPEG/PNG/WebP by `file.type`; payment receipt accepts PDF/images | WIS-007: magic-byte verification, image dimension/pixel caps, malware scanning policy |
 | Medium | Server mutation routes do not use one central CSRF/origin policy | Public routes do; authenticated routes rely on auth cookie/provider behavior | WIS-004: document Neon cookie SameSite/security settings and add consistent origin/CSRF defense where required |
@@ -22,7 +22,7 @@ This is a source-assisted security audit, not a penetration test. The code was r
 
 **Implemented:** Neon Auth is explicit, secret-backed, and session retrieval is server-side. `safeReturnPath` rejects cross-origin/protocol-relative redirect targets. Workspace and admin pages require identity. The live unauthenticated `/workspace` route redirected to sign-in, and the sign-in page rendered English by default with email/password, recovery, signup and Google controls.
 
-**Blocker:** The current UI knowingly surfaces `account_not_linked` for a password account attempting Google: it says the current provider cannot link Google. That is secure in the sense that it does not auto-merge accounts, but it is not a complete user journey. Do not implement unsafe matching by email. Choose one safe design: provider-supported verified linking after password re-authentication, or a clear reset/password-first recovery flow with support escalation. Exercise both directions and invalid/expired OAuth state in a non-production auth tenant.
+**Implemented on production (12 September 2026):** a password account that starts with Google is directed to password-first recovery rather than being auto-linked by email. After authenticated password sign-in, `/auth/connect-google` offers a dedicated verified provider-linking handoff. The recovery email and authenticated handoff were observed; the user confirmed completion of the Google link. Do not implement unsafe matching by email. Retain provider callback, revoked-grant and invalid/expired-state cases as release regressions.
 
 **Not verified:** Google provider activation on the Vercel domain, callback allowlist, password-reset mail delivery, email verification policy, cookie attributes, session expiry/renewal, revoked Google grant, and account enumeration/rate limiting.
 
@@ -36,6 +36,14 @@ Required proof before launch:
 - A valid guest token cannot RSVP/open a different event, view hidden segments, or change an unrelated guest.
 - A support/content role cannot perform user-role or payment-review actions; a normal couple cannot call any admin API.
 - Private invitation URLs remain noindex, no-referrer and absent from sitemap/canonical query strings.
+
+### 12 September 2026 controlled isolation check
+
+- Created two independent non-production test identities in the deployed application and a draft event under Owner A.
+- Signed in as Owner B and confirmed a separate workspace/account context; no Owner A event was present in Owner B's event list.
+- Reviewed all `app/api/events/**` route handlers: each resolves `getCurrentOwnerEmail()` and service methods select the event with both `events.id` and `events.owner_id` before a read or mutation. Guest, group, segment, message and cover paths use the same owner guard.
+- Ran the local production-contract suite: 179/179 tests passed, including owner scoping, private guest tokens, hidden-segment access, per-segment RSVP and admin permission contracts; lint and TypeScript checks also passed.
+- Limitation: the cloud browser returned `ERR_BLOCKED_BY_CLIENT` for the single direct Owner-B request to the Owner-A `/api/events/{id}` URL. No bypass or retry was attempted. Therefore this is positive evidence, not a replacement for the CI negative API matrix.
 
 ## Input, transport and data exposure review
 
@@ -57,4 +65,3 @@ Concerns to address:
 ## References
 
 [^1]: OWASP, [Insecure Direct Object Reference Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Insecure_Direct_Object_Reference_Prevention_Cheat_Sheet.html), accessed September 2026.
-
