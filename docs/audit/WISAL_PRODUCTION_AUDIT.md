@@ -24,13 +24,12 @@ See [WISAL_ARCHITECTURE.md](WISAL_ARCHITECTURE.md). The verified stack is Next.j
 
 | Complete / substantially implemented | Partial / needs proof | Broken or launch-incomplete | Missing |
 |---|---|---|---|
-| Public landing, template catalog, privacy/terms, English UI default, LTR/RTL switch, email/password entry, workspace gate, event CRUD, templates/opening settings, segments, groups, CSV import/export, tokenized guests, RSVP, invitations, admin roles/overview, support, notifications, manual payments, audit log, robots/sitemap/CSP | Google OAuth new-account flow, account creation/reset delivery, private invite server enforcement in production, admin roles, mobile/Safari behavior, real Sentry delivery, actual health-monitor success, payment receipt review, subscription entitlement | Password-account Google linking has no safe supported route; scheduled messages do not send; schema/service defaults persist Arabic-first values | Email/WhatsApp provider integration and delivery worker, verified analytics/consent setup, deletion/export workflow, public observability dashboards, immutable operational audit for all sensitive user actions |
+| Public landing, template catalog, privacy/terms, English UI default, LTR/RTL switch, email/password entry, password-first Google recovery/linking handoff, workspace gate, event CRUD, templates/opening settings, segments, groups, CSV import/export, tokenized guests, RSVP, invitations, admin roles/overview, support, notifications, manual payments, audit log, robots/sitemap/CSP | Google OAuth new-account flow, account creation/reset delivery, full negative API authorization matrix, private invite server enforcement in production, admin roles, mobile/Safari behavior, real Sentry delivery, actual health-monitor success, payment receipt review, subscription entitlement | Scheduled messages do not send; schema/service defaults persist Arabic-first values | Email/WhatsApp provider integration and delivery worker, verified analytics/consent setup, deletion/export workflow, public observability dashboards, immutable operational audit for all sensitive user actions |
 
 ## 4. Production blockers (P0)
 
-1. **WIS-001 — Resolve Google OAuth account-linking/recovery.** Existing password users are directed to a provider limitation rather than a completed safe path. This directly affects a primary advertised sign-in choice and repeats the previously reported issue.
-2. **WIS-003 — Prove production authorization and core journeys with controlled identities.** The source design is good, but launch cannot rely on source assertions for cross-tenant data isolation, token privacy, callback behavior, or payment entitlements.
-3. **WIS-004 — Verify production auth/secret/callback/cookie configuration.** Configuration is deliberately unavailable to code review; launch must not proceed until the checklist records pass/fail evidence.
+1. **WIS-003 — Prove production authorization and core journeys with controlled identities.** A controlled check confirmed distinct accounts and owner-scoped code, but launch cannot rely on source assertions for every cross-tenant API substitution, token privacy, callback behavior, or payment entitlement.
+2. **WIS-004 — Verify production auth/secret/callback/cookie configuration.** Configuration is deliberately unavailable to code review; launch must not proceed until the checklist records pass/fail evidence.
 
 ## 5. Critical issues (P1)
 
@@ -140,4 +139,3 @@ The backlog, priorities, dependencies and acceptance criteria are maintained in 
 ## References
 
 [^1]: Google Search Central, [Understanding Core Web Vitals and Google search results](https://developers.google.com/search/docs/appearance/core-web-vitals), accessed September 2026.
-
