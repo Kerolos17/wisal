@@ -37,7 +37,7 @@ test("auth return paths reject protocol-relative and cross-origin redirects", ()
   assert.match(identity, /url\.origin === "https:\/\/wisal\.local"/);
 });
 
-test("authentication UI supports Arabic, English, email, and Google", () => {
+test("authentication UI supports Arabic, English, email, Google, and explicit account linking", () => {
   assert.match(authForm, /useWisalLocale\(\)/);
   assert.match(authForm, /sign-in\/social/);
   assert.match(authForm, /Invalid callbackURL/);
@@ -49,8 +49,10 @@ test("authentication UI supports Arabic, English, email, and Google", () => {
   assert.match(authProxy, /\/auth\/callback/);
   assert.match(signInPage, /account_not_linked/);
   assert.match(signInPage, /password sign-in/);
-  assert.doesNotMatch(signInPage, /linkGoogleAfterPassword/);
-  assert.match(connectGooglePage, /redirect\(returnTo\)/);
+  assert.match(authForm, /accountLinkingNeeded/);
+  assert.match(authForm, /auth\/connect-google/);
+  assert.match(connectGooglePage, /requirePlatformIdentity/);
+  assert.match(connectGooglePage, /ConnectGoogleCard/);
   assert.match(authForm, /auth\/forgot-password/);
   assert.match(recoveryCard, /request-password-reset/);
   assert.match(recoveryCard, /api\/auth\/reset-password/);

@@ -13,9 +13,9 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
   const initialError = params.reset === "success"
     ? "Your password has been updated. Sign in with your new password."
     : params.error === "account_not_linked"
-    ? "This email already uses password sign-in. Google cannot be linked by the current authentication provider, so please sign in with your password or reset it."
+    ? "This email already uses password sign-in. Sign in with your password first, then connect Google from the secure account-linking page."
     : params.error
       ? "Google sign-in could not be completed. Please try again or use your email and password."
       : "";
-  return <AuthForm mode="sign-in" returnTo={returnTo} initialError={initialError} />;
+  return <AuthForm mode="sign-in" returnTo={returnTo} initialError={initialError} accountLinkingNeeded={params.error === "account_not_linked"} />;
 }

@@ -8,7 +8,7 @@ import { useWisalLocale } from "@/app/use-wisal-locale";
 
 type Mode = "sign-in" | "sign-up";
 
-export default function AuthForm({ mode, returnTo, initialError = "" }: { mode: Mode; returnTo: string; initialError?: string }) {
+export default function AuthForm({ mode, returnTo, initialError = "", accountLinkingNeeded = false }: { mode: Mode; returnTo: string; initialError?: string; accountLinkingNeeded?: boolean }) {
   const [locale, setLocale] = useWisalLocale();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -91,6 +91,7 @@ export default function AuthForm({ mode, returnTo, initialError = "" }: { mode: 
             <label>{L("كلمة المرور", "Password")}<span className="auth-password"><input type={showPassword ? "text" : "password"} autoComplete={isSignUp ? "new-password" : "current-password"} minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} required placeholder={L("٨ أحرف على الأقل", "At least 8 characters")} /><button type="button" onClick={() => setShowPassword((value) => !value)} aria-label={L("إظهار أو إخفاء كلمة المرور", "Show or hide password")}>{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button></span></label>
             {!isSignUp && <Link className="auth-forgot" href={`/auth/forgot-password?returnTo=${encodeURIComponent(returnTo)}`}>{L("نسيت كلمة المرور؟", "Forgot password?")}</Link>}
             {error && <p className="auth-error" role="alert">{error}</p>}
+            {accountLinkingNeeded && <p className="auth-linking-help">{L("سجّل الدخول أولًا بكلمة المرور، ثم افتح صفحة الربط الآمن لحساب Google.", "Sign in with your password first, then open the secure Google connection page.")} <Link href={`/auth/connect-google?returnTo=${encodeURIComponent(returnTo)}`}>{L("ربط Google بأمان", "Securely connect Google")}</Link></p>}
             <button className="auth-submit" disabled={Boolean(loading)}>{loading === "email" && <LoaderCircle className="auth-spin" size={18} />}{isSignUp ? L("إنشاء الحساب", "Create account") : L("تسجيل الدخول", "Sign in")}</button>
           </form>
 
