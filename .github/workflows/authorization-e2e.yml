@@ -1,0 +1,57 @@
+name: Isolated authorization E2E
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  authorization-isolation:
+    name: Verify cross-tenant denial on isolated database
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      DATABASE_URL: ${{ secrets.WISAL_E2E_DATABASE_URL }}
+      PLATFORM_OWNER_EMAIL: ci@wisal.invalid
+      WISAL_AUTH_PROVIDER: chatgpt
+      WISAL_E2E_TEST_MODE: enabled
+      WISAL_E2E_TEST_TOKEN: ${{ secrets.WISAL_E2E_TEST_TOKEN }}
+      E2E_MUTABLE_AUTHORIZATION: enabled
+      E2E_BASE_URL: http://127.0.0.1:3100
+      NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3100
+    steps:
+      - name: Refuse an unconfigured test environment
+        run: |
+          test -n "$DATABASE_URL" || (echo "Missing WISAL_E2E_DATABASE_URL secret" && exit 1)
+          test -n "$WISAL_E2E_TEST_TOKEN" || (echo "Missing WISAL_E2E_TEST_TOKEN secret" && exit 1)
+
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Start isolated application
+        run: npm run dev -- --hostname 127.0.0.1 --port 3100 > /tmp/wisal-e2e.log 2>&1 &
+
+      - name: Wait for application and database
+        run: |
+          for attempt in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:3100/api/health > /dev/null; then exit 0; fi
+            sleep 2
+          done
+          tail -100 /tmp/wisal-e2e.log
+          exit 1
+
+      - name: Run cross-tenant authorization suite
+        run: npx playwright test tests/e2e/authorization-isolation.spec.ts --project=chromium --workers=1

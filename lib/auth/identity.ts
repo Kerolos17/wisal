@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { chatGPTSignInPath, getChatGPTUser, type ChatGPTUser } from "@/app/chatgpt-auth";
+import { getE2ETestIdentity } from "@/lib/auth/e2e-test-identity";
 import { getNeonAuth, isNeonAuthEnabled } from "@/lib/auth/server";
 
 export type PlatformIdentity = ChatGPTUser;
@@ -15,6 +16,8 @@ function safeReturnPath(value: string) {
 }
 
 export async function getPlatformIdentity(): Promise<PlatformIdentity | null> {
+  const e2eIdentity = await getE2ETestIdentity();
+  if (e2eIdentity) return e2eIdentity;
   if (!isNeonAuthEnabled()) return getChatGPTUser();
 
   try {

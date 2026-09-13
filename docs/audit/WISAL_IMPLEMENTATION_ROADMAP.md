@@ -108,7 +108,7 @@ Priority: P0
 Area: Security / QA  
 Complexity: Large
 
-Description: Prove every sensitive API/UI path denies cross-owner and role-inappropriate access. A 12 September 2026 controlled production check verified two distinct accounts, separate event context and the owner-scoped implementation, but direct `/api/*` substitution was blocked by the cloud-browser policy; automated negative HTTP coverage is still required.
+Description: Prove every sensitive API/UI path denies cross-owner and role-inappropriate access. A 12 September 2026 controlled production check verified two distinct accounts, separate event context and the owner-scoped implementation, but direct `/api/*` substitution was blocked by the cloud-browser policy. Implemented an opt-in isolated Playwright suite for Owner A/B event substitution and normal-user admin denial; configure its dedicated GitHub secrets and extend it with guest-token and role-matrix cases before closing the release gate.
 
 Acceptance Criteria:
 
