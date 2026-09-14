@@ -15,6 +15,7 @@ This file is the single source of truth for the next development cycle. Do not s
 |---|---|---|
 | WIS-001 | Code path implemented; runtime verification pending | An authenticated password user can now reach `/auth/connect-google`, which invokes the provider's explicit `link-social` flow. Targeted auth contracts, lint, TypeScript and production build passed. Verify with an isolated Neon OAuth account before closure. |
 | WIS-003 | CI gate operational; release coverage incomplete | The dedicated non-production Neon branch and GitHub Actions secrets are configured. The isolated Owner A/B event-substitution and normal-user admin-denial suite passed on 14 September 2026 ([run 34821961307](https://github.com/Kerolos17/wisal/actions/runs/34821961307)). Guest-token and full role-matrix cases remain before the P0 release gate can close. |
+| WIS-004 | Partial non-secret verification; separation remediation required | On 14 September 2026, Vercel confirmed all required production configuration keys exist and Neon confirmed the production trusted origins and shared Google provider. The same Vercel entries currently cover Production and Preview for the database, auth provider, Auth base URL, and cookie secret, so Preview/Production separation is not yet proven. See `docs/release/WIS-004_AUTH_CONFIG_VERIFICATION.md`. |
 
 ## Phase 0 — Emergency / production blockers
 
@@ -124,7 +125,7 @@ Priority: P0
 Area: DevOps / Security  
 Complexity: Medium
 
-Description: Verify Vercel/Neon runtime secrets, domain callbacks, cookie policy and reset delivery without exposing values.
+Description: Verify Vercel/Neon runtime secrets, domain callbacks, cookie policy and reset delivery without exposing values. The 14 September 2026 non-secret check established that the required Vercel configuration keys exist and confirmed the production Auth trusted origins and provider metadata. It also found shared Production/Preview Vercel entries for the database and core Auth settings; establish a dedicated Preview trust boundary and exact trusted origins before closing this P0 gate. See `docs/release/WIS-004_AUTH_CONFIG_VERIFICATION.md`.
 
 Acceptance Criteria:
 
