@@ -6,6 +6,7 @@ Completion of every P0 and P1 item is required for a real-user launch.
 
 - [ ] Set and verify production `DATABASE_URL`, Neon Auth URL, 32+ char cookie secret, platform-owner email, canonical site URL and Sentry DSN in Vercel; do not print values in CI/logs.
 - [x] Record a non-secret Vercel/Neon configuration inventory and production trusted-origin/provider evidence; see `docs/release/WIS-004_AUTH_CONFIG_VERIFICATION.md` (14 September 2026).
+- [x] Verify a stable isolated Preview branch: dedicated database/Auth boundary, health, sign-in rendering, canonical origin and hostile-callback safety; see `docs/release/WIS-004_AUTH_CONFIG_VERIFICATION.md` (14 September 2026).
 - [ ] Verify production and preview use separate auth callback allowlists, secrets and databases where appropriate.
 - [ ] Run `npm ci`, tests, lint, `tsc --noEmit`, build, migration checksum verification and environment checker in CI against Node 22.
 - [ ] Confirm Vercel production is built from the approved commit and domain/canonical URL are correct.

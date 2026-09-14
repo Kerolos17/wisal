@@ -4,6 +4,23 @@
 **Scope:** non-secret production and Preview configuration evidence  
 **Status:** partial — Preview/Production separation remains a P0 release gate
 
+## Dedicated Preview boundary — 14 September 2026
+
+- A stable, branch-scoped Preview deployment now uses a dedicated non-production
+  Neon branch and a separately provisioned Neon Auth instance. Its trusted-origin
+  allowlist contains only the stable Preview origin used for this verification.
+- Branch-only Vercel overrides now exist for the database, Auth provider and base
+  URL, cookie secret, and canonical site URL. Production settings were not
+  changed. The database credential was rotated during setup and is not recorded
+  here.
+- Deployment `dpl_DMmHjHfH7wE6xuUjBmRTLZfWj4vp` was READY. Read-only smoke checks
+  passed: health endpoint returned `200` with application/database `ok`; sign-in
+  rendered; the canonical URL matched the stable Preview origin; and a hostile
+  callback `returnTo` value stayed local.
+- This is evidence for the named stable Preview branch only. The generic
+  Production/Preview entries listed below still exist for other Preview branches,
+  so the global Preview/Production separation acceptance criterion remains open.
+
 ## Safe verification procedure
 
 This procedure reports configuration names, scopes, and non-secret Auth metadata
