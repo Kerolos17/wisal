@@ -16,6 +16,7 @@ Completion of every P0 and P1 item is required for a real-user launch.
 - [ ] Test email signup, verification policy, sign-in, sign-out, password reset email and reset completion.
 - [ ] Test Google new-account sign-in, password-account → Google behavior, Google-account → password behavior, expired/invalid OAuth state and revoked consent.
 - [ ] Implement and verify the WIS-001 recovery/linking decision; no duplicate account or automatic unsafe email merge.
+- [x] Configure and run the isolated Owner A/B authorization CI gate against a dedicated non-production database; [run 34821961307](https://github.com/Kerolos17/wisal/actions/runs/34821961307) passed on 14 September 2026. Guest-token and full role-matrix coverage remain required before launch.
 - [ ] Run Owner A vs Owner B IDOR test matrix for every event/guest/group/segment/message/cover/payment endpoint.
 - [ ] Run couple/support/content-manager/admin permission matrix; verify owner protection and audit log entries.
 - [ ] Verify cookies, CSRF/origin policy and session expiry behavior in the deployed environment.

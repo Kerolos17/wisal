@@ -14,6 +14,7 @@ This file is the single source of truth for the next development cycle. Do not s
 | ID | Status | Evidence / remaining gate |
 |---|---|---|
 | WIS-001 | Code path implemented; runtime verification pending | An authenticated password user can now reach `/auth/connect-google`, which invokes the provider's explicit `link-social` flow. Targeted auth contracts, lint, TypeScript and production build passed. Verify with an isolated Neon OAuth account before closure. |
+| WIS-003 | CI gate operational; release coverage incomplete | The dedicated non-production Neon branch and GitHub Actions secrets are configured. The isolated Owner A/B event-substitution and normal-user admin-denial suite passed on 14 September 2026 ([run 34821961307](https://github.com/Kerolos17/wisal/actions/runs/34821961307)). Guest-token and full role-matrix cases remain before the P0 release gate can close. |
 
 ## Phase 0 — Emergency / production blockers
 
@@ -108,7 +109,7 @@ Priority: P0
 Area: Security / QA  
 Complexity: Large
 
-Description: Prove every sensitive API/UI path denies cross-owner and role-inappropriate access. A 12 September 2026 controlled production check verified two distinct accounts, separate event context and the owner-scoped implementation, but direct `/api/*` substitution was blocked by the cloud-browser policy. Implemented an opt-in isolated Playwright suite for Owner A/B event substitution and normal-user admin denial; configure its dedicated GitHub secrets and extend it with guest-token and role-matrix cases before closing the release gate.
+Description: Prove every sensitive API/UI path denies cross-owner and role-inappropriate access. A 12 September 2026 controlled production check verified two distinct accounts, separate event context and the owner-scoped implementation, but direct `/api/*` substitution was blocked by the cloud-browser policy. The opt-in isolated Playwright suite for Owner A/B event substitution and normal-user admin denial is now operational in GitHub Actions, using a dedicated non-production Neon branch; its first successful run was [34821961307](https://github.com/Kerolos17/wisal/actions/runs/34821961307) on 14 September 2026. Extend it with guest-token and role-matrix cases before closing the release gate.
 
 Acceptance Criteria:
 
