@@ -25,7 +25,8 @@ test("English is the platform-wide default with LTR document semantics", () => {
 });
 
 test("all bilingual entry points share the same locale preference", () => {
-  assert.match(home, /useWisalLocale\(\)/);
+  // Landing honors ?lang= deep links like invitations do (UX-001, D-Phase 2).
+  assert.match(home, /useWisalLocale\("lang"\)/);
   assert.match(auth, /useWisalLocale\(\)/);
   assert.match(legal, /useWisalLocale\(\)/);
   assert.match(invite, /useWisalLocale\("lang"\)/);

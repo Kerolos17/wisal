@@ -131,7 +131,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .atelier-main-invite > span { position: absolute; inset: auto 14px 14px; min-height: 39px; display: grid; place-items: center; border-radius: 9px; background: rgba(67,40,70,.9); color: #fff; font-size: 11px; font-weight: 750; backdrop-filter: blur(10px); opacity: 0; transform: translateY(6px); transition: opacity .25s, transform .25s; }
 .atelier-main-invite:hover > span, .atelier-main-invite:focus-visible > span { opacity: 1; transform: none; }
 .atelier-swatches { position: absolute; z-index: 4; inset: auto 22px 22px; display: flex; justify-content: center; gap: 10px; }
-.atelier-swatches button { position: relative; width: 72px; aspect-ratio: 1.2; border: 2px solid rgba(255,255,255,.72); border-radius: 9px; padding: 0; overflow: hidden; background: #fff; box-shadow: 0 8px 20px rgba(67,40,70,.15); transition: transform .2s, border-color .2s; }
+.atelier-swatches button { position: relative; width: 96px; aspect-ratio: 1.2; border: 2px solid rgba(255,255,255,.72); border-radius: var(--ds-radius-md); padding: 0; overflow: hidden; background: #fff; box-shadow: 0 8px 20px rgba(67,40,70,.15); transition: transform var(--ds-motion-base), border-color var(--ds-motion-base); }
 .atelier-swatches button:hover { transform: translateY(-3px); }
 .atelier-swatches button.is-selected { border-color: #b4dd40; box-shadow: 0 0 0 2px rgba(67,40,70,.75), 0 10px 22px rgba(67,40,70,.2); }
 .atelier-swatches img { object-fit: cover; object-position: top; }
@@ -436,7 +436,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .atlas-primary, .atlas-link { width: 100%; }
   .atelier-stage { min-height: 480px; border-radius: 14px; }
   .atelier-main-invite { width: min(64%, 270px); }
-  .atelier-swatches button { width: 64px; }
+  .atelier-swatches button { width: 76px; }
   .atelier-workflow { grid-template-columns: 1fr; padding-inline: 18px; }
   .atelier-workflow article { min-height: 96px; padding: 18px 6px; border-inline-end: 0; border-bottom: 1px solid var(--atelier-line); }
   .atelier-workflow article:last-child { border-bottom: 0; }
