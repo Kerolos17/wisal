@@ -165,6 +165,24 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .atlas-template-directions,
 .atlas-template-path { border-color: var(--atelier-line); }
 .atlas-template-path span { color: var(--atelier-aubergine-soft); }
+/* Gallery stage is always the light atelier panel: beat the legacy dark
+   per-concept copy backgrounds (higher specificity) so text stays readable. */
+.atlas-template-stage-love-poem .atlas-template-stage-copy,
+.atlas-template-stage-garden-night .atlas-template-stage-copy,
+.atlas-template-stage-moonlight .atlas-template-stage-copy,
+.atlas-template-stage-golden-vows .atlas-template-stage-copy,
+.atlas-template-stage-cinema-night .atlas-template-stage-copy { background: #fff; }
+.atlas-template-stage-garden-night .atlas-template-directions,
+.atlas-template-stage-moonlight .atlas-template-directions,
+.atlas-template-stage-golden-vows .atlas-template-directions,
+.atlas-template-stage-cinema-night .atlas-template-directions { border-color: var(--atelier-line); }
+.atlas-template-stage-garden-night .atlas-template-directions dt,
+.atlas-template-stage-moonlight .atlas-template-directions dt,
+.atlas-template-stage-golden-vows .atlas-template-directions dt,
+.atlas-template-stage-cinema-night .atlas-template-directions dt { color: #72577a; }
+/* Journey strip cells: light cells on the light panel (legacy paints them dark). */
+.atlas-template-stage-copy .atlas-template-path { background: transparent; }
+.atlas-template-stage-copy .atlas-template-path span { background: #f6f0fa; color: var(--atelier-aubergine-soft); }
 .atlas-template-grid { gap: 18px; background: transparent; }
 .atlas-template { border: 0; border-radius: var(--ds-radius-md); overflow: hidden; box-shadow: 0 14px 38px rgba(38,23,42,.1); transition: transform .35s var(--ds-ease-cinematic), box-shadow .35s; }
 .atlas-template:hover { transform: translateY(-8px); box-shadow: 0 26px 56px rgba(38,23,42,.17); }
