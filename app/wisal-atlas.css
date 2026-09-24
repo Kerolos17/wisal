@@ -161,7 +161,7 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
   z-index: 4;
   max-width: 570px;
   padding-inline-end: clamp(18px, 2vw, 36px);
-  animation: atlas-copy-in .8s cubic-bezier(.16, 1, .3, 1) both;
+  animation: atlas-copy-in .8s var(--ds-ease-cinematic) both;
 }
 
 .atlas-hero h1 {
@@ -263,7 +263,7 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
   transform: translate(-50%, -50%) rotate(-2deg) scale(1.06);
   object-fit: contain;
   filter: drop-shadow(0 34px 64px rgba(4, 1, 6, .38));
-  animation: atlas-instrument-in 1.15s cubic-bezier(.16, 1, .3, 1) both;
+  animation: atlas-instrument-in 1.15s var(--ds-ease-cinematic) both;
 }
 
 [dir="rtl"] .atlas-instrument {
@@ -287,7 +287,7 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
   text-align: center;
   box-shadow: 0 22px 70px rgba(6, 2, 8, .54), inset 0 0 0 7px #eee4da, inset 0 0 0 8px rgba(70, 35, 50, .18);
   transform: translate(4%, 1%) rotate(.8deg);
-  animation: atlas-card-in .9s .24s cubic-bezier(.16, 1, .3, 1) both;
+  animation: atlas-card-in .9s .24s var(--ds-ease-cinematic) both;
 }
 
 .atlas-invitation small {
@@ -362,7 +362,7 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
   box-shadow: 0 22px 54px rgba(5, 2, 7, .42);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  animation: atlas-rail-in .8s .5s cubic-bezier(.16, 1, .3, 1) both;
+  animation: atlas-rail-in .8s .5s var(--ds-ease-cinematic) both;
 }
 
 [dir="rtl"] .atlas-rsvp {
@@ -522,7 +522,7 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
   background: var(--atlas-ground-raised);
   color: var(--atlas-ivory);
   text-align: start;
-  transition: transform .28s cubic-bezier(.16, 1, .3, 1), border-color .28s ease;
+  transition: transform .28s var(--ds-ease-cinematic), border-color .28s ease;
 }
 
 .atlas-template:hover {
@@ -555,7 +555,7 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
   object-fit: cover;
   object-position: center 25%;
   filter: saturate(.78) contrast(1.03);
-  transition: transform .8s cubic-bezier(.16, 1, .3, 1);
+  transition: transform .8s var(--ds-ease-cinematic);
 }
 
 .atlas-template:hover .atlas-template-media img {

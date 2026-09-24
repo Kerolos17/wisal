@@ -121,7 +121,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 [dir="rtl"] .atelier-preview-label { inset: 18px 18px auto auto; }
 .atelier-preview-label svg { width: 16px; }
 .atelier-scene { object-fit: cover; }
-.atelier-main-invite { position: relative; z-index: 2; width: min(250px, 35%); aspect-ratio: .78; display: grid; align-content: center; justify-items: center; gap: 10px; border: 0; border-radius: 9px; padding: 18px; overflow: hidden; background: transparent; color: var(--atelier-aubergine); transform: translate(4%, -2%) rotate(-1deg); transition: transform .55s cubic-bezier(.16,1,.3,1); }
+.atelier-main-invite { position: relative; z-index: 2; width: min(250px, 35%); aspect-ratio: .78; display: grid; align-content: center; justify-items: center; gap: 10px; border: 0; border-radius: 9px; padding: 18px; overflow: hidden; background: transparent; color: var(--atelier-aubergine); transform: translate(4%, -2%) rotate(-1deg); transition: transform .55s var(--ds-ease-cinematic); }
 [dir="rtl"] .atelier-main-invite { transform: translate(4%, -2%) rotate(1deg); }
 .atelier-main-invite:hover { transform: translate(4%, -5%) rotate(0); }
 .atelier-main-invite small { font-size: 10px; }
@@ -176,7 +176,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .atlas-template-path { border-color: var(--atelier-line); }
 .atlas-template-path span { color: var(--atelier-aubergine-soft); }
 .atlas-template-grid { gap: 18px; background: transparent; }
-.atlas-template { border: 0; border-radius: 15px; overflow: hidden; box-shadow: 0 14px 38px rgba(38,23,42,.1); transition: transform .35s cubic-bezier(.16,1,.3,1), box-shadow .35s; }
+.atlas-template { border: 0; border-radius: 15px; overflow: hidden; box-shadow: 0 14px 38px rgba(38,23,42,.1); transition: transform .35s var(--ds-ease-cinematic), box-shadow .35s; }
 .atlas-template:hover { transform: translateY(-8px); box-shadow: 0 26px 56px rgba(38,23,42,.17); }
 .atlas-template.is-previewing { outline: 3px solid var(--atelier-lime); outline-offset: 4px; }
 
@@ -384,13 +384,13 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .invite-concept-cinema-night .segment-number { color:#ff8a72; }
 
 /* Native opening motion per invitation world. */
-.opening-concept-love-poem.is-opening :is(.opening-envelope,.opening-card) { animation:atelier-editorial-fold .82s cubic-bezier(.16,1,.3,1) both; }
-.opening-concept-garden-night.is-opening :is(.opening-envelope,.opening-card) { animation:atelier-garden-bloom .9s cubic-bezier(.16,1,.3,1) both; }
-.opening-concept-moonlight.is-opening :is(.opening-envelope,.opening-card) { animation:atelier-moon-focus .88s cubic-bezier(.16,1,.3,1) both; }
-.opening-concept-golden-vows.is-opening :is(.opening-envelope,.opening-card) { animation:atelier-seal-break .84s cubic-bezier(.16,1,.3,1) both; }
-.opening-concept-white-story.is-opening :is(.opening-envelope,.opening-card) { animation:atelier-still-lift .72s cubic-bezier(.16,1,.3,1) both; }
-.opening-concept-cinema-night.is-opening .curtain-right { animation:atelier-curtain-right .92s cubic-bezier(.76,0,.24,1) both; }
-.opening-concept-cinema-night.is-opening .curtain-left { animation:atelier-curtain-left .92s cubic-bezier(.76,0,.24,1) both; }
+.opening-concept-love-poem.is-opening :is(.opening-envelope,.opening-card) { animation:atelier-editorial-fold .82s var(--ds-ease-cinematic) both; }
+.opening-concept-garden-night.is-opening :is(.opening-envelope,.opening-card) { animation:atelier-garden-bloom .9s var(--ds-ease-cinematic) both; }
+.opening-concept-moonlight.is-opening :is(.opening-envelope,.opening-card) { animation:atelier-moon-focus .88s var(--ds-ease-cinematic) both; }
+.opening-concept-golden-vows.is-opening :is(.opening-envelope,.opening-card) { animation:atelier-seal-break .84s var(--ds-ease-cinematic) both; }
+.opening-concept-white-story.is-opening :is(.opening-envelope,.opening-card) { animation:atelier-still-lift .72s var(--ds-ease-cinematic) both; }
+.opening-concept-cinema-night.is-opening .curtain-right { animation:atelier-curtain-right .92s var(--ds-ease-curtain) both; }
+.opening-concept-cinema-night.is-opening .curtain-left { animation:atelier-curtain-left .92s var(--ds-ease-curtain) both; }
 @keyframes atelier-editorial-fold { 0%{clip-path:inset(0)} 58%{clip-path:inset(5% 4% round 3px);transform:rotate(-1deg)} 100%{clip-path:inset(50% 4%);transform:translateY(-12px)} }
 @keyframes atelier-garden-bloom { 0%{filter:saturate(.7) blur(0);transform:scale(1)} 55%{filter:saturate(1.15) blur(1px);transform:scale(1.025)} 100%{filter:blur(12px);transform:scale(1.08);opacity:0} }
 @keyframes atelier-moon-focus { 0%{filter:blur(0) brightness(1)} 52%{filter:blur(3px) brightness(1.2);box-shadow:0 28px 70px rgba(188,220,255,.2)} 100%{filter:blur(18px) brightness(.8);opacity:0} }
@@ -412,8 +412,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .invite-concept-white-story .guest-cover { background: #f8f7f3; color: #202023; }
 .invite-concept-cinema-night { --invite-accent: #ff8a72; }
 .invite-concept-cinema-night .signature-invite-hero { background-color: #160d15; color: #fff3e8; }
-.invite-opening.is-opening .opening-card { animation: atelier-invite-open .82s cubic-bezier(.16,1,.3,1) both; }
-.invite-revealed > section:first-of-type { animation: atelier-content-arrive .72s .08s cubic-bezier(.16,1,.3,1) both; }
+.invite-opening.is-opening .opening-card { animation: atelier-invite-open .82s var(--ds-ease-cinematic) both; }
+.invite-revealed > section:first-of-type { animation: atelier-content-arrive .72s .08s var(--ds-ease-cinematic) both; }
 @keyframes atelier-invite-open { 0% { clip-path: inset(0); filter: saturate(1); } 52% { clip-path: inset(5% 5% 5% 5% round 18px); filter: saturate(1.08) drop-shadow(0 24px 40px rgba(0,0,0,.22)); } 100% { clip-path: inset(50% 5% 50% 5% round 18px); filter: saturate(.9); } }
 @keyframes atelier-content-arrive { from { opacity: .01; transform: translateY(18px); filter: blur(8px); } to { opacity: 1; transform: none; filter: none; } }
 
