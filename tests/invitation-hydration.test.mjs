@@ -4,12 +4,14 @@ import test from "node:test";
 
 const client = await readFile(new URL("../app/invite/[slug]/InvitationClient.tsx", import.meta.url), "utf8");
 
-test("invitation countdown is mount-gated to prevent hydration mismatch (React #418)", () => {
-  assert.match(client, /const \[mounted, setMounted\] = useState\(false\)/);
-  assert.match(client, /setMounted\(true\)/);
-  assert.match(client, /mounted \? liveCountdown/);
+test("invitation clock uses useSyncExternalStore with deterministic server snapshot (no React #418)", () => {
+  assert.match(client, /useSyncExternalStore\(/);
+  assert.match(client, /\(\) => eventDate\.getTime\(\)/);
+  assert.match(client, /setInterval\(onStoreChange, 60000\)/);
 });
 
-test("rsvp deadline state is mount-gated for identical first render", () => {
-  assert.match(client, /mounted && Boolean\(deadline/);
+test("live clock state is not initialized with Date.now() (would mismatch prerender)", () => {
+  // openedAt may keep its lazy initializer: it is never rendered, only compared.
+  assert.doesNotMatch(client, /const \[now, setNow\] = useState/);
+  assert.doesNotMatch(client, /setMounted\(true\)/);
 });

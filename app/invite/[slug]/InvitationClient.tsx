@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 import Image from "next/image";
 import { AudioLines, CalendarDays, CalendarPlus, Check, ChevronDown, Clock3, MapPin, Pause, Share2, Sparkles, TimerOff } from "lucide-react";
 import { useWisalLocale } from "@/app/use-wisal-locale";
@@ -82,11 +82,17 @@ export default function InvitationClient({ data, previewMode = false }: { data: 
   const [state, setState] = useState<"idle" | "saving" | "done" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [openedAt] = useState(() => Date.now());
-  const [now, setNow] = useState(() => Date.now());
-  // Time-dependent UI must render identically on server and first client pass.
-  // The live clock is attached only after mount to avoid hydration mismatches
-  // (React #418) on prerendered/dynamic invitation pages.
-  const [mounted, setMounted] = useState(false);
+  // Live clock via useSyncExternalStore: the server snapshot is deterministic
+  // (event time) so hydration matches, and the client subscribes to minute
+  // ticks after hydration. This avoids React #418 without setState-in-effect.
+  const now = useSyncExternalStore(
+    (onStoreChange) => {
+      const timer = window.setInterval(onStoreChange, 60000);
+      return () => window.clearInterval(timer);
+    },
+    () => Date.now(),
+    () => eventDate.getTime(),
+  );
   const [openingState, setOpeningState] = useState<"closed" | "opening" | "open">(previewMode ? "open" : "closed");
   const [locale, setLocale] = useWisalLocale("lang");
   const [musicPlaying, setMusicPlaying] = useState(false);
@@ -102,15 +108,13 @@ export default function InvitationClient({ data, previewMode = false }: { data: 
   const deadlineFormatter = new Intl.DateTimeFormat(formatLocale, { day: "numeric", month: "long", year: "numeric", timeZone: "Africa/Cairo" });
   const coverUrl = invitation.coverImageKey ? `/api/media/${invitation.coverImageKey.split("/").map(encodeURIComponent).join("/")}` : null;
   const deadline = invitation.rsvpDeadline ? new Date(`${invitation.rsvpDeadline}T23:59:59+03:00`) : null;
-  const rsvpClosed = mounted && Boolean(deadline && !Number.isNaN(deadline.getTime()) && openedAt > deadline.getTime());
+  const rsvpClosed = Boolean(deadline && !Number.isNaN(deadline.getTime()) && openedAt > deadline.getTime());
   const deadlineLabel = deadline && !Number.isNaN(deadline.getTime()) ? deadlineFormatter.format(deadline) : invitation.rsvpDeadline;
   const templateArt = publicTemplateArt[invitation.template] ?? "editorial";
   const templateConcept = resolveInvitationConcept(invitation.template);
   const sectionOrder = Array.isArray(invitation.sectionOrder) && invitation.sectionOrder.length === 4 ? invitation.sectionOrder : ["message", "countdown", "schedule", "rsvp"];
   const secondsUntilEvent = Math.max(0, Math.floor((eventDate.getTime() - now) / 1000));
-  const liveCountdown = { days: Math.floor(secondsUntilEvent / 86400), hours: Math.floor((secondsUntilEvent % 86400) / 3600), minutes: Math.floor((secondsUntilEvent % 3600) / 60) };
-  // Server and first client render show zeros; live values attach after mount.
-  const countdown = mounted ? liveCountdown : { days: 0, hours: 0, minutes: 0 };
+  const countdown = { days: Math.floor(secondsUntilEvent / 86400), hours: Math.floor((secondsUntilEvent % 86400) / 3600), minutes: Math.floor((secondsUntilEvent % 3600) / 60) };
 
   useEffect(() => {
     if (previewMode || !guest?.inviteToken) return;
@@ -120,13 +124,6 @@ export default function InvitationClient({ data, previewMode = false }: { data: 
       body: JSON.stringify({ eventId: event.id, inviteToken: guest.inviteToken }),
     });
   }, [event.id, guest?.inviteToken, previewMode]);
-
-  useEffect(() => {
-    setMounted(true);
-    setNow(Date.now());
-    const timer = window.setInterval(() => setNow(Date.now()), 60000);
-    return () => window.clearInterval(timer);
-  }, []);
 
   useEffect(() => {
     return () => {
