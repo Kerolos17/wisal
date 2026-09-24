@@ -67,7 +67,7 @@
 .view-home .header-cta {
   min-height: 44px;
   border: 1px solid var(--atlas-line);
-  border-radius: 4px;
+  border-radius: var(--ds-radius-sm);
   background: transparent;
   color: var(--atlas-ivory);
 }
@@ -114,7 +114,7 @@ html:has(.view-home)::-webkit-scrollbar-track {
 
 html:has(.view-home)::-webkit-scrollbar-thumb {
   border: 2px solid var(--atlas-ground);
-  border-radius: 999px;
+  border-radius: var(--ds-radius-full);
   background: var(--atlas-copper);
 }
 
@@ -208,7 +208,7 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
   min-height: 50px;
   padding: 0 21px;
   border: 1px solid var(--atlas-copper);
-  border-radius: 4px;
+  border-radius: var(--ds-radius-sm);
   background: var(--atlas-copper);
   color: #241126;
   font: 750 12px/1 var(--font-ui);
@@ -281,7 +281,7 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
   justify-content: center;
   padding: 28px 20px;
   border: 1px solid rgba(215, 146, 97, .74);
-  border-radius: 4px;
+  border-radius: var(--ds-radius-sm);
   background: #eee4da;
   color: #28162a;
   text-align: center;
@@ -332,7 +332,7 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
   margin-top: 22px;
   padding: 0 20px;
   border: 1px solid #6c3940;
-  border-radius: 3px;
+  border-radius: var(--ds-radius-sm);
   background: transparent;
   color: #4c2632;
   font: 750 10px/1 var(--font-ui);
@@ -357,7 +357,7 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
   gap: 18px;
   padding: 15px 18px;
   border: 1px solid var(--atlas-line);
-  border-radius: 4px;
+  border-radius: var(--ds-radius-sm);
   background: rgba(24, 11, 27, .9);
   box-shadow: 0 22px 54px rgba(5, 2, 7, .42);
   backdrop-filter: blur(14px);
@@ -518,7 +518,7 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
   padding: 0;
   overflow: hidden;
   border: 1px solid var(--atlas-line-soft);
-  border-radius: 6px;
+  border-radius: var(--ds-radius-sm);
   background: var(--atlas-ground-raised);
   color: var(--atlas-ivory);
   text-align: start;
@@ -735,7 +735,7 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
   margin: 32px 0 32px 32px;
   overflow: hidden;
   border: 1px solid var(--atlas-line);
-  border-radius: 6px;
+  border-radius: var(--ds-radius-sm);
 }
 
 [dir="rtl"] .atlas-story-media {
@@ -760,7 +760,7 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
   gap: 13px;
   padding: 15px 17px;
   border: 1px solid var(--atlas-line);
-  border-radius: 4px;
+  border-radius: var(--ds-radius-sm);
   background: rgba(18, 9, 20, .9);
   color: var(--atlas-ivory);
   backdrop-filter: blur(12px);
@@ -932,7 +932,7 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
   min-height: 44px;
   padding: 0 14px;
   border: 1px solid var(--atlas-copper);
-  border-radius: 4px;
+  border-radius: var(--ds-radius-sm);
   background: transparent;
   color: var(--atlas-ivory);
   font: 700 10px/1 var(--font-ui);
@@ -1403,7 +1403,7 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
   width: auto !important;
   height: auto !important;
   min-height: 0 !important;
-  border-radius: 2px !important;
+  border-radius: var(--ds-radius-sm) !important;
   box-shadow: 0 24px 50px rgba(5, 2, 8, .28);
 }
 .atlas-template-fallback::before {
