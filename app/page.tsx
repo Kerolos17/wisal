@@ -112,9 +112,9 @@ const templates: PublicTemplate[] = [
   { code: "modern-monogram", name: "حروف النور", enName: "Noor Monogram", tag: "عربي عصري", enTag: "Arabic luxury", category: "cinematic", color: "template-mono", openingStyle: "curtain", layoutStyle: "cinematic", art: "arabic", description: "فخامة عربية حديثة بزجاج داكن وظلال هندسية رقيقة.", enDescription: "Modern Arabic luxury shaped with dark glass and subtle geometric light." },
 ];
 
-// Editorial Atelier launches with six authored worlds. The remaining legacy
-// definitions stay available for rendering older invitations, but are not
-// offered as new choices in the studio or public catalogue.
+// Editorial Atelier collection: twelve authored worlds, all offered in the
+// studio and public catalogue. atelierTemplates keeps the original six for
+// legacy index compatibility only.
 const atelierTemplates = templates.slice(0, 6);
 
 const atelierDirections = {
@@ -196,8 +196,8 @@ const templateAccentByArt: Record<TemplateArt, "plum" | "sage" | "blue" | "sand"
   arabic: "plum",
 };
 
-const mergePublicTemplates = (rows: Array<{ code: string; nameAr: string; nameEn: string; category: string }>) => rows.filter((row) => atelierTemplates.some((item) => item.code === row.code)).map((row, index) => {
-  const visual = atelierTemplates.find((item) => item.code === row.code) ?? atelierTemplates[index % atelierTemplates.length];
+const mergePublicTemplates = (rows: Array<{ code: string; nameAr: string; nameEn: string; category: string }>) => rows.map((row, index) => {
+  const visual = templates.find((item) => item.code === row.code) ?? templates[index % templates.length];
   return { ...visual, code: row.code, category: row.category };
 });
 
@@ -377,7 +377,7 @@ export default function Home({ initialView = "home", authenticated = false, acco
       const data = await response.json() as EventOverview;
       if (!data?.event) throw new Error(tr(locale, "لم يتم العثور على دعوة نشطة.", "No active invitation was found."));
       setEventData(data);
-      setSelectedTemplate(Math.max(0, templateIndexForName(atelierTemplates, data.invitation.template)));
+      setSelectedTemplate(Math.max(0, templateIndexForName(templates, data.invitation.template)));
       setDataState("ready");
       setDataError("");
       return true;
@@ -501,7 +501,7 @@ export default function Home({ initialView = "home", authenticated = false, acco
     setEventData(created);
     setDataState("ready");
     setDataError("");
-    setSelectedTemplate(Math.max(0, templateIndexForName(atelierTemplates, created.invitation.template)));
+    setSelectedTemplate(Math.max(0, templateIndexForName(templates, created.invitation.template)));
     const listResponse = await fetch("/api/events", { cache: "no-store" });
     if (listResponse.ok) setEventList((await listResponse.json() as { events: EventSummary[] }).events);
     setStep(1);
