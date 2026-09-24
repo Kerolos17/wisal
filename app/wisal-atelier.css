@@ -465,6 +465,19 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .invite-concept-desert-sunset .event-details article { background:#f9efe0; }
 .invite-concept-desert-sunset .invite-message { max-width:760px; }
 
+/* Light guest-cover worlds: the generic no-cover date chip (dark translucent)
+   and pale --plum names fail on their light imagery — restore local ink. */
+.invite-concept-golden-vows .guest-cover:not(.with-cover) h1 { color:#401522 !important; text-shadow:none; }
+.invite-concept-golden-vows .guest-cover:not(.with-cover) .guest-flower + small { color:#816668; text-shadow:none; }
+.invite-concept-golden-vows .guest-cover:not(.with-cover) .guest-date { background:rgba(248,238,224,.92); border:1px solid rgba(124,36,53,.2); color:#401522; box-shadow:0 18px 50px rgba(66,27,44,.14); backdrop-filter:none; }
+.invite-concept-golden-vows .guest-cover:not(.with-cover) .guest-date small { color:#816668; }
+.invite-concept-white-story .guest-cover:not(.with-cover) .guest-date { background:transparent; border:0; border-block:1px solid #aaa29b; border-radius:0; color:#242124; backdrop-filter:none; box-shadow:none; }
+.invite-concept-white-story .guest-cover:not(.with-cover) .guest-date small { color:#676166; }
+
+/* UX-004: countdown digits arrive with a soft 160ms fade when a unit ticks. */
+.signature-countdown b, .countdown-card b { animation: atelier-digit-arrive 160ms var(--ds-ease-out) both; }
+@keyframes atelier-digit-arrive { from { opacity: .25; } to { opacity: 1; } }
+
 /* Native opening motion for the separated worlds — brightness/arch/clip axes their siblings never touch. */
 .opening-concept-rose-garden.is-opening :is(.opening-envelope,.opening-card) { animation:atelier-petal-drift .86s var(--ds-ease-cinematic) both; }
 .opening-concept-cathedral-light.is-opening :is(.opening-envelope,.opening-card) { animation:atelier-light-shaft .9s var(--ds-ease-cinematic) both; }
