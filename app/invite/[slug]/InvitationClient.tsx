@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 import Image from "next/image";
 import { AudioLines, CalendarDays, CalendarPlus, Check, ChevronDown, Clock3, MapPin, Pause, Share2, Sparkles, TimerOff } from "lucide-react";
-import { useWisalLocale } from "@/app/use-wisal-locale";
+import { dateLocale, useWisalLocale } from "@/app/use-wisal-locale";
 import { resolveInvitationConcept } from "@/lib/invitation-concepts";
 
 export type InvitationData = {
@@ -102,7 +102,7 @@ export default function InvitationClient({ data, previewMode = false }: { data: 
   const ambienceTimerRef = useRef<number | null>(null);
   const ar = locale === "ar";
   const t = copy[locale];
-  const formatLocale = ar ? "ar-EG" : "en-GB";
+  const formatLocale = dateLocale(locale);
   const dateFormatter = new Intl.DateTimeFormat(formatLocale, { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Africa/Cairo" });
   const timeFormatter = new Intl.DateTimeFormat(formatLocale, { hour: "numeric", minute: "2-digit", timeZone: "Africa/Cairo" });
   const deadlineFormatter = new Intl.DateTimeFormat(formatLocale, { day: "numeric", month: "long", year: "numeric", timeZone: "Africa/Cairo" });

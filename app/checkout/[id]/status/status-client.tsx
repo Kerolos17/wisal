@@ -139,7 +139,7 @@ export default function CheckoutStatusClient({ id }: { id: string }) {
   const progressState = isApproved ? 2 : payment.status === "rejected" || payment.status === "cancelled" ? 1 : payment.status === "draft" ? 0 : 1;
   const approvedAt = isApproved && payment.reviewedAt ? new Date(payment.reviewedAt) : null;
   const expiresAt = approvedAt ? new Date(approvedAt.getTime() + payment.durationDaysSnapshot * 24 * 60 * 60 * 1000) : null;
-  const formatDate = (date: Date) => new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-GB", { dateStyle: "long" }).format(date);
+  const formatDate = (date: Date) => new Intl.DateTimeFormat(locale === "ar" ? "ar-EG-u-nu-latn" : "en-GB", { dateStyle: "long" }).format(date);
 
   return (
     <section className="checkout-status-shell">

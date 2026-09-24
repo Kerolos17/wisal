@@ -4,6 +4,16 @@ import { useEffect, useState } from "react";
 
 export type Locale = "ar" | "en";
 
+// Date/time locale rule (D-Phase 6): Arabic language with Latin digits so
+// dates read naturally (Arabic month names) while staying tabular and
+// consistent with stats, tables, and countdown digits.
+export const AR_DATE_LOCALE = "ar-EG-u-nu-latn";
+export const EN_DATE_LOCALE = "en-GB";
+
+export function dateLocale(locale: Locale): string {
+  return locale === "ar" ? AR_DATE_LOCALE : EN_DATE_LOCALE;
+}
+
 const DEFAULT_LOCALE: Locale = "en";
 // Version the preference so legacy Arabic-first sessions restart from the new English default.
 const STORAGE_KEY = "wisal-locale-v3";

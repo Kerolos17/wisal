@@ -63,7 +63,7 @@ function PaymentCard({ locale, payment, busy, onAct }: {
         <div><dt>{L("المُودِع", "Payer")}</dt><dd>{payment.payerName || "—"}</dd></div>
         <div><dt>{L("المرجع", "Reference")}</dt><dd>{payment.referenceNumber || "—"}</dd></div>
         <div><dt>{L("الطريقة", "Method")}</dt><dd>{payment.paymentMethod || "—"}</dd></div>
-        <div><dt>{L("أُرسلت", "Submitted")}</dt><dd>{new Date(submitted).toLocaleString(locale === "ar" ? "ar-EG" : "en-GB")}</dd></div>
+        <div><dt>{L("أُرسلت", "Submitted")}</dt><dd>{new Date(submitted).toLocaleString(locale === "ar" ? "ar-EG-u-nu-latn" : "en-GB")}</dd></div>
       </dl>
       {payment.hasReceipt && (
         <a className="admin-receipt-link" href={`/api/admin/payments/${payment.id}/receipt`} target="_blank" rel="noreferrer">

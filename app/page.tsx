@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Bell, CircleCheckBig, CircleDashed, Eye, Headphones, History, House, LayoutDashboard, LayoutTemplate, ListChecks, MessageSquareText, Palette, Quote, Rocket, Send, Settings, UsersRound } from "lucide-react";
-import { type Locale, useWisalLocale } from "./use-wisal-locale";
+import { type Locale, dateLocale, useWisalLocale, AR_DATE_LOCALE } from "./use-wisal-locale";
 import { isPremiumTemplateCode } from "@/lib/template-entitlements";
 
 const AdminDashboard = lazy(() => import("./admin-dashboard"));
@@ -94,7 +94,7 @@ const segmentKindLabel = {
 function formatSegmentDate(value: string, locale: Locale) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
-  return new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-GB", { weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit", timeZone: "Africa/Cairo" }).format(date);
+  return new Intl.DateTimeFormat(dateLocale(locale), { weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit", timeZone: "Africa/Cairo" }).format(date);
 }
 
 const templates: PublicTemplate[] = [
@@ -326,7 +326,7 @@ function PlanCard({ locale, subscription, plans }: { locale: Locale; subscriptio
         <div>
           <small>{ar ? "باقتك النشطة" : "Your active plan"}</small>
           <b>{planName}</b>
-          {subscription.expiresAt ? <p>{ar ? `سارية حتى ${new Date(subscription.expiresAt).toLocaleDateString("ar-EG")}` : `Active until ${new Date(subscription.expiresAt).toLocaleDateString("en-GB")}`}</p> : null}
+          {subscription.expiresAt ? <p>{ar ? `سارية حتى ${new Date(subscription.expiresAt).toLocaleDateString(AR_DATE_LOCALE)}` : `Active until ${new Date(subscription.expiresAt).toLocaleDateString("en-GB")}`}</p> : null}
         </div>
       </section>
     );
