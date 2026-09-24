@@ -347,7 +347,7 @@ type AccountSummary = { displayName: string; email: string; role?: string };
 
 export default function Home({ initialView = "home", authenticated = false, account = null, isOwner = false, canManagePayments = false }: { initialView?: View; authenticated?: boolean; account?: AccountSummary | null; isOwner?: boolean; canManagePayments?: boolean } = {}) {
   const router = useRouter();
-  const [locale, setLocale] = useWisalLocale();
+  const [locale, setLocale] = useWisalLocale("lang");
   const [view, setView] = useState<View>(initialView);
   const [step, setStep] = useState(1);
   const [selectedTemplate, setSelectedTemplate] = useState(0);
@@ -681,8 +681,8 @@ function Landing({ locale, plans, catalogState, templates, content, onStart, onG
             <span>{ar ? "افتح الدعوة" : "Open invitation"}</span>
           </button>
           <div className="atelier-swatches" aria-label={ar ? "غيّر معاينة التصميم" : "Change design preview"}>
-            {showcaseTemplates.slice(0, 3).map((template) => <button type="button" key={template.code} className={previewTemplateCode === template.code ? "is-selected" : ""} onClick={() => setPreviewTemplateCode(template.code)} aria-label={ar ? `معاينة ${template.name}` : `Preview ${template.enName}`} aria-pressed={previewTemplateCode === template.code}>
-              {template.previewImage && <Image src={template.previewImage} fill sizes="92px" alt="" />}
+            {showcaseTemplates.slice(0, 6).map((template) => <button type="button" key={template.code} className={previewTemplateCode === template.code ? "is-selected" : ""} onClick={() => setPreviewTemplateCode(template.code)} aria-label={ar ? `معاينة ${template.name}` : `Preview ${template.enName}`} title={ar ? template.name : template.enName} aria-pressed={previewTemplateCode === template.code}>
+              {template.previewImage && <Image src={template.previewImage} fill sizes="96px" alt="" />}
             </button>)}
           </div>
         </div>
