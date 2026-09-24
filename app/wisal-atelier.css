@@ -425,6 +425,54 @@ button, a { -webkit-tap-highlight-color: transparent; }
 @keyframes atelier-invite-open { 0% { clip-path: inset(0); filter: saturate(1); } 52% { clip-path: inset(5% 5% 5% 5% round 18px); filter: saturate(1.08) drop-shadow(0 24px 40px rgba(0,0,0,.22)); } 100% { clip-path: inset(50% 5% 50% 5% round 18px); filter: saturate(.9); } }
 @keyframes atelier-content-arrive { from { opacity: .01; transform: translateY(18px); filter: blur(8px); } to { opacity: 1; transform: none; filter: none; } }
 
+/* Pair separations: blush, chapel and sunlit worlds each own a motif their sibling never uses.
+   rose-garden keeps the petal wash (garden-night owns the arch card);
+   cathedral-light keeps the arch line (golden-vows owns the seal frame);
+   desert-sunset keeps the sunlit page (love-poem owns the cotton split). */
+.invite-concept-rose-garden { --invite-accent: #a04e65; }
+.invite-concept-rose-garden .signature-invite-hero { background:#c98d9c url('/brand/templates/romantic-botanical.webp') center/cover no-repeat; }
+.invite-concept-rose-garden .signature-invite-hero::after { content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(180deg,rgba(251,241,243,.94) 0 58%,rgba(201,141,156,.42) 100%); }
+.invite-concept-rose-garden .signature-copy { width:min(680px,56%); min-height:100svh; margin:0; padding:clamp(80px,9vw,140px) clamp(28px,6vw,92px); justify-content:center; align-items:flex-start; color:#552c39; }
+.invite-concept-rose-garden .signature-copy h1 { align-items:flex-start; color:#a04e65; }
+.invite-concept-rose-garden .signature-rsvp { background:#a04e65; color:#fff; }
+.invite-concept-rose-garden .signature-rsvp:focus-visible { outline-color:#a04e65; }
+.invite-concept-rose-garden .signature-countdown { border-block:1px solid rgba(160,78,101,.24); }
+.invite-concept-rose-garden .guest-content { background:#f8edef; }
+.invite-concept-rose-garden .event-details article { background:#fbf4f6; }
+.invite-concept-rose-garden .invite-message { border-color:rgba(160,78,101,.2); }
+
+.invite-concept-cathedral-light { --invite-accent: #7a6138; }
+.invite-concept-cathedral-light .guest-cover { min-height:100svh; background:#dfe0d8 url('/brand/templates/editorial-arch.webp') center/cover no-repeat!important; }
+.invite-concept-cathedral-light .guest-cover::before { content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(180deg,rgba(31,42,48,.3),rgba(31,42,48,.62)); }
+.invite-concept-cathedral-light .guest-cover::after { content:""; position:absolute; inset:clamp(18px,3vw,42px); z-index:-1; border:1px solid rgba(249,247,242,.55); border-radius:999px 999px 0 0; }
+.invite-concept-cathedral-light .guest-cover h1 { max-width:14ch; color:#26353d !important; text-shadow:none; }
+.invite-concept-cathedral-light .guest-content { background:#f2efe8; }
+.invite-concept-cathedral-light .invite-message,.invite-concept-cathedral-light .rsvp-card,.invite-concept-cathedral-light .event-details article { background:#faf8f3; box-shadow:0 18px 50px rgba(31,42,48,.12); }
+.invite-concept-cathedral-light .countdown-card { background:#26353d; }
+.invite-concept-cathedral-light .guest-cover .guest-flower + small { color:#3d4c54; text-shadow:none; }
+.invite-concept-cathedral-light .guest-cover:not(.with-cover) .guest-date { background:rgba(250,248,243,.9); border:1px solid rgba(38,53,61,.22); color:#26353d; box-shadow:0 18px 50px rgba(31,42,48,.14); backdrop-filter:none; }
+.invite-concept-cathedral-light .guest-cover:not(.with-cover) .guest-date small { color:#68747a; }
+
+.invite-concept-desert-sunset { --invite-accent: #713620; }
+.invite-concept-desert-sunset .signature-invite-hero { align-items:stretch; text-align:start; background:#a85c34 url('/brand/templates/editorial-background-v2.webp') center/cover no-repeat; }
+.invite-concept-desert-sunset .signature-invite-hero::after { content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(180deg,rgba(58,26,16,.5) 0 18%,rgba(236,196,155,.5) 45%,rgba(247,235,214,.95) 100%); }
+.invite-concept-desert-sunset .signature-copy { width:min(720px,58%); min-height:100svh; margin:0; padding:clamp(80px,9vw,140px) clamp(28px,6vw,92px); justify-content:flex-end; align-items:flex-start; color:#3a221a; }
+.invite-concept-desert-sunset .signature-copy h1 { align-items:flex-start; color:#713620; }
+.invite-concept-desert-sunset .signature-rsvp { background:#713620; color:#fff; }
+.invite-concept-desert-sunset .signature-rsvp:focus-visible { outline-color:#713620; }
+.invite-concept-desert-sunset .signature-countdown { border-block:1px solid rgba(113,54,32,.26); }
+.invite-concept-desert-sunset .guest-content { background:#f4e6cd; }
+.invite-concept-desert-sunset .event-details article { background:#f9efe0; }
+.invite-concept-desert-sunset .invite-message { max-width:760px; }
+
+/* Native opening motion for the separated worlds — brightness/arch/clip axes their siblings never touch. */
+.opening-concept-rose-garden.is-opening :is(.opening-envelope,.opening-card) { animation:atelier-petal-drift .86s var(--ds-ease-cinematic) both; }
+.opening-concept-cathedral-light.is-opening :is(.opening-envelope,.opening-card) { animation:atelier-light-shaft .9s var(--ds-ease-cinematic) both; }
+.opening-concept-desert-sunset.is-opening :is(.opening-envelope,.opening-card) { animation:atelier-sunlit-reveal .84s var(--ds-ease-cinematic) both; }
+@keyframes atelier-petal-drift { 0%{transform:none;filter:blur(0)} 55%{transform:rotate(1.2deg) scale(1.02);box-shadow:0 26px 70px rgba(160,78,101,.24)} 100%{transform:rotate(-1.5deg) translateY(-14px) scale(1.05);filter:blur(10px);opacity:0} }
+@keyframes atelier-light-shaft { 0%{filter:brightness(1) blur(0)} 50%{filter:brightness(1.35) blur(2px);box-shadow:0 -18px 80px rgba(250,247,240,.35)} 100%{filter:brightness(1.7) blur(16px);opacity:0} }
+@keyframes atelier-sunlit-reveal { 0%{clip-path:inset(0)} 58%{clip-path:inset(0 0 42% 0 round 3px);filter:brightness(1.12)} 100%{clip-path:inset(0 0 50% 0 round 3px);filter:brightness(1.3);opacity:0} }
+
 @media (max-width: 980px) {
   .atlas-hero { grid-template-columns: 1fr 1fr; gap: 24px; padding-inline: 28px; }
   .atlas-hero h1 { font-size: clamp(48px, 7vw, 70px); }

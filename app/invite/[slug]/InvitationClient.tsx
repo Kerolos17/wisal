@@ -90,7 +90,9 @@ export default function InvitationClient({ data, previewMode = false }: { data: 
       const timer = window.setInterval(onStoreChange, 60000);
       return () => window.clearInterval(timer);
     },
-    () => Date.now(),
+    // Minute-aligned snapshot: stable within a tick so repeated getSnapshot
+    // calls return the same value (an uncached Date.now() loops forever).
+    () => Math.floor(Date.now() / 60000) * 60000,
     () => eventDate.getTime(),
   );
   const [openingState, setOpeningState] = useState<"closed" | "opening" | "open">(previewMode ? "open" : "closed");
