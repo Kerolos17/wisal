@@ -142,6 +142,30 @@ const atelierDirections = {
     ar: { material: "فيلم ليلي", composition: "لقطة ممتدة", moment: "ستارة سينمائية" },
     en: { material: "Nocturnal film", composition: "Full-bleed frame", moment: "Cinematic curtain" },
   },
+  "rose-garden": {
+    ar: { material: "أزهار وردية ناعمة", composition: "حديقة متفتحة", moment: "قصة زهرية" },
+    en: { material: "Soft rose blooms", composition: "Blooming garden", moment: "Floral story" },
+  },
+  "cathedral-light": {
+    ar: { material: "رخام مهيب", composition: "قوس كاتدرائي", moment: "ختم ملكي" },
+    en: { material: "Majestic marble", composition: "Cathedral arch", moment: "Royal seal" },
+  },
+  "desert-sunset": {
+    ar: { material: "رمال دافئة وقت الغروب", composition: "صفحات الغروب", moment: "كشف شمسي" },
+    en: { material: "Warm sunset sands", composition: "Sunlit pages", moment: "Sunlit reveal" },
+  },
+  "velvet-night": {
+    ar: { material: "مخمل ليلي", composition: "إطار مسرحي", moment: "ستارة مخملية" },
+    en: { material: "Nocturnal velvet", composition: "Theatrical frame", moment: "Velvet curtain" },
+  },
+  "coastal-breeze": {
+    ar: { material: "نسيم ساحلي", composition: "أفق مفتوح", moment: "بطاقة شاطئية" },
+    en: { material: "Coastal breeze", composition: "Open horizon", moment: "Seaside card" },
+  },
+  "modern-monogram": {
+    ar: { material: "حروف مضيئة", composition: "توقيع مزدوج", moment: "الأسماء أولًا" },
+    en: { material: "Luminous lettering", composition: "Dual signature", moment: "Names first" },
+  },
 } as const;
 
 function InvitationSpecimen({ template, brideName, groomName, date, venue, city, locale, phone = false }: { template: PublicTemplate; brideName: string; groomName: string; date: string; venue?: string; city?: string; locale: Locale; phone?: boolean }) {

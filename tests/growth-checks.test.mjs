@@ -19,6 +19,14 @@ test("TASK-009 sharing strip mentions personal WhatsApp links", () => {
   assert.match(page, /personal WhatsApp link|رابط خاص به عبر واتساب/);
 });
 
+test("review fix: every showcased concept has an atelier direction entry", () => {
+  const block = page.match(/const atelierDirections = \{[\s\S]*?\n\} as const/);
+  assert.ok(block, "atelierDirections block exists");
+  for (const code of ["love-poem","garden-night","moonlight","golden-vows","white-story","cinema-night","rose-garden","cathedral-light","desert-sunset","velvet-night","coastal-breeze","modern-monogram"]) {
+    assert.match(block[0], new RegExp(`(?:"${code}"|${code}:)`), `missing direction for ${code}`);
+  }
+});
+
 test("preview route still covers 12 and stays noindex", () => {
   assert.match(preview, /previewConceptCodes = \[/);
   for (const code of ["rose-garden","modern-monogram"]) assert.match(preview, new RegExp(code));
