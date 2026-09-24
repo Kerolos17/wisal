@@ -92,17 +92,17 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .atlas-primary {
   min-height: 54px;
   border: 0;
-  border-radius: 13px;
+  border-radius: var(--ds-radius-md);
   padding: 0 24px;
   background: var(--atelier-lime);
   color: #332137;
   box-shadow: 0 12px 28px rgba(83, 70, 32, .16);
   font-size: 14px;
   font-weight: 760;
-  transition: transform .22s cubic-bezier(.2,.8,.2,1), box-shadow .22s, background .22s;
+  transition: transform var(--ds-motion-base) var(--ds-ease-out), box-shadow var(--ds-motion-base), background var(--ds-motion-base);
 }
 .atlas-primary:hover { background: #cdf65d; color: #332137; transform: translateY(-2px); box-shadow: 0 18px 34px rgba(83, 70, 32, .2); }
-.atlas-link { min-height: 54px; border: 1px solid rgba(67,40,70,.38); border-radius: 13px; padding: 0 22px; color: var(--atelier-aubergine); text-decoration: none; font-weight: 700; }
+.atlas-link { min-height: 54px; border: 1px solid rgba(67,40,70,.38); border-radius: var(--ds-radius-md); padding: 0 22px; color: var(--atelier-aubergine); text-decoration: none; font-weight: 700; }
 .atlas-link:hover { border-color: var(--atelier-aubergine); background: rgba(255,255,255,.38); }
 .atelier-assurance { display: flex; align-items: center; gap: 8px; margin: 18px 0 0; color: #5d4860; font-size: 12px; }
 .atelier-assurance svg { width: 17px; color: #50651d; }

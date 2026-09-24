@@ -1,0 +1,70 @@
+/* Wisal Design System 2.0 — single token source (D-Phase 1).
+   Atelier Wisal direction (seed b17b8bec). Additive: no visual change by itself.
+   Migration rule: components consume var(--*) tokens; raw values migrate phase by phase. */
+
+:root {
+  /* Color — semantic */
+  --ds-bg: #fbf9fc;
+  --ds-surface: #ffffff;
+  --ds-surface-raised: #f6f0fa;
+  --ds-ink: #432846;
+  --ds-ink-muted: #756579;
+  --ds-line: rgba(67, 40, 70, .16);
+  --ds-line-soft: rgba(67, 40, 70, .1);
+  --ds-brand: #432846;
+  --ds-action: #d8ff6d;
+  --ds-action-hover: #cdf65d;
+  --ds-action-ink: #332137;
+  --ds-gold: #b58a4c;
+  --ds-success: #5d8068;
+  --ds-warning: #98703c;
+  --ds-error: #a24747;
+  --ds-info: #5c3762;
+
+  /* Typography */
+  --ds-font-ui: "Manrope", "Segoe UI", Arial, sans-serif;
+  --ds-font-ui-ar: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, Arial, sans-serif;
+  --ds-font-display: "Cormorant Garamond", Georgia, serif;
+  --ds-font-display-ar: "Noto Naskh Arabic", Georgia, serif;
+  --ds-text-display: clamp(40px, 5vw, 64px);
+  --ds-text-h1: clamp(28px, 3.2vw, 36px);
+  --ds-text-h2: 24px;
+  --ds-text-h3: 20px;
+  --ds-text-body: 16px;
+  --ds-text-small: 14px;
+  --ds-text-caption: 12px;
+
+  /* Spacing (4pt) */
+  --ds-space-1: 4px;
+  --ds-space-2: 8px;
+  --ds-space-3: 12px;
+  --ds-space-4: 16px;
+  --ds-space-5: 20px;
+  --ds-space-6: 24px;
+  --ds-space-8: 32px;
+  --ds-space-10: 40px;
+  --ds-space-12: 48px;
+  --ds-space-16: 64px;
+  --ds-space-20: 80px;
+  --ds-space-24: 96px;
+
+  /* Radius — the only sanctioned values (+ arch exception for invitation openings) */
+  --ds-radius-sm: 6px;
+  --ds-radius-md: 12px;
+  --ds-radius-lg: 20px;
+  --ds-radius-full: 999px;
+
+  /* Motion */
+  --ds-motion-fast: 160ms;
+  --ds-motion-base: 280ms;
+  --ds-motion-slow: 480ms;
+  --ds-motion-cinematic: 900ms;
+  --ds-ease-out: cubic-bezier(.22, .9, .28, 1);
+  --ds-ease-spring: cubic-bezier(.34, 1.4, .4, 1);
+  --ds-stagger: 60ms;
+
+  /* Elevation */
+  --ds-shadow-soft: 0 24px 70px rgba(67, 40, 70, .16);
+  --ds-shadow-raised: 0 12px 28px rgba(83, 70, 32, .16);
+  --ds-shadow-none: none;
+}
