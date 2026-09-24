@@ -51,6 +51,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
           variantClasses[variant],
           paddingClasses[padding],
           hover && hoverClass,
+          className,
         )}
         {...props}
       >

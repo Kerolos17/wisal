@@ -3,7 +3,7 @@
    Migration rule: components consume var(--*) tokens; raw values migrate phase by phase. */
 
 :root {
-  /* Color — semantic */
+  /* Color — semantic (DS 2.0 canonical) */
   --ds-bg: #fbf9fc;
   --ds-surface: #ffffff;
   --ds-surface-raised: #f6f0fa;
@@ -21,6 +21,63 @@
   --ds-error: #a24747;
   --ds-info: #5c3762;
 
+  /* Legacy color aliases (mapped to semantic tokens) */
+  /* These map legacy variable names to semantic tokens for gradual migration */
+  --plum: var(--ds-brand);
+  --plum-2: var(--ds-brand);
+  --rose: #c98779;
+  --rose-dark: #9f6158;
+  --ivory: #f8f3ef;
+  --paper: var(--ds-surface);
+  --sage: #78836f;
+  --ink: var(--ds-ink);
+  --muted: #796f79;
+  --line: var(--ds-line);
+  --green: var(--ds-success);
+  --gold: var(--ds-gold);
+  --shadow: var(--ds-shadow-soft);
+
+  /* Atelier-specific colors (mapped to semantic tokens) */
+  --atelier-lilac: #d8c5ec;
+  --atelier-lilac-soft: #f0e8f8;
+  --atelier-porcelain: #fbf9fc;
+  --atelier-aubergine: var(--ds-brand);
+  --atelier-aubergine-soft: #674f69;
+  --atelier-lime: var(--ds-action);
+  --atelier-line: var(--ds-line);
+  --atelier-shadow: var(--ds-shadow-soft);
+  --atelier-aubergine-soft: #674f69;
+  --atelier-gold: var(--ds-gold);
+  --atelier-muted: var(--ds-ink-muted);
+  --atelier-ink: var(--ds-ink);
+  --atelier-action: var(--ds-action);
+  --atelier-cream: #f4eadc;
+  --atelier-paper: var(--ds-surface);
+  --atelier-oxblood: #671d2b;
+  --atelier-ink: #291b1d;
+  --atelier-gold: #b8874b;
+  --atelier-muted: #765f5d;
+
+  /* Atlas colors (mapped to semantic tokens) */
+  --atlas-ground: var(--atelier-porcelain);
+  --atlas-ground-raised: #f6f0fa;
+  --atlas-ivory: var(--atelier-aubergine);
+  --atlas-muted: var(--atelier-aubergine-soft);
+  --atlas-copper: #795a85;
+  --atlas-copper-bright: #5c3762;
+  --atlas-line: var(--atelier-line);
+  --atlas-line-soft: var(--ds-line-soft);
+  --atlas-copper: #795a85;
+  --atlas-copper-bright: #5c3762;
+
+  /* Premium dark colors */
+  --ink-premium: #f7efe9;
+  --canvas-premium: #160d19;
+  --canvas-deep: #0d0810;
+  --gold-premium: #d5ae6c;
+  --border-premium: rgba(213, 174, 108, .28);
+  --cinematic-fallback: linear-gradient(135deg, #1d0d21 0%, #100817 58%, #160a1b 100%);
+
   /* Typography */
   --ds-font-ui: "Manrope", "Segoe UI", Arial, sans-serif;
   --ds-font-ui-ar: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, Arial, sans-serif;
@@ -34,7 +91,12 @@
   --ds-text-small: 14px;
   --ds-text-caption: 12px;
 
-  /* Spacing (4pt) */
+  --font-ar-ui: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, Arial, sans-serif;
+  --font-ar-display: "Noto Naskh Arabic", Georgia, "Times New Roman", serif;
+  --font-en-ui: "Manrope", "Segoe UI", Arial, sans-serif;
+  --font-en-display: "Cormorant Garamond", Georgia, serif;
+
+  /* Spacing (4pt base) */
   --ds-space-1: 4px;
   --ds-space-2: 8px;
   --ds-space-3: 12px;
@@ -52,7 +114,8 @@
   --ds-radius-sm: 6px;
   --ds-radius-md: 12px;
   --ds-radius-lg: 20px;
-  --ds-radius-full: 999px;
+  --ds-radius-xl: 24px;
+  --ds-radius-full: 9999px;
 
   /* Motion */
   --ds-motion-fast: 160ms;
@@ -68,5 +131,56 @@
   /* Elevation */
   --ds-shadow-soft: 0 24px 70px rgba(67, 40, 70, .16);
   --ds-shadow-raised: 0 12px 28px rgba(83, 70, 32, .16);
+  --ds-shadow-strong: 0 30px 80px rgba(35, 15, 30, .3);
   --ds-shadow-none: none;
+
+  /* Legacy premium dark aliases */
+  --ink-premium: #f7efe9;
+  --canvas-premium: #160d19;
+  --canvas-deep: #0d0810;
+  --gold-premium: #d5ae6c;
+  --border-premium: rgba(213, 174, 108, .28);
+
+  /* Invitation concept aliases */
+  --invitation-collection-version: 3;
+  --atelier-countdown-surface: color-mix(in srgb, var(--atelier-paper) 86%, var(--atelier-background));
+  --atelier-countdown-ink: var(--atelier-ink);
+  --atelier-countdown-muted: var(--atelier-muted);
+  --atelier-countdown-number: var(--atelier-action);
+  --atelier-countdown-chip: color-mix(in srgb, var(--atelier-action) 8%, var(--atelier-paper));
+  --atelier-field: color-mix(in srgb, var(--atelier-paper) 94%, white);
+  --atelier-soft-shadow: 0 24px 58px color-mix(in srgb, var(--atelier-action) 13%, transparent);
+  --atelier-countdown-surface-dark: color-mix(in srgb, var(--atelier-paper) 82%, var(--atelier-dark));
+  --atelier-countdown-ink-dark: var(--atelier-ink);
+  --atelier-countdown-muted-dark: var(--atelier-muted);
+  --atelier-countdown-number-dark: var(--atelier-gold);
+  --atelier-countdown-chip-dark: color-mix(in srgb, var(--atelier-gold) 10%, var(--atelier-paper));
+  --atelier-field-dark: color-mix(in srgb, var(--atelier-paper) 92%, var(--atelier-dark));
+  --atelier-soft-shadow-dark: 0 24px 58px rgba(0, 0, 0, .22);
+
+  /* Editorial Atelier collection — twelve authored invitation worlds. */
+  --atelier-cream: #f4ecdf;
+  --atelier-paper: var(--ds-surface);
+  --atelier-oxblood: #671d2b;
+  --atelier-ink: #291b1d;
+  --atelier-gold: #b8874b;
+  --atelier-muted: #765f5d;
+  --atlas-copper: #795a85;
+  --atlas-copper-bright: #5c3762;
+  --atlas-line: var(--ds-line);
+  --atlas-line-soft: var(--ds-line-soft);
+  --atlas-copper-bright: #5c3762;
+
+  /* Component-specific aliases */
+  --ci-bg: var(--ds-bg);
+  --ci-paper: var(--ds-surface);
+  --ci-ink: var(--ds-ink);
+  --ci-muted: var(--ds-ink-muted);
+  --ci-accent: var(--ds-brand);
+  --ci-dark: var(--ds-brand);
+  --ci-action-text: var(--ds-action-ink);
+
+  /* Operational accessibility and interaction floor */
+  --focus-ring: 3px solid var(--ds-brand);
+  --focus-offset: 3px;
 }
