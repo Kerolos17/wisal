@@ -10,6 +10,7 @@ import "@fontsource-variable/manrope";
 import "@fontsource-variable/cormorant-garamond";
 import "./globals.css";
 import "./wisal-atlas.css";
+import "./wisal-atelier.css";
 import { siteUrl } from "@/lib/site-url";
 
 const platformJsonLd = {
@@ -63,14 +64,14 @@ export default function RootLayout({
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(platformJsonLd) }} />
         <template
-          data-impeccable-contract="1917206f"
+          data-impeccable-contract="b17b8bec"
           dangerouslySetInnerHTML={{
             __html: `<!--
-THESIS: Wisal is a celestial guest atlas, not a pastel wedding-template catalogue.
-OWN-WORLD: Plum-black observatory fields, cold ivory type, copper instruments, ruled rails, and one luminous invitation plate.
-STORY: Couples see invitation craft and guest control as one system, trust the workflow, then begin their invitation.
-FIRST VIEWPORT: Copy occupies the left third; a large copper astrolabe owns the right, holding the invitation while an RSVP rail crosses its lower edge. The primary action sits beneath the headline.
-FORM: Celestial Guest Atlas, first in the chosen ordered direction set; seed 1917206f.
+THESIS: Wisal is a living invitation atelier: the invitation demonstrates the product before supporting tools explain it.
+OWN-WORLD: Pale lilac fields, porcelain surfaces, aubergine type, silk depth, chartreuse action, and precisely framed invitation previews.
+STORY: Couples understand design, private sharing, and RSVP tracking, explore six distinct worlds, then begin their invitation.
+FIRST VIEWPORT: Clear copy and actions occupy one half; a large invitation on lilac silk owns the other, with three selectable previews. A three-step workflow closes the fold.
+FORM: Atelier Wisal, first grounded direction and user-approved balanced composition; seed b17b8bec.
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
 -->`,
           }}
