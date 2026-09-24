@@ -142,6 +142,30 @@ const atelierDirections = {
     ar: { material: "فيلم ليلي", composition: "لقطة ممتدة", moment: "ستارة سينمائية" },
     en: { material: "Nocturnal film", composition: "Full-bleed frame", moment: "Cinematic curtain" },
   },
+  "rose-garden": {
+    ar: { material: "أزهار وردية ناعمة", composition: "حديقة متفتحة", moment: "قصة زهرية" },
+    en: { material: "Soft rose blooms", composition: "Blooming garden", moment: "Floral story" },
+  },
+  "cathedral-light": {
+    ar: { material: "رخام مهيب", composition: "قوس كاتدرائي", moment: "ختم ملكي" },
+    en: { material: "Majestic marble", composition: "Cathedral arch", moment: "Royal seal" },
+  },
+  "desert-sunset": {
+    ar: { material: "رمال دافئة وقت الغروب", composition: "صفحات الغروب", moment: "كشف شمسي" },
+    en: { material: "Warm sunset sands", composition: "Sunlit pages", moment: "Sunlit reveal" },
+  },
+  "velvet-night": {
+    ar: { material: "مخمل ليلي", composition: "إطار مسرحي", moment: "ستارة مخملية" },
+    en: { material: "Nocturnal velvet", composition: "Theatrical frame", moment: "Velvet curtain" },
+  },
+  "coastal-breeze": {
+    ar: { material: "نسيم ساحلي", composition: "أفق مفتوح", moment: "بطاقة شاطئية" },
+    en: { material: "Coastal breeze", composition: "Open horizon", moment: "Seaside card" },
+  },
+  "modern-monogram": {
+    ar: { material: "حروف مضيئة", composition: "توقيع مزدوج", moment: "الأسماء أولًا" },
+    en: { material: "Luminous lettering", composition: "Dual signature", moment: "Names first" },
+  },
 } as const;
 
 function InvitationSpecimen({ template, brideName, groomName, date, venue, city, locale, phone = false }: { template: PublicTemplate; brideName: string; groomName: string; date: string; venue?: string; city?: string; locale: Locale; phone?: boolean }) {
@@ -630,7 +654,7 @@ export default function Home({ initialView = "home", authenticated = false, acco
 function Landing({ locale, plans, catalogState, templates, content, onStart, onGuest, onChoosePlan, onChooseTemplate }: { locale: Locale; plans: PublicPlan[]; catalogState: CatalogState; templates: PublicTemplate[]; content: PublicContent; onStart: () => void; onGuest: () => void; onChoosePlan: (plan: PlanCode) => void; onChooseTemplate: (code: string) => void }) {
   const ar = locale === "ar";
   const copy = (key: string, fallbackAr: string, fallbackEn: string) => content[key]?.[ar ? "ar" : "en"] || (ar ? fallbackAr : fallbackEn);
-  const showcaseTemplates = ["love-poem", "garden-night", "moonlight", "golden-vows", "white-story", "cinema-night"].map((code) => templates.find((template) => template.code === code) ?? atelierTemplates.find((template) => template.code === code)).filter(Boolean) as PublicTemplate[];
+  const showcaseTemplates = ["love-poem", "garden-night", "moonlight", "golden-vows", "white-story", "cinema-night", "rose-garden", "cathedral-light", "desert-sunset", "velvet-night", "coastal-breeze", "modern-monogram"].map((code) => templates.find((template) => template.code === code) ?? atelierTemplates.find((template) => template.code === code)).filter(Boolean) as PublicTemplate[];
   const [previewTemplateCode, setPreviewTemplateCode] = useState("love-poem");
   const previewTemplate = showcaseTemplates.find((template) => template.code === previewTemplateCode) ?? showcaseTemplates[0];
   const previewDirection = atelierDirections[previewTemplate?.code as keyof typeof atelierDirections];
@@ -730,7 +754,7 @@ function Landing({ locale, plans, catalogState, templates, content, onStart, onG
         <div className="atlas-orbit-steps">
           <article><LayoutTemplate aria-hidden="true" /><span><h3>{ar ? "اختاروا القالب" : "Choose the template"}</h3><p>{ar ? "ابدؤوا من تصميم يناسب روح المناسبة." : "Begin with a design that suits the celebration."}</p></span></article>
           <article><ListChecks aria-hidden="true" /><span><h3>{ar ? "أضيفوا التفاصيل" : "Add the details"}</h3><p>{ar ? "رتبوا الموعد والمكان والرسالة ومجموعات الضيوف." : "Arrange the date, venue, message, and guest groups."}</p></span></article>
-          <article><Send aria-hidden="true" /><span><h3>{ar ? "شاركوا وتابعوا" : "Share and follow"}</h3><p>{ar ? "أرسلوا الرابط وشاهدوا الفتح والردود فورًا." : "Send the link and see opens and replies as they arrive."}</p></span></article>
+          <article><Send aria-hidden="true" /><span><h3>{ar ? "شاركوا وتابعوا" : "Share and follow"}</h3><p>{ar ? "كل ضيف يصله رابط خاص به عبر واتساب، وترون الفتح والردود فورًا." : "Each guest gets a personal WhatsApp link — see opens and replies as they arrive."}</p></span></article>
         </div>
       </section>
 
@@ -763,7 +787,7 @@ function Landing({ locale, plans, catalogState, templates, content, onStart, onG
           {plans.map((plan) => <article className={plan.featured ? "is-featured" : ""} key={plan.code}>
             <div><h3>{ar ? plan.nameAr : plan.nameEn}</h3><p>{plan.guestLimit ? (ar ? `حتى ${plan.guestLimit} ضيفًا` : `Up to ${plan.guestLimit} guests`) : (ar ? "ضيوف بلا حد" : "Unlimited guests")}</p></div>
             <ul>{(ar ? plan.featuresAr : plan.featuresEn).map((feature) => <li key={feature}><CircleCheckBig aria-hidden="true" />{feature}</li>)}</ul>
-            <div className="atlas-plan-action"><span><b>{plan.priceEgp}</b><small>{ar ? `جنيه · اشتراك ${plan.durationDays} يومًا` : `EGP · ${plan.durationDays}-day subscription`}</small></span><button onClick={() => onChoosePlan(plan.code)}>{ar ? "اختيار الخطة" : "Choose plan"}</button></div>
+            <div className="atlas-plan-action"><span><b>{plan.priceEgp}</b><small>{ar ? `جنيه · وصول للمناسبة لمدة ${plan.durationDays} يومًا` : `EGP · event access for ${plan.durationDays} days`}</small></span><button onClick={() => onChoosePlan(plan.code)}>{ar ? "اختيار الخطة" : "Choose plan"}</button></div>
           </article>)}
         </div>}
       </section>
