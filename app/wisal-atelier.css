@@ -1,20 +1,10 @@
 /* Wisal Atelier — approved replacement visual world, seed b17b8bec. */
-:root {
-  --atelier-lilac: #d8c5ec;
-  --atelier-lilac-soft: #f0e8f8;
-  --atelier-porcelain: #fbf9fc;
-  --atelier-aubergine: #432846;
-  --atelier-aubergine-soft: #674f69;
-  --atelier-lime: #d8ff6d;
-  --atelier-line: rgba(67, 40, 70, .16);
-  --atelier-shadow: 0 24px 70px rgba(67, 40, 70, .16);
-}
 
 html { scroll-behavior: smooth; }
 body { background: var(--atelier-porcelain); color: var(--atelier-aubergine); }
 body::selection, ::selection { background: var(--atelier-aubergine); color: #fff; }
 button, a { -webkit-tap-highlight-color: transparent; }
-:focus-visible { outline: 3px solid #7e55a1; outline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--ds-brand); outline-offset: 3px; }
 
 .view-home { background: var(--atelier-porcelain); }
 .view-home .site-header {
