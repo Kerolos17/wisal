@@ -5,6 +5,8 @@
 **Rule:** audit first, no app code changed. Authenticated dashboard/admin assessed via code (no credentials); stated where NOT VERIFIED visually.
 **Prior decision (binding):** Atelier Wisal is the single visual direction (impeccable seed `b17b8bec`, Phase 1). This plan consolidates toward it — it does NOT propose a new direction.
 
+**Execution status (24 September 2026): ALL D-PHASES MERGED** — D-1 tokens (#13) · D-2 public site incl. `?lang=` fix (#14) · D-3 dashboard/studio (#15) · D-4 twelve-world catalogue (#16) · D-5 motion tokens (#17) · D-6 digit rule + AA lock (#18). Main: 213/213 tests green. Remaining: manual gates (domain, E2E secrets, drills, payment dual-review, legal counsel).
+
 ---
 
 ## 1. Executive Summary
