@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Bell, CircleCheckBig, CircleDashed, Eye, Headphones, History, House, LayoutDashboard, LayoutTemplate, ListChecks, MessageSquareText, Palette, Quote, Rocket, Send, Settings, UsersRound } from "lucide-react";
 import { type Locale, dateLocale, useWisalLocale, AR_DATE_LOCALE } from "./use-wisal-locale";
 import { isPremiumTemplateCode } from "@/lib/template-entitlements";
+import { Button } from "./components/ui/Button";
 
 const AdminDashboard = lazy(() => import("./admin-dashboard"));
 const AccountCenter = lazy(() => import("./account-center"));
@@ -608,8 +609,8 @@ export default function Home({ initialView = "home", authenticated = false, acco
         <div className="header-actions">
           {(account?.role === "admin" || account?.role === "support" || account?.role === "content_manager") && <button className="admin-shortcut" onClick={() => router.push("/admin")} aria-label={locale === "ar" ? "فتح لوحة الإدارة" : "Open admin dashboard"}><Settings aria-hidden="true" /></button>}
           <button className="locale-switch" onClick={() => setLocale(locale === "ar" ? "en" : "ar")} aria-label={locale === "ar" ? "Switch to English" : "التبديل إلى العربية"}>{locale === "ar" ? "EN" : "عربي"}</button>
-          {authenticated ? <button className="account-button" onClick={() => router.push("/auth/sign-out?returnTo=%2F")}><span>{profileName.slice(0, 1)}</span><b>{profileName.split(" ")[0]}</b><small>{locale === "ar" ? "تسجيل الخروج" : "Sign out"}</small></button> : <button className="header-cta" onClick={() => router.push("/auth/sign-in?returnTo=%2Fworkspace")}>{locale === "ar" ? "تسجيل الدخول" : "Sign in"}</button>}
-          {view === "home" && <button className="header-cta home-create" onClick={() => void openStudio()}>{locale === "ar" ? "أنشئ دعوتك" : "Create your invitation"}</button>}
+          {authenticated ? <button className="account-button" onClick={() => router.push("/auth/sign-out?returnTo=%2F")}><span>{profileName.slice(0, 1)}</span><b>{profileName.split(" ")[0]}</b><small>{locale === "ar" ? "تسجيل الخروج" : "Sign out"}</small></button> : <Button className="whitespace-nowrap" variant="ghost" size="sm" onClick={() => router.push("/auth/sign-in?returnTo=%2Fworkspace")}>{locale === "ar" ? "تسجيل الدخول" : "Sign in"}</Button>}
+          {view === "home" && <Button className="whitespace-nowrap home-create" size="sm" onClick={() => void openStudio()}>{locale === "ar" ? "أنشئ دعوتك" : "Create your invitation"}</Button>}
         </div>
       </header>
 
@@ -665,8 +666,8 @@ function Landing({ locale, plans, catalogState, templates, content, onStart, onG
           <h1>{ar ? <>دعوة تشبهكم.<br /><em>وفرحة تجمعكم.</em></> : <>Your invitation.<br /><em>Your celebration.</em></>}</h1>
           <p className="atlas-intro">{ar ? "صمّم دعوة زفافك، شاركها مع ضيوفك، وتابع تأكيدات الحضور في مكان واحد." : "Design your wedding invitation, share it with your guests, and follow every RSVP in one place."}</p>
           <div className="atlas-actions">
-            <button className="atlas-primary" onClick={onStart}>{copy("hero_primary_cta", "صمّم دعوتك", "Design your invitation")} <span aria-hidden="true">{ar ? "←" : "→"}</span></button>
-            <button className="atlas-link" onClick={() => document.getElementById("templates")?.scrollIntoView({ behavior: "smooth" })}>{ar ? "استعرض التصاميم" : "Browse designs"}</button>
+            <Button size="lg" onClick={onStart}>{copy("hero_primary_cta", "صمّم دعوتك", "Design your invitation")} <span aria-hidden="true">{ar ? "←" : "→"}</span></Button>
+            <Button size="lg" variant="ghost" onClick={() => document.getElementById("templates")?.scrollIntoView({ behavior: "smooth" })}>{ar ? "استعرض التصاميم" : "Browse designs"}</Button>
           </div>
           <p className="atelier-assurance"><CircleCheckBig aria-hidden="true" />{ar ? "ابدأ بالمعاينة قبل تسجيل الدخول" : "Preview first — sign in when you are ready"}</p>
         </div>

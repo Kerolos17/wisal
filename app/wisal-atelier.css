@@ -423,7 +423,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   [dir="ltr"] .atlas-hero h1 { font-size: clamp(42px, 11vw, 58px); }
   .atlas-intro { margin-top: 22px; font-size: 15px; }
   .atlas-actions { display: grid; grid-template-columns: 1fr; }
-  .atlas-primary, .atlas-link { width: 100%; }
+  .atlas-primary, .atlas-link, .atlas-actions > * { width: 100%; }
   .atelier-stage { min-height: 480px; border-radius: var(--ds-radius-md); }
   .atelier-main-invite { width: min(64%, 270px); }
   .atelier-swatches button { width: 76px; }
