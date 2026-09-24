@@ -2,7 +2,20 @@ import { notFound } from "next/navigation";
 import InvitationClient, { type InvitationData } from "@/app/invite/[slug]/InvitationClient";
 import type { InvitationConcept } from "@/lib/invitation-concepts";
 
-const previewConceptCodes = ["love-poem", "garden-night", "moonlight", "golden-vows", "white-story", "cinema-night"] as const satisfies readonly InvitationConcept[];
+const previewConceptCodes = [
+  "love-poem",
+  "garden-night",
+  "moonlight",
+  "golden-vows",
+  "white-story",
+  "cinema-night",
+  "rose-garden",
+  "cathedral-light",
+  "desert-sunset",
+  "velvet-night",
+  "coastal-breeze",
+  "modern-monogram",
+] as const satisfies readonly InvitationConcept[];
 type PreviewConcept = (typeof previewConceptCodes)[number];
 
 const templates: Record<PreviewConcept, { name: string; accent: string; layout: "classic" | "story" | "cinematic" }> = {
@@ -12,6 +25,12 @@ const templates: Record<PreviewConcept, { name: string; accent: string; layout: 
   "golden-vows": { name: "Gilded Promise", accent: "sand", layout: "classic" },
   "white-story": { name: "Still", accent: "plum", layout: "classic" },
   "cinema-night": { name: "Afterglow Première", accent: "plum", layout: "cinematic" },
+  "rose-garden": { name: "Blush Botanica", accent: "sage", layout: "story" },
+  "cathedral-light": { name: "The Royal Chapel", accent: "sand", layout: "classic" },
+  "desert-sunset": { name: "Sunlit Pages", accent: "sand", layout: "story" },
+  "velvet-night": { name: "Velvet Première", accent: "plum", layout: "cinematic" },
+  "coastal-breeze": { name: "Barefoot Vows", accent: "blue", layout: "classic" },
+  "modern-monogram": { name: "Noor Monogram", accent: "plum", layout: "classic" },
 };
 
 export const dynamic = "force-static";
