@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 import Image from "next/image";
 import { AudioLines, CalendarDays, CalendarPlus, Check, ChevronDown, Clock3, MapPin, Pause, Share2, Sparkles, TimerOff } from "lucide-react";
 import { useWisalLocale } from "@/app/use-wisal-locale";
@@ -82,7 +82,17 @@ export default function InvitationClient({ data, previewMode = false }: { data: 
   const [state, setState] = useState<"idle" | "saving" | "done" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [openedAt] = useState(() => Date.now());
-  const [now, setNow] = useState(() => Date.now());
+  // Live clock via useSyncExternalStore: the server snapshot is deterministic
+  // (event time) so hydration matches, and the client subscribes to minute
+  // ticks after hydration. This avoids React #418 without setState-in-effect.
+  const now = useSyncExternalStore(
+    (onStoreChange) => {
+      const timer = window.setInterval(onStoreChange, 60000);
+      return () => window.clearInterval(timer);
+    },
+    () => Date.now(),
+    () => eventDate.getTime(),
+  );
   const [openingState, setOpeningState] = useState<"closed" | "opening" | "open">(previewMode ? "open" : "closed");
   const [locale, setLocale] = useWisalLocale("lang");
   const [musicPlaying, setMusicPlaying] = useState(false);
@@ -114,11 +124,6 @@ export default function InvitationClient({ data, previewMode = false }: { data: 
       body: JSON.stringify({ eventId: event.id, inviteToken: guest.inviteToken }),
     });
   }, [event.id, guest?.inviteToken, previewMode]);
-
-  useEffect(() => {
-    const timer = window.setInterval(() => setNow(Date.now()), 60000);
-    return () => window.clearInterval(timer);
-  }, []);
 
   useEffect(() => {
     return () => {

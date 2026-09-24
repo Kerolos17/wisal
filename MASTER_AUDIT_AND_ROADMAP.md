@@ -11,23 +11,23 @@
 ## 0. Launch Readiness Dashboard (read this first)
 
 ```text
-Overall Launch Readiness: 66/100
+Overall Launch Readiness: 70/100
 
 Core Product:      12/15
 UX / Conversion:    7/10
 UI / Brand:         7/8
-Mobile:             7/8
+Mobile:             8/8
 Security/Privacy:  10/15
 Reliability/Data:   7/10
-Performance:        4/8
-QA:                 3/7
+Performance:        6/8
+QA:                 4/7
 DevOps:             3/5
 SEO / Sharing:      3/4
 Analytics/Obs:      2/4
 Competitive:        3/6
 
-P0 Issues: 1
-P1 Issues: 12
+P0 Issues: 0 open (SEC-001 closed Phase 0)
+P1 Issues: 11 open (MOBILE-001 closed Phase 7; RSVP-001/FLOW-001 harnesses merged, isolated runs pending)
 P2 Issues: 11
 P3 Issues: 4
 
@@ -54,6 +54,7 @@ Top 5 Competitive Opportunities:
 |---|---|---|---|
 | 2 Sept 2026 | 63/100 | 🟡 Beta | baseline |
 | 24 Sept 2026 | 66/100 | 🟡 Beta | privacy/SEO hardening, RSVP transaction, catalog alignment, Sentry/logging (+); critical dep RCE, 2 failing tests (−) |
+| 24 Sept 2026 (Phase 7) | 70/100 | 🟡 Beta | dep RCE closed, tests 196/196, mobile widths verified, hydration #418 fixed, hero proven WebP/13KB (+); manual gates unchanged (−) |
 
 ---
 
@@ -334,16 +335,16 @@ Privacy + Terms exist in AR/EN and are linked from marketing and invitation surf
 | Core Product | 15 | 12 | 12 concepts, studio, segments, RSVP, guests, payments in code; runtime unverified | E2E proof (TASK-003/004) |
 | UX/Conversion | 10 | 7 | Clear narrative; trust + subscription-framing gaps | Reframe plans; preview gallery |
 | UI/Brand | 8 | 7 | Coherent atelier system; tree/prod drift | Reconcile atelier (TASK-002) |
-| Mobile | 8 | 7 | No prior overflow; new hero unverified | 320–430px pass (TASK-002) |
+| Mobile | 8 | 8 | Phase 7: 0 overflow at 320–1440, targets ≥53px, screenshots verified (landing + preview) | throttled field re-trace V1.1 |
 | Security | 15 | 10 | Headers, guards, scoping, uploads solid; **P0 dep RCE** | Upgrade Next ≥16.3.3 (TASK-001) |
 | Reliability | 10 | 7 | Transactions, verify-gate, drill docs; retention/schedule open | Backup runbook (TASK-005) |
-| Performance | 8 | 4 | Prior LCP 6.64s; new imagery unbudgeted | Budgets + measure (TASK-002) |
-| QA | 7 | 3 | 177/179; 2 regressions; no runtime E2E | Fix tree; E2E (TASK-002/003) |
+| Performance | 8 | 6 | Phase 7 lab: LCP 212–1100ms landing / 476–656ms preview, CLS 0; hero 750w served WebP 13KB via next/image | throttled 4G field trace V1.1 |
+| QA | 7 | 4 | 196/196; hydration #418 fixed + regression tests; E2E harnesses merged, isolated runs pending | isolated DB evidence (TASK-003/004) |
 | DevOps | 5 | 3 | Health ok, gated migrations; domain/env open | Cutover checklist (TASK-007) |
 | SEO/Sharing | 4 | 3 | noindex/canonical/sitemap correct | Preview cards V1.1 |
 | Analytics | 4 | 2 | Sentry+logger; no funnel | Alert proof + events (TASK-005/009) |
 | Competitive | 6 | 3 | Unique segments; crowded low-price field | Speed + privacy positioning |
-| **Total** | **100** | **66** | **🟡 Beta candidate** | P0+P1 gates below |
+| **Total** | **100** | **70** | **🟡 Beta candidate** | manual gates below |
 
 ---
 
@@ -367,10 +368,11 @@ Privacy + Terms exist in AR/EN and are linked from marketing and invitation surf
 | AUTH-001 | Signup/login/OAuth/recovery/delivery lack production acceptance evidence | code present (`lib/auth/*`, `app/auth/*`); runtime NOT VERIFIED |
 | OPS-001 | Sentry + structured logging installed, but no proven alert path (no synthetic-failure drill evidence this round) | `instrumentation*.ts`, `app/api/ops/sentry-smoke/route.ts`, `lib/logger.ts` |
 | REL-001 | Backup retention schedule + re-verified restore evidence outstanding (prior drill docs exist, not re-verified) | `docs/release/*`; BETA gate operating limits |
-| PERF-001 | Prior throttled LCP 6.64s; new atelier hero raster unbudgeted/unmeasured | Sept trace; `public/brand/atelier/*` untracked |
+| PERF-001 | PARTIALLY MITIGATED (Phase 7): lab LCP 212–1100ms, CLS 0; hero 750w → WebP 13KB via next/image (1.8MB source never guest-facing). Throttled field trace still open for V1.1 | phase7-shots/results.json; `public/brand/atelier/*` |
+| HYDR-001 | FIXED (Phase 7): preview/invite countdown rendered server-time causing React #418 on every guest open; live clock moved to useSyncExternalStore (deterministic server snapshot, minute-tick subscribe) with regression tests | `InvitationClient.tsx`; `tests/invitation-hydration.test.mjs`; 0 console errors re-measured |
 | DOM-001 | Final-domain cutover pending: `metadataBase`/robots/sitemap default to `wisal-self.vercel.app`, auth callback URLs | `lib/site-url.ts:1`; `docs/LAUNCH_READINESS.md` |
 | LEGAL-001 | Counsel review pending: privacy, terms, retention, guest consent, photo rights, tax/invoice, deletion, refunds | `app/privacy`, `app/terms`; BETA gate §5 |
-| MOBILE-001 | New atelier hero (`fill` image + overlay CTA + swatches) never verified at 320–430px | uncommitted `app/page.tsx` diff + `wisal-atelier.css` |
+| MOBILE-001 | CLOSED (Phase 7): 0 overflow at 320/360/375/390/414/768/1024/1440, CTA/swatch targets 53–60px, landing + preview screenshots verified | phase7-shots/*.png + results.json |
 
 ### P2 — Medium (V1.1 unless cheap)
 
