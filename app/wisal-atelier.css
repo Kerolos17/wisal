@@ -22,9 +22,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .view-home .site-header nav button { color: var(--atelier-aubergine-soft); font-size: 13px; font-weight: 650; }
 .view-home .site-header nav button:hover { color: var(--atelier-aubergine); }
 .view-home .site-header nav button::after { background: var(--atelier-aubergine); }
-.view-home .locale-switch,
-.view-home .header-cta { border-color: var(--atelier-line); background: transparent; color: var(--atelier-aubergine); }
-.view-home .header-cta:hover { background: var(--atelier-aubergine); color: #fff; }
+.view-home .locale-switch { border-color: var(--atelier-line); background: transparent; color: var(--atelier-aubergine); }
 .view-home .home-create { border: 0 !important; border-radius: var(--ds-radius-md) !important; background: var(--atelier-lime) !important; color: #332137 !important; box-shadow: 0 10px 24px rgba(91, 104, 38, .14); }
 .view-home .home-create:hover { background: #ccf45d !important; color: #332137 !important; transform: translateY(-1px); }
 
@@ -92,8 +90,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
   transition: transform var(--ds-motion-base) var(--ds-ease-out), box-shadow var(--ds-motion-base), background var(--ds-motion-base);
 }
 .atlas-primary:hover { background: #cdf65d; color: #332137; transform: translateY(-2px); box-shadow: 0 18px 34px rgba(83, 70, 32, .2); }
-.atlas-link { min-height: 54px; border: 1px solid rgba(67,40,70,.38); border-radius: var(--ds-radius-md); padding: 0 22px; color: var(--atelier-aubergine); text-decoration: none; font-weight: 700; }
-.atlas-link:hover { border-color: var(--atelier-aubergine); background: rgba(255,255,255,.38); }
+
+
 .atelier-assurance { display: flex; align-items: center; gap: 8px; margin: 18px 0 0; color: #5d4860; font-size: 12px; }
 .atelier-assurance svg { width: 17px; color: #50651d; }
 
@@ -224,8 +222,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 /* Calm operational shell: same identity, lower expression. */
 .view-studio, .view-dashboard, .view-guest, .view-admin { background: #f7f3f9; color: var(--atelier-aubergine); }
 :is(.view-studio,.view-dashboard,.view-guest,.view-admin) .site-header { border-color: var(--atelier-line); background: rgba(251,249,252,.94); box-shadow: 0 8px 30px rgba(67,40,70,.06); }
-:is(.view-studio,.view-dashboard,.view-guest,.view-admin) .primary,
-:is(.view-studio,.view-dashboard,.view-guest,.view-admin) .header-cta { border-color: var(--atelier-aubergine); background: var(--atelier-aubergine); color: #fff; }
+:is(.view-studio,.view-dashboard,.view-guest,.view-admin) .primary { border-color: var(--atelier-aubergine); background: var(--atelier-aubergine); color: #fff; }
 .studio-main, .dashboard-page { accent-color: var(--atelier-aubergine); }
 .studio-steps button.active, .studio-templates button.selected { border-color: #7b5684; box-shadow: 0 0 0 3px rgba(123,86,132,.12); }
 .studio-templates button.selected > i { background: var(--atelier-lime); color: #2f2033; }
@@ -258,7 +255,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   box-shadow: 0 0 0 3px rgba(119,82,128,.12);
   outline: 0;
 }
-:is(.view-studio,.view-dashboard,.view-guest,.view-admin) :where(.primary,.ghost,.header-cta) {
+:is(.view-studio,.view-dashboard,.view-guest,.view-admin) :where(.primary,.ghost) {
   min-height: 44px;
   border-radius: var(--ds-radius-md);
   font-weight: 760;
@@ -515,7 +512,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   [dir="ltr"] .atlas-hero h1 { font-size: clamp(42px, 11vw, 58px); }
   .atlas-intro { margin-top: 22px; font-size: 15px; }
   .atlas-actions { display: grid; grid-template-columns: 1fr; }
-  .atlas-primary, .atlas-link, .atlas-actions > * { width: 100%; }
+  .atlas-primary, .atlas-actions > * { width: 100%; }
   .atelier-stage { min-height: 480px; border-radius: var(--ds-radius-md); }
   .atelier-main-invite { width: min(64%, 270px); }
   .atelier-swatches button { width: 76px; }

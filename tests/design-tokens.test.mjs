@@ -30,7 +30,4 @@ test("atelier primary buttons consume radius/motion tokens (no hardcoded 13px)",
   assert.match(primary[0], /var\(--ds-radius-md\)/);
   assert.match(primary[0], /var\(--ds-motion-base\)/);
   assert.doesNotMatch(primary[0], /border-radius:\s*13px/);
-  const link = atelier.match(/\.atlas-link \{[^}]*\}/);
-  assert.ok(link);
-  assert.match(link[0], /var\(--ds-radius-md\)/);
 });
