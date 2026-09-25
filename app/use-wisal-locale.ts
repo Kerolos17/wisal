@@ -14,7 +14,7 @@ export function dateLocale(locale: Locale): string {
   return locale === "ar" ? AR_DATE_LOCALE : EN_DATE_LOCALE;
 }
 
-export function useWisalLocale(_queryParameter?: string) {
+export function useWisalLocale() {
   const context = useLocaleContext();
   if (!context) {
     throw new Error("useWisalLocale must be used inside <LocaleProvider> (server-rendered locale).");

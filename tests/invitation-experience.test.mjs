@@ -32,7 +32,7 @@ test("studio offers a true phone and desktop invitation preview", () => {
 });
 
 test("guest invitation supports bilingual controls and opt-in ambient music", () => {
-  assert.match(inviteSource, /useWisalLocale\("lang"\)/);
+  assert.match(inviteSource, /useWisalLocale\(\)/);
   assert.doesNotMatch(inviteSource, /wisal-invite-locale/);
   assert.match(inviteSource, /new AudioContext\(\)/);
   assert.match(inviteSource, /aria-pressed={musicPlaying}/);

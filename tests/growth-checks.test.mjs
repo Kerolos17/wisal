@@ -34,7 +34,7 @@ test("preview route still covers 12 and stays noindex", () => {
 });
 
 test("D-Phase 2: landing honors ?lang= links and hero swatches are larger", () => {
-  assert.match(page, /useWisalLocale\("lang"\)/);
+  assert.match(page, /useWisalLocale\(\)/);
   assert.match(page, /showcaseTemplates\.slice\(0, 6\)/);
   assert.match(page, /title=\{ar \? template\.name : template\.enName\}/);
 });

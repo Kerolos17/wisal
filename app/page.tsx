@@ -4,7 +4,7 @@ import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Bell, CircleCheckBig, CircleDashed, Eye, Headphones, History, House, LayoutDashboard, LayoutTemplate, ListChecks, MessageSquareText, Palette, Quote, Rocket, Send, Settings, UsersRound } from "lucide-react";
+import { Bell, CircleCheckBig, CircleDashed, Eye, Headphones, History, House, LayoutDashboard, LayoutTemplate, ListChecks, MessageSquareText, Palette, Rocket, Send, Settings, UsersRound } from "lucide-react";
 import { type Locale, dateLocale, useWisalLocale, AR_DATE_LOCALE } from "./use-wisal-locale";
 import { isPremiumTemplateCode } from "@/lib/template-entitlements";
 import { Button } from "./components/ui/Button";
@@ -348,7 +348,7 @@ type AccountSummary = { displayName: string; email: string; role?: string };
 
 export default function Home({ initialView = "home", authenticated = false, account = null, isOwner = false, canManagePayments = false }: { initialView?: View; authenticated?: boolean; account?: AccountSummary | null; isOwner?: boolean; canManagePayments?: boolean } = {}) {
   const router = useRouter();
-  const [locale, setLocale] = useWisalLocale("lang");
+  const [locale, setLocale] = useWisalLocale();
   const [view, setView] = useState<View>(initialView);
   const [step, setStep] = useState(1);
   const [selectedTemplate, setSelectedTemplate] = useState(0);
