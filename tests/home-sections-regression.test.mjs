@@ -11,7 +11,7 @@ test("homepage journey uses a responsive celestial orbit timeline", () => {
   assert.match(home, /ListChecks aria-hidden/);
   assert.match(home, /Send aria-hidden/);
   assert.match(styles, /\.atlas-orbit-steps article \{[^}]*min-height: 180px/);
-  assert.match(styles, /@media \(max-width: 900px\)[\s\S]*\.atlas-journey,[\s\S]*grid-template-columns: 1fr/);
+  assert.match(styles, /@media\(max-width:1024px\)[\s\S]*\.atlas-journey,[\s\S]*grid-template-columns: 1fr/);
 });
 
 test("testimonial image loads directly and quote keeps a readable measure", () => {

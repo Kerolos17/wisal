@@ -28,7 +28,7 @@ test("public invitation opening and footer use real brand assets", () => {
 });
 
 test("responsive and reduced-motion product safeguards remain present", () => {
-  assert.match(styles, /@media\(max-width:700px\).*\.dashboard-page,\.admin-page\{display:block\}/s);
+  assert.match(styles, /@media\(max-width:768px\).*\.dashboard-page,\.admin-page\{display:block\}/s);
   assert.match(styles, /@media\(prefers-reduced-motion:reduce\)/);
 });
 

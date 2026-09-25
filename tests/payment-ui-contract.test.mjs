@@ -26,6 +26,6 @@ test("payment status screen exposes a clear, responsive visual hierarchy", () =>
   assert.match(source, /checkout-status-progress/);
   assert.match(source, /checkout-status-live/);
   assert.match(styles, /\.checkout-status-card/);
-  assert.match(styles, /@media\(max-width:560px\)\{\.checkout-status-shell/);
+  assert.match(styles, /@media\(max-width:480px\)\{\.checkout-status-shell/);
   assert.match(styles, /@media\(prefers-reduced-motion:reduce\)/);
 });
