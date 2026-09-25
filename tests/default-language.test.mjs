@@ -16,12 +16,11 @@ const [layout, loading, localeHook, home, auth, legal, invite, admin, errorPage,
   read("../app/not-found.tsx"),
 ]);
 
-test("English is the platform-wide default with LTR document semantics", () => {
-  assert.match(layout, /<html lang="en" dir="ltr"/);
+test("English is the platform-wide default with server-rendered document semantics", () => {
+  assert.match(layout, /cookieLocale === "ar" \? "ar" : "en"/);
+  assert.match(layout, /dir=\{locale === "ar" \? "rtl" : "ltr"\}/);
   assert.match(loading, /Preparing your experience/);
-  assert.match(localeHook, /DEFAULT_LOCALE: Locale = "en"/);
-  assert.match(localeHook, /const STORAGE_KEY = "wisal-locale-v3"/);
-  assert.match(localeHook, /if \(!preferenceReady\) return/);
+  assert.match(localeHook, /must be used inside <LocaleProvider>/);
 });
 
 test("all bilingual entry points share the same locale preference", () => {
