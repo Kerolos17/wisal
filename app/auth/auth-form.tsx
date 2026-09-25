@@ -96,7 +96,7 @@ export default function AuthForm({ mode, returnTo, initialError = "", accountLin
           </form>
 
           <p className="auth-switch">{isSignUp ? L("لديكم حساب بالفعل؟", "Already have an account?") : L("ليس لديكم حساب؟", "New to Wisal?")} <Link href={`/auth/${isSignUp ? "sign-in" : "sign-up"}?returnTo=${encodeURIComponent(returnTo)}`}>{isSignUp ? L("تسجيل الدخول", "Sign in") : L("إنشاء حساب", "Create an account")}</Link></p>
-          <small className="auth-terms">{L("بالمتابعة، أنتم توافقون على شروط الاستخدام وسياسة الخصوصية.", "By continuing, you agree to our Terms and Privacy Policy.")}</small>
+          <small className="auth-terms">{L("بالمتابعة، أنتم توافقون على", "By continuing, you agree to our")} <Link href="/terms" target="_blank">{L("شروط الاستخدام", "Terms of Use")}</Link> {L("و", "and")} <Link href="/privacy" target="_blank">{L("سياسة الخصوصية", "Privacy Policy")}</Link>.</small>
         </div>
       </section>
     </main>
