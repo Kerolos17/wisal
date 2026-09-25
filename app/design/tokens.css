@@ -37,7 +37,8 @@
   --gold: var(--ds-gold);
   --shadow: var(--ds-shadow-soft);
 
-  /* Atelier-specific colors (mapped to semantic tokens) */
+  /* Atelier-specific colors (mapped to semantic tokens; overridden values
+     resolved to their effective literals — one definition per token). */
   --atelier-lilac: #d8c5ec;
   --atelier-lilac-soft: #f0e8f8;
   --atelier-porcelain: #fbf9fc;
@@ -46,12 +47,8 @@
   --atelier-lime: var(--ds-action);
   --atelier-line: var(--ds-line);
   --atelier-shadow: var(--ds-shadow-soft);
-  --atelier-aubergine-soft: #674f69;
-  --atelier-gold: var(--ds-gold);
-  --atelier-muted: var(--ds-ink-muted);
-  --atelier-ink: var(--ds-ink);
   --atelier-action: var(--ds-action);
-  --atelier-cream: #f4eadc;
+  --atelier-cream: #f4ecdf;
   --atelier-paper: var(--ds-surface);
   --atelier-oxblood: #671d2b;
   --atelier-ink: #291b1d;
@@ -65,10 +62,8 @@
   --atlas-muted: var(--atelier-aubergine-soft);
   --atlas-copper: #795a85;
   --atlas-copper-bright: #5c3762;
-  --atlas-line: var(--atelier-line);
+  --atlas-line: var(--ds-line);
   --atlas-line-soft: var(--ds-line-soft);
-  --atlas-copper: #795a85;
-  --atlas-copper-bright: #5c3762;
 
   /* Premium dark colors */
   --ink-premium: #f7efe9;
@@ -134,13 +129,6 @@
   --ds-shadow-strong: 0 30px 80px rgba(35, 15, 30, .3);
   --ds-shadow-none: none;
 
-  /* Legacy premium dark aliases */
-  --ink-premium: #f7efe9;
-  --canvas-premium: #160d19;
-  --canvas-deep: #0d0810;
-  --gold-premium: #d5ae6c;
-  --border-premium: rgba(213, 174, 108, .28);
-
   /* Invitation concept aliases */
   --invitation-collection-version: 3;
   --atelier-countdown-surface: color-mix(in srgb, var(--atelier-paper) 86%, var(--atelier-background));
@@ -157,19 +145,6 @@
   --atelier-countdown-chip-dark: color-mix(in srgb, var(--atelier-gold) 10%, var(--atelier-paper));
   --atelier-field-dark: color-mix(in srgb, var(--atelier-paper) 92%, var(--atelier-dark));
   --atelier-soft-shadow-dark: 0 24px 58px rgba(0, 0, 0, .22);
-
-  /* Editorial Atelier collection — twelve authored invitation worlds. */
-  --atelier-cream: #f4ecdf;
-  --atelier-paper: var(--ds-surface);
-  --atelier-oxblood: #671d2b;
-  --atelier-ink: #291b1d;
-  --atelier-gold: #b8874b;
-  --atelier-muted: #765f5d;
-  --atlas-copper: #795a85;
-  --atlas-copper-bright: #5c3762;
-  --atlas-line: var(--ds-line);
-  --atlas-line-soft: var(--ds-line-soft);
-  --atlas-copper-bright: #5c3762;
 
   /* Component-specific aliases */
   --ci-bg: var(--ds-bg);
