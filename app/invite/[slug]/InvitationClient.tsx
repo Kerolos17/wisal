@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
+import { Button } from "../../components/ui";
 import Image from "next/image";
 import { AudioLines, CalendarDays, CalendarPlus, Check, ChevronDown, Clock3, MapPin, Pause, Share2, Sparkles, TimerOff } from "lucide-react";
 import { dateLocale, useWisalLocale } from "@/app/use-wisal-locale";
@@ -66,6 +67,31 @@ function escapeCalendarText(value: string) {
   return value.replace(/[\\;,\n]/g, (character) => character === "\n" ? "\\n" : `\\${character}`);
 }
 
+// Blur-up stand-in per world: an 8×12 SVG gradient in the world's palette
+// paints instantly while the cover streams in. Layered inside --guest-photo
+// so every cover rule gets it without touching the incumbent CSS.
+const conceptLqipStops: Record<string, [string, string]> = {
+  "love-poem": ["#eee2d0", "#fbf6ed"],
+  "garden-night": ["#ded8c5", "#f5f0e4"],
+  "moonlight": ["#19131a", "#2a2025"],
+  "golden-vows": ["#f8eee0", "#efe3d5"],
+  "white-story": ["#f3f0e9", "#fffdf8"],
+  "cinema-night": ["#120d11", "#24171d"],
+  "rose-garden": ["#c98d9c", "#f8edef"],
+  "cathedral-light": ["#dfe0d8", "#faf8f3"],
+  "desert-sunset": ["#a85c34", "#f4e6cd"],
+  "velvet-night": ["#12080c", "#231218"],
+  "coastal-breeze": ["#cfe3e6", "#edf2ec"],
+  "modern-monogram": ["#101615", "#18201e"],
+};
+
+function conceptLqip(concept: string) {
+  const [from, to] = conceptLqipStops[concept] ?? ["#d8c5ec", "#fbf9fc"];
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='8' height='12'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='${from}'/><stop offset='1' stop-color='${to}'/></linearGradient></defs><rect width='8' height='12' fill='url(#g)'/></svg>`;
+  return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+}
+
+
 function calendarDate(value: Date) {
   return value.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
 }
@@ -90,7 +116,9 @@ export default function InvitationClient({ data, previewMode = false }: { data: 
       const timer = window.setInterval(onStoreChange, 60000);
       return () => window.clearInterval(timer);
     },
-    () => Date.now(),
+    // Minute-aligned snapshot: stable within a tick so repeated getSnapshot
+    // calls return the same value (an uncached Date.now() loops forever).
+    () => Math.floor(Date.now() / 60000) * 60000,
     () => eventDate.getTime(),
   );
   const [openingState, setOpeningState] = useState<"closed" | "opening" | "open">(previewMode ? "open" : "closed");
@@ -251,9 +279,9 @@ export default function InvitationClient({ data, previewMode = false }: { data: 
 
   const sectionNodes = {
     message: invitation.showMessage ? <section className="invite-message"><p>{invitation.message}</p></section> : null,
-    countdown: invitation.showCountdown ? <section className="countdown-card"><h2>{ar ? "باقي على الاحتفال" : "Until the celebration"}</h2><div>{[[countdown.days, ar ? "يوم" : "Days"], [countdown.hours, ar ? "ساعة" : "Hours"], [countdown.minutes, ar ? "دقيقة" : "Minutes"]].map(([value, label]) => <span key={String(label)}><b>{String(value).padStart(2, "0")}</b><small>{label}</small></span>)}</div></section> : null,
+    countdown: invitation.showCountdown ? <section className="countdown-card"><h2>{ar ? "باقي على الاحتفال" : "Until the celebration"}</h2><div>{[[countdown.days, ar ? "يوم" : "Days"], [countdown.hours, ar ? "ساعة" : "Hours"], [countdown.minutes, ar ? "دقيقة" : "Minutes"]].map(([value, label]) => <span key={String(label)}><b key={String(value)}>{String(value).padStart(2, "0")}</b><small>{label}</small></span>)}</div></section> : null,
     schedule: invitation.showSchedule ? <section className="invite-schedule"><h2>{t.stages}</h2><p>{t.stagesNote}</p><div className="event-details">{data.segments.map((segment, index) => { const date = new Date(segment.startsAt); return <article key={segment.id}><span className="segment-number">{String(index + 1).padStart(2, "0")}</span><span><small>{dateFormatter.format(date)}</small><b>{segment.title}</b><p>{timeFormatter.format(date)} · {segment.venueName}، {segment.city}</p>{segment.address && <p>{segment.address}</p>}</span>{segment.mapUrl && <a href={segment.mapUrl} target="_blank" rel="noreferrer">{t.map}</a>}</article>; })}</div></section> : null,
-    rsvp: invitation.rsvpEnabled ? <section className="rsvp-card" id="invitation-rsvp">{rsvpClosed ? <div className="rsvp-success rsvp-closed" aria-live="polite"><span><TimerOff aria-hidden="true" /></span><h2>{t.closed}</h2><p>{t.closedNote}</p></div> : state === "done" ? <div className="rsvp-success" aria-live="polite"><span><Check aria-hidden="true" /></span><h2>{t.thanks}</h2><p>{t.thanksNote}</p></div> : <><h2>{t.confirmEach}</h2><p>{t.before} {deadlineLabel}</p><div className="rsvp-progress" aria-label={ar ? `${data.segments.length} مراحل للحضور` : `${data.segments.length} attendance moments`}><span>{String(data.segments.length).padStart(2, "0")}</span><small>{ar ? "مراحل يمكنكم الرد عليها بشكل مستقل" : "moments you can respond to independently"}</small></div><div className="segment-rsvp-list">{data.segments.map((segment, index) => { const response = segmentAnswers[segment.id]; return <section key={segment.id}><div className="segment-rsvp-heading"><span>{String(index + 1).padStart(2, "0")}</span><div><b>{segment.title}</b><small>{segment.venueName} · {timeFormatter.format(new Date(segment.startsAt))}</small></div></div><div className="segment-rsvp-options" role="group" aria-label={segment.title}>{[["yes", t.attend], ["maybe", t.maybe], ["no", t.decline]].map(([value, label]) => <button key={value} type="button" aria-pressed={response?.status === value} className={`${value} ${response?.status === value ? "selected" : ""}`} onClick={() => setSegmentAnswers((current) => ({ ...current, [segment.id]: { status: value as "yes" | "maybe" | "no", partySize: current[segment.id]?.partySize ?? 1 } }))}>{label}</button>)}</div>{response?.status === "yes" && <label htmlFor={`party-size-${segment.id}`}>{t.party}<select id={`party-size-${segment.id}`} name={`party-size-${segment.id}`} value={response.partySize} onChange={(event) => setSegmentAnswers((current) => ({ ...current, [segment.id]: { ...current[segment.id], partySize: Number(event.target.value) } }))}>{Array.from({ length: invitation.maxPartySize }, (_, index) => <option key={index + 1} value={index + 1}>{index + 1}</option>)}</select></label>}</section>; })}</div><div className="guest-form"><label htmlFor="rsvp-full-name">{t.fullName}<input id="rsvp-full-name" name="name" autoComplete="name" value={name} onChange={(e) => { setName(e.target.value); setState("idle"); setErrorMessage(""); }} placeholder={t.namePlaceholder} aria-invalid={state === "error"} readOnly={Boolean(guest)} />{guest && <small className="personalized-note">{t.personalized}</small>}</label>{Object.values(segmentAnswers).some((response) => response.status === "yes") && invitation.mealQuestionEnabled && <label htmlFor="rsvp-meal">{t.meal}<select id="rsvp-meal" name="meal" value={meal} onChange={(e) => setMeal(e.target.value)}><option value="عادي">{t.regular}</option><option value="نباتي">{t.vegetarian}</option></select></label>}</div>{state === "error" && <p className="form-error" role="alert">{errorMessage}</p>}<button className="primary wide-button invite-primary-action" onClick={() => void submit()} disabled={state === "saving"}>{state === "saving" ? t.saving : t.send}</button><small className="privacy-note">{t.privacy}</small></>}</section> : null,
+    rsvp: invitation.rsvpEnabled ? <section className="rsvp-card" id="invitation-rsvp">{rsvpClosed ? <div className="rsvp-success rsvp-closed" aria-live="polite"><span><TimerOff aria-hidden="true" /></span><h2>{t.closed}</h2><p>{t.closedNote}</p></div> : state === "done" ? <div className="rsvp-success" aria-live="polite"><span><Check aria-hidden="true" /></span><h2>{t.thanks}</h2><p>{t.thanksNote}</p></div> : <><h2>{t.confirmEach}</h2><p>{t.before} {deadlineLabel}</p><div className="rsvp-progress" aria-label={ar ? `${data.segments.length} مراحل للحضور` : `${data.segments.length} attendance moments`}><span>{String(data.segments.length).padStart(2, "0")}</span><small>{ar ? "مراحل يمكنكم الرد عليها بشكل مستقل" : "moments you can respond to independently"}</small></div><div className="segment-rsvp-list">{data.segments.map((segment, index) => { const response = segmentAnswers[segment.id]; return <section key={segment.id}><div className="segment-rsvp-heading"><span>{String(index + 1).padStart(2, "0")}</span><div><b>{segment.title}</b><small>{segment.venueName} · {timeFormatter.format(new Date(segment.startsAt))}</small></div></div><div className="segment-rsvp-options" role="group" aria-label={segment.title}>{[["yes", t.attend], ["maybe", t.maybe], ["no", t.decline]].map(([value, label]) => <button key={value} type="button" aria-pressed={response?.status === value} className={`${value} ${response?.status === value ? "selected" : ""}`} onClick={() => setSegmentAnswers((current) => ({ ...current, [segment.id]: { status: value as "yes" | "maybe" | "no", partySize: current[segment.id]?.partySize ?? 1 } }))}>{label}</button>)}</div>{response?.status === "yes" && <label htmlFor={`party-size-${segment.id}`}>{t.party}<select id={`party-size-${segment.id}`} name={`party-size-${segment.id}`} value={response.partySize} onChange={(event) => setSegmentAnswers((current) => ({ ...current, [segment.id]: { ...current[segment.id], partySize: Number(event.target.value) } }))}>{Array.from({ length: invitation.maxPartySize }, (_, index) => <option key={index + 1} value={index + 1}>{index + 1}</option>)}</select></label>}</section>; })}</div><div className="guest-form"><label htmlFor="rsvp-full-name">{t.fullName}<input id="rsvp-full-name" name="name" autoComplete="name" value={name} onChange={(e) => { setName(e.target.value); setState("idle"); setErrorMessage(""); }} placeholder={t.namePlaceholder} aria-invalid={state === "error"} readOnly={Boolean(guest)} />{guest && <small className="personalized-note">{t.personalized}</small>}</label>{Object.values(segmentAnswers).some((response) => response.status === "yes") && invitation.mealQuestionEnabled && <label htmlFor="rsvp-meal">{t.meal}<select id="rsvp-meal" name="meal" value={meal} onChange={(e) => setMeal(e.target.value)}><option value="عادي">{t.regular}</option><option value="نباتي">{t.vegetarian}</option></select></label>}</div>{state === "error" && <p className="form-error" role="alert">{errorMessage}</p>}<Button variant="primary" tone="ink" className="wide-button invite-primary-action" onClick={() => void submit()} disabled={state === "saving"}>{state === "saving" ? t.saving : t.send}</Button><small className="privacy-note">{t.privacy}</small></>}</section> : null,
   };
 
   return (
@@ -269,7 +297,7 @@ export default function InvitationClient({ data, previewMode = false }: { data: 
       </section>}
     <main ref={contentRef} tabIndex={-1} dir={ar ? "rtl" : "ltr"} lang={locale} className={`public-invite invite-${invitation.accentColor} guest-template-${templateArt} invite-concept-${templateConcept} layout-${invitation.layoutStyle} ${openingState === "open" ? "invite-revealed" : ""}`}>
       <div className="invite-controls"><button onClick={() => setLocale(ar ? "en" : "ar")} aria-label={ar ? "Switch to English" : "التبديل إلى العربية"}>{ar ? "EN" : "عربي"}</button><button onClick={() => void toggleMusic()} aria-pressed={musicPlaying}>{musicPlaying ? <Pause aria-hidden="true" /> : <AudioLines aria-hidden="true" />}{musicPlaying ? t.musicOn : t.musicOff}</button></div>
-      {(["editorial", "botanical", "cinematic"] as TemplateArt[]).includes(templateArt) ? <section className={`signature-invite-hero signature-${templateArt} concept-${templateConcept} ${coverUrl ? "with-cover" : ""}`} style={coverUrl ? { "--guest-photo": `url(${coverUrl})` } as CSSProperties : undefined}>
+      {(["editorial", "botanical", "cinematic"] as TemplateArt[]).includes(templateArt) ? <section className={`signature-invite-hero signature-${templateArt} concept-${templateConcept} ${coverUrl ? "with-cover" : ""}`} style={coverUrl ? { "--guest-photo": `url(${coverUrl}), ${conceptLqip(templateConcept)}` } as CSSProperties : undefined}>
         <div className="signature-copy">
           <Image className="signature-monogram" src="/brand/wisal-monogram-64.png" width={56} height={56} alt="" unoptimized />
           <h1><span>{event.brideName}</span><i>&</i><span>{event.groomName}</span></h1>
@@ -280,12 +308,12 @@ export default function InvitationClient({ data, previewMode = false }: { data: 
             <article><Clock3 aria-hidden="true" /><span><b>{timeFormatter.format(eventDate)}</b><small>{ar ? "الوقت" : "Time"}</small></span></article>
             <article><MapPin aria-hidden="true" /><span><b>{event.venue}</b><small>{event.city}</small></span></article>
           </div>
-          {invitation.showCountdown && <div className="signature-countdown">{[[countdown.days, ar ? "يوم" : "Days"], [countdown.hours, ar ? "ساعة" : "Hours"], [countdown.minutes, ar ? "دقيقة" : "Minutes"]].map(([value, label]) => <span key={String(label)}><b>{String(value).padStart(2, "0")}</b><small>{label}</small></span>)}</div>}
+          {invitation.showCountdown && <div className="signature-countdown">{[[countdown.days, ar ? "يوم" : "Days"], [countdown.hours, ar ? "ساعة" : "Hours"], [countdown.minutes, ar ? "دقيقة" : "Minutes"]].map(([value, label]) => <span key={String(label)}><b key={String(value)}>{String(value).padStart(2, "0")}</b><small>{label}</small></span>)}</div>}
           {invitation.rsvpEnabled && <button className="signature-rsvp" type="button" onClick={() => document.getElementById("invitation-rsvp")?.scrollIntoView({ behavior: "smooth" })}>{t.rsvp} <span>{ar ? "←" : "→"}</span></button>}
           <div className="invitation-utilities" aria-live="polite"><button type="button" onClick={saveDate}><CalendarPlus aria-hidden="true" />{t.saveDate}</button><button type="button" onClick={() => void shareInvitation()}><Share2 aria-hidden="true" />{utilityFeedback === "copied" ? t.copied : utilityFeedback === "shared" ? t.shared : t.share}</button>{utilityFeedback !== "idle" && <small>{utilityFeedback === "saved" ? t.saved : utilityFeedback === "copied" ? t.copied : t.shared}</small>}</div>
         </div>
         <button className="signature-scroll" type="button" aria-label={t.scroll} onClick={() => contentRef.current?.querySelector(".guest-content")?.scrollIntoView({ behavior: "smooth" })}><ChevronDown aria-hidden="true" /></button>
-      </section> : <section className={`guest-cover image-treatment-${templateArt} concept-${templateConcept} ${coverUrl ? "with-cover" : ""}`} style={coverUrl ? { "--guest-photo": `url(${coverUrl})` } as CSSProperties : undefined}>
+      </section> : <section className={`guest-cover image-treatment-${templateArt} concept-${templateConcept} ${coverUrl ? "with-cover" : ""}`} style={coverUrl ? { "--guest-photo": `url(${coverUrl}), ${conceptLqip(templateConcept)}` } as CSSProperties : undefined}>
         <span className="guest-flower"><Sparkles aria-hidden="true" /></span><small>{guest ? `${t.privateInvite} ${guest.name}` : t.joy}</small><h1>{event.brideName} <b>&</b> {event.groomName}</h1><div className="guest-date"><span><b>{dateFormatter.format(eventDate)}</b><small>{timeFormatter.format(eventDate)}</small></span><i /><span><b>{event.venue}</b><small>{event.city}</small></span></div><div className="invitation-utilities" aria-live="polite"><button type="button" onClick={saveDate}><CalendarPlus aria-hidden="true" />{t.saveDate}</button><button type="button" onClick={() => void shareInvitation()}><Share2 aria-hidden="true" />{utilityFeedback === "copied" ? t.copied : utilityFeedback === "shared" ? t.shared : t.share}</button>{utilityFeedback !== "idle" && <small>{utilityFeedback === "saved" ? t.saved : utilityFeedback === "copied" ? t.copied : t.shared}</small>}</div><div className="scroll-hint">{t.scroll}</div>
       </section>}
       <div className="guest-content">{sectionOrder.map((section) => sectionNodes[section as keyof typeof sectionNodes])}</div>

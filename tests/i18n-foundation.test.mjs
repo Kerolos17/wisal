@@ -4,7 +4,7 @@ import test from "node:test";
 
 const pageSource = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
 const localeSource = await readFile(new URL("../app/use-wisal-locale.ts", import.meta.url), "utf8");
-const stylesSource = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+const stylesSource = await readFile(new URL("../app/design/wisal.css", import.meta.url), "utf8");
 
 test("language preference is persistent and updates document semantics", () => {
   assert.match(localeSource, /type Locale = "ar" \| "en"/);
@@ -22,7 +22,7 @@ test("the public experience exposes an accessible language switcher", () => {
 
 test("LTR uses explicit direction-aware layout overrides", () => {
   assert.match(stylesSource, /\[dir="ltr"\] \.template-card/);
-  assert.match(stylesSource, /\[dir="ltr"\] \.note-one/);
+  assert.match(stylesSource, /\[dir="ltr"\] \.legend span b/);
   assert.match(stylesSource, /\.locale-switch:focus-visible/);
   assert.match(stylesSource, /\[dir="ltr"\] \.studio-panel/);
   assert.match(stylesSource, /\[dir="ltr"\] \.dashboard-page aside nav button/);

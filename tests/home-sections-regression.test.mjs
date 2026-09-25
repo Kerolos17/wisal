@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const home = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
-const styles = await readFile(new URL("../app/wisal-atlas.css", import.meta.url), "utf8");
+const styles = await readFile(new URL("../app/design/wisal.css", import.meta.url), "utf8");
 
 test("homepage journey uses a responsive celestial orbit timeline", () => {
   assert.match(home, /atlas-orbit-steps/);

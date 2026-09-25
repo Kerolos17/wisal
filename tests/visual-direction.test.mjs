@@ -4,7 +4,7 @@ import test from "node:test";
 
 const layout = await readFile(new URL("../app/layout.tsx", import.meta.url), "utf8");
 const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
-const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+const styles = await readFile(new URL("../app/design/wisal.css", import.meta.url), "utf8");
 
 test("self-hosted bilingual typography is explicit and direction-aware", () => {
   assert.match(layout, /@fontsource\/ibm-plex-sans-arabic/);

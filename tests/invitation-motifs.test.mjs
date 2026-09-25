@@ -4,7 +4,7 @@ import test from "node:test";
 
 const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
 const admin = await readFile(new URL("../app/admin-dashboard.tsx", import.meta.url), "utf8");
-const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+const css = await readFile(new URL("../app/design/wisal.css", import.meta.url), "utf8");
 
 test("D-Phase 4: public catalogue merges all templates (no six-gate)", () => {
   assert.doesNotMatch(page, /rows\.filter\(\(row\) => atelierTemplates\.some/);

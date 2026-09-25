@@ -5,7 +5,7 @@ import test from "node:test";
 const pageSource = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
 const ownerSource = await readFile(new URL("../lib/current-owner.ts", import.meta.url), "utf8");
 const dataSource = await readFile(new URL("../lib/wisal-data.ts", import.meta.url), "utf8");
-const stylesSource = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+const stylesSource = await readFile(new URL("../app/design/wisal.css", import.meta.url), "utf8");
 
 test("does not mount the builder until an active event is ready", () => {
   assert.match(pageSource, /dataState === "ready" && eventData && \(/);
