@@ -4,10 +4,13 @@ import { forwardRef, ButtonHTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 export type ButtonVariant = "primary" | "ghost" | "danger" | "text";
+export type ButtonTone = "action" | "ink";
 export type ButtonSize = "sm" | "md" | "lg";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
+  /** "action" = chartreuse decisive action; "ink" = calm-operations primary (aubergine). */
+  tone?: ButtonTone;
   size?: ButtonSize;
   loading?: boolean;
   icon?: ReactNode;
@@ -28,6 +31,11 @@ const variantClasses = {
   text: "bg-transparent border-0 text-[var(--ds-brand)] font-semibold hover:underline active:opacity-70",
 };
 
+const toneClasses = {
+  action: "",
+  ink: "bg-[var(--ds-brand)] text-white hover:bg-[var(--atelier-aubergine-soft)] border-0",
+};
+
 const fullWidthClass = "w-full justify-center";
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -35,6 +43,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     {
       className,
       variant = "primary",
+      tone = "action",
       size = "md",
       loading = false,
       icon,
@@ -61,6 +70,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           "rounded-[var(--ds-radius-md)]",
           sizeClasses[size],
           variantClasses[variant],
+          toneClasses[tone],
           fullWidth && fullWidthClass,
           className,
         )}
