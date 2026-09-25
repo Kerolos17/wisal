@@ -30,8 +30,8 @@ test("preview route covers all 12 concepts with distinct accent/layout", () => {
 });
 
 test("preview routes are non-indexable and invitation client respects reduced motion/mobile", async () => {
-  const atelierCss = await readFile(new URL("../app/wisal-atelier.css", import.meta.url), "utf8");
-  const globalsCss = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const atelierCss = await readFile(new URL("../app/design/wisal.css", import.meta.url), "utf8");
+  const globalsCss = await readFile(new URL("../app/design/wisal.css", import.meta.url), "utf8");
   assert.match(previewSource, /robots.*index:\s*false/);
   assert.match(atelierCss + globalsCss, /prefers-reduced-motion/);
   // client exposes previewMode for gallery reuse

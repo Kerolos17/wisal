@@ -4,7 +4,7 @@ import test from "node:test";
 
 const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
 const layout = await readFile(new URL("../app/layout.tsx", import.meta.url), "utf8");
-const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+const styles = await readFile(new URL("../app/design/wisal.css", import.meta.url), "utf8");
 const headers = await readFile(new URL("../public/_headers", import.meta.url), "utf8");
 const robots = await readFile(new URL("../app/robots.ts", import.meta.url), "utf8");
 const errorPage = await readFile(new URL("../app/error.tsx", import.meta.url), "utf8");

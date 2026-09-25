@@ -21,7 +21,7 @@ test("payment state conflicts are reported as conflicts instead of generic valid
 
 test("payment status screen exposes a clear, responsive visual hierarchy", () => {
   const source = read("app/checkout/[id]/status/status-client.tsx");
-  const styles = read("app/globals.css");
+  const styles = read("app/design/wisal.css");
   assert.match(source, /checkout-status-shell/);
   assert.match(source, /checkout-status-progress/);
   assert.match(source, /checkout-status-live/);

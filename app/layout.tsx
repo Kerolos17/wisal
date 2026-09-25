@@ -8,10 +8,7 @@ import "@fontsource/noto-naskh-arabic/600.css";
 import "@fontsource/noto-naskh-arabic/700.css";
 import "@fontsource-variable/manrope";
 import "@fontsource-variable/cormorant-garamond";
-import "./design/tokens.css";
-import "./globals.css";
-import "./wisal-atlas.css";
-import "./wisal-atelier.css";
+import "./design/wisal.css";
 import { siteUrl } from "@/lib/site-url";
 
 const platformJsonLd = {

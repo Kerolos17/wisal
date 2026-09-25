@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-const atelier = await readFile(new URL("../app/wisal-atelier.css", import.meta.url), "utf8");
+const atelier = await readFile(new URL("../app/design/wisal.css", import.meta.url), "utf8");
 
 function luminance(hex) {
   const c = hex.replace("#", "");

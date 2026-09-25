@@ -4,7 +4,7 @@ import test from "node:test";
 
 const pageSource = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
 const localeSource = await readFile(new URL("../app/use-wisal-locale.ts", import.meta.url), "utf8");
-const stylesSource = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+const stylesSource = await readFile(new URL("../app/design/wisal.css", import.meta.url), "utf8");
 
 test("language preference is persistent and updates document semantics", () => {
   assert.match(localeSource, /type Locale = "ar" \| "en"/);

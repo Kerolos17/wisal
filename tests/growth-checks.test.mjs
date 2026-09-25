@@ -40,7 +40,7 @@ test("D-Phase 2: landing honors ?lang= links and hero swatches are larger", () =
 });
 
 test("D-Phase 2: swatches use radius token and larger sizes", async () => {
-  const atelier = await readFile(new URL("../app/wisal-atelier.css", import.meta.url), "utf8");
+  const atelier = await readFile(new URL("../app/design/wisal.css", import.meta.url), "utf8");
   const rule = atelier.match(/\.atelier-swatches button \{[^}]*\}/);
   assert.ok(rule);
   assert.match(rule[0], /width: 96px/);

@@ -3,7 +3,7 @@ import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 
 const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
-const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+const styles = await readFile(new URL("../app/design/wisal.css", import.meta.url), "utf8");
 const identity = await readFile(new URL("../lib/auth/identity.ts", import.meta.url), "utf8");
 const authServer = await readFile(new URL("../lib/auth/server.ts", import.meta.url), "utf8");
 const authForm = await readFile(new URL("../app/auth/auth-form.tsx", import.meta.url), "utf8");
