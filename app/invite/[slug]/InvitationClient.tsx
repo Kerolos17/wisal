@@ -66,6 +66,31 @@ function escapeCalendarText(value: string) {
   return value.replace(/[\\;,\n]/g, (character) => character === "\n" ? "\\n" : `\\${character}`);
 }
 
+// Blur-up stand-in per world: an 8×12 SVG gradient in the world's palette
+// paints instantly while the cover streams in. Layered inside --guest-photo
+// so every cover rule gets it without touching the incumbent CSS.
+const conceptLqipStops: Record<string, [string, string]> = {
+  "love-poem": ["#eee2d0", "#fbf6ed"],
+  "garden-night": ["#ded8c5", "#f5f0e4"],
+  "moonlight": ["#19131a", "#2a2025"],
+  "golden-vows": ["#f8eee0", "#efe3d5"],
+  "white-story": ["#f3f0e9", "#fffdf8"],
+  "cinema-night": ["#120d11", "#24171d"],
+  "rose-garden": ["#c98d9c", "#f8edef"],
+  "cathedral-light": ["#dfe0d8", "#faf8f3"],
+  "desert-sunset": ["#a85c34", "#f4e6cd"],
+  "velvet-night": ["#12080c", "#231218"],
+  "coastal-breeze": ["#cfe3e6", "#edf2ec"],
+  "modern-monogram": ["#101615", "#18201e"],
+};
+
+function conceptLqip(concept: string) {
+  const [from, to] = conceptLqipStops[concept] ?? ["#d8c5ec", "#fbf9fc"];
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='8' height='12'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='${from}'/><stop offset='1' stop-color='${to}'/></linearGradient></defs><rect width='8' height='12' fill='url(#g)'/></svg>`;
+  return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+}
+
+
 function calendarDate(value: Date) {
   return value.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
 }
@@ -271,7 +296,7 @@ export default function InvitationClient({ data, previewMode = false }: { data: 
       </section>}
     <main ref={contentRef} tabIndex={-1} dir={ar ? "rtl" : "ltr"} lang={locale} className={`public-invite invite-${invitation.accentColor} guest-template-${templateArt} invite-concept-${templateConcept} layout-${invitation.layoutStyle} ${openingState === "open" ? "invite-revealed" : ""}`}>
       <div className="invite-controls"><button onClick={() => setLocale(ar ? "en" : "ar")} aria-label={ar ? "Switch to English" : "التبديل إلى العربية"}>{ar ? "EN" : "عربي"}</button><button onClick={() => void toggleMusic()} aria-pressed={musicPlaying}>{musicPlaying ? <Pause aria-hidden="true" /> : <AudioLines aria-hidden="true" />}{musicPlaying ? t.musicOn : t.musicOff}</button></div>
-      {(["editorial", "botanical", "cinematic"] as TemplateArt[]).includes(templateArt) ? <section className={`signature-invite-hero signature-${templateArt} concept-${templateConcept} ${coverUrl ? "with-cover" : ""}`} style={coverUrl ? { "--guest-photo": `url(${coverUrl})` } as CSSProperties : undefined}>
+      {(["editorial", "botanical", "cinematic"] as TemplateArt[]).includes(templateArt) ? <section className={`signature-invite-hero signature-${templateArt} concept-${templateConcept} ${coverUrl ? "with-cover" : ""}`} style={coverUrl ? { "--guest-photo": `url(${coverUrl}), ${conceptLqip(templateConcept)}` } as CSSProperties : undefined}>
         <div className="signature-copy">
           <Image className="signature-monogram" src="/brand/wisal-monogram-64.png" width={56} height={56} alt="" unoptimized />
           <h1><span>{event.brideName}</span><i>&</i><span>{event.groomName}</span></h1>
@@ -287,7 +312,7 @@ export default function InvitationClient({ data, previewMode = false }: { data: 
           <div className="invitation-utilities" aria-live="polite"><button type="button" onClick={saveDate}><CalendarPlus aria-hidden="true" />{t.saveDate}</button><button type="button" onClick={() => void shareInvitation()}><Share2 aria-hidden="true" />{utilityFeedback === "copied" ? t.copied : utilityFeedback === "shared" ? t.shared : t.share}</button>{utilityFeedback !== "idle" && <small>{utilityFeedback === "saved" ? t.saved : utilityFeedback === "copied" ? t.copied : t.shared}</small>}</div>
         </div>
         <button className="signature-scroll" type="button" aria-label={t.scroll} onClick={() => contentRef.current?.querySelector(".guest-content")?.scrollIntoView({ behavior: "smooth" })}><ChevronDown aria-hidden="true" /></button>
-      </section> : <section className={`guest-cover image-treatment-${templateArt} concept-${templateConcept} ${coverUrl ? "with-cover" : ""}`} style={coverUrl ? { "--guest-photo": `url(${coverUrl})` } as CSSProperties : undefined}>
+      </section> : <section className={`guest-cover image-treatment-${templateArt} concept-${templateConcept} ${coverUrl ? "with-cover" : ""}`} style={coverUrl ? { "--guest-photo": `url(${coverUrl}), ${conceptLqip(templateConcept)}` } as CSSProperties : undefined}>
         <span className="guest-flower"><Sparkles aria-hidden="true" /></span><small>{guest ? `${t.privateInvite} ${guest.name}` : t.joy}</small><h1>{event.brideName} <b>&</b> {event.groomName}</h1><div className="guest-date"><span><b>{dateFormatter.format(eventDate)}</b><small>{timeFormatter.format(eventDate)}</small></span><i /><span><b>{event.venue}</b><small>{event.city}</small></span></div><div className="invitation-utilities" aria-live="polite"><button type="button" onClick={saveDate}><CalendarPlus aria-hidden="true" />{t.saveDate}</button><button type="button" onClick={() => void shareInvitation()}><Share2 aria-hidden="true" />{utilityFeedback === "copied" ? t.copied : utilityFeedback === "shared" ? t.shared : t.share}</button>{utilityFeedback !== "idle" && <small>{utilityFeedback === "saved" ? t.saved : utilityFeedback === "copied" ? t.copied : t.shared}</small>}</div><div className="scroll-hint">{t.scroll}</div>
       </section>}
       <div className="guest-content">{sectionOrder.map((section) => sectionNodes[section as keyof typeof sectionNodes])}</div>
