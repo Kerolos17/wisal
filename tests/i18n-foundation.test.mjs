@@ -22,7 +22,7 @@ test("the public experience exposes an accessible language switcher", () => {
 
 test("LTR uses explicit direction-aware layout overrides", () => {
   assert.match(stylesSource, /\[dir="ltr"\] \.template-card/);
-  assert.match(stylesSource, /\[dir="ltr"\] \.note-one/);
+  assert.match(stylesSource, /\[dir="ltr"\] \.legend span b/);
   assert.match(stylesSource, /\.locale-switch:focus-visible/);
   assert.match(stylesSource, /\[dir="ltr"\] \.studio-panel/);
   assert.match(stylesSource, /\[dir="ltr"\] \.dashboard-page aside nav button/);
