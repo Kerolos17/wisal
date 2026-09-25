@@ -9,6 +9,8 @@ import "@fontsource/noto-naskh-arabic/700.css";
 import "@fontsource-variable/manrope";
 import "@fontsource-variable/cormorant-garamond";
 import "./design/wisal.css";
+import { cookies } from "next/headers";
+import { LocaleProvider, type Locale } from "./locale-provider";
 import { siteUrl } from "@/lib/site-url";
 
 const platformJsonLd = {
@@ -52,14 +54,22 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Server-known locale: the cookie is written by LocaleProvider on every
+  // choice, so <html lang/dir> is correct from the first byte — no
+  // post-hydration direction flip for Arabic visitors. Static routes see an
+  // empty cookie store and fall back to the English default.
+  const cookieStore = await cookies();
+  const cookieLocale = cookieStore.get("wisal-locale")?.value;
+  const locale: Locale = cookieLocale === "ar" ? "ar" : "en";
   return (
-    <html lang="en" dir="ltr">
+    <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
       <body>
+        <LocaleProvider initialLocale={locale}>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(platformJsonLd) }} />
         <template
           data-impeccable-contract="b17b8bec"
@@ -75,6 +85,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
           }}
         />
         {children}
+        </LocaleProvider>
       </body>
     </html>
   );

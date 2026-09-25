@@ -111,9 +111,10 @@ test("every invitation concept gives its primary action readable contrast", () =
 });
 
 test("English remains the platform default while Arabic is an explicit preference", async () => {
-  const localeSource = await readFile(new URL("../app/use-wisal-locale.ts", import.meta.url), "utf8");
-  assert.match(localeSource, /DEFAULT_LOCALE: Locale = "en"/);
-  assert.match(localeSource, /wisal-locale-v3/);
+  const layoutSource = await readFile(new URL("../app/layout.tsx", import.meta.url), "utf8");
+  const providerSource = await readFile(new URL("../app/locale-provider.tsx", import.meta.url), "utf8");
+  assert.match(layoutSource, /cookieLocale === "ar" \? "ar" : "en"/);
+  assert.match(providerSource, /wisal-locale-v3/);
 });
 
 test("content composer persists section visibility and order into the guest invitation", () => {

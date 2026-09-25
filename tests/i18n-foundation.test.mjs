@@ -6,11 +6,13 @@ const pageSource = await readFile(new URL("../app/page.tsx", import.meta.url), "
 const localeSource = await readFile(new URL("../app/use-wisal-locale.ts", import.meta.url), "utf8");
 const stylesSource = await readFile(new URL("../app/design/wisal.css", import.meta.url), "utf8");
 
-test("language preference is persistent and updates document semantics", () => {
+test("language preference is persistent and updates document semantics", async () => {
+  const providerSource = await readFile(new URL("../app/locale-provider.tsx", import.meta.url), "utf8");
   assert.match(localeSource, /type Locale = "ar" \| "en"/);
-  assert.match(localeSource, /localStorage\.getItem\(STORAGE_KEY\)/);
-  assert.match(localeSource, /document\.documentElement\.lang = locale/);
-  assert.match(localeSource, /document\.documentElement\.dir = locale === "ar" \? "rtl" : "ltr"/);
+  assert.match(providerSource, /localStorage\.setItem\(STORAGE_KEY, locale\)/);
+  assert.match(providerSource, /document\.cookie = `wisal-locale=/);
+  assert.match(providerSource, /document\.documentElement\.lang = next/);
+  assert.match(providerSource, /document\.documentElement\.dir = next === "ar" \? "rtl" : "ltr"/);
 });
 
 test("the public experience exposes an accessible language switcher", () => {
