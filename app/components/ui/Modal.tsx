@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, type HTMLAttributes, type KeyboardEvent, type ReactNode } from "react";
+import { forwardRef, useEffect, useRef, type HTMLAttributes, type KeyboardEvent, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
 
@@ -79,16 +79,44 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(function Modal(
     children,
     showCloseButton = true,
     closeOnOverlayClick = true,
-    closeOnEscape = true,
-    ...props
-  },
-  ref,
+  closeOnEscape = true,
+  ...props
+},
+ref,
 ) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const previous = document.activeElement as HTMLElement | null;
+    const scope = dialogRef.current;
+    const focusables = scope?.querySelectorAll<HTMLElement>(FOCUSABLE);
+    (focusables && focusables.length ? focusables[0] : scope)?.focus();
+    return () => previous?.focus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     if (event.key === "Escape" && closeOnEscape) {
       onClose();
+      return;
+    }
+    // Focus trap: keep Tab cycling inside the dialog.
+    if (event.key === "Tab" && dialogRef.current) {
+      const focusables = [...dialogRef.current.querySelectorAll<HTMLElement>(FOCUSABLE)];
+      if (!focusables.length) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     }
   }
 
@@ -100,6 +128,7 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(function Modal(
 
   return (
     <div
+      ref={dialogRef}
       className="fixed inset-0 z-50"
       role="dialog"
       aria-modal="true"
@@ -113,6 +142,7 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(function Modal(
       />
       <div
         ref={ref}
+        tabIndex={-1}
         className={cn(
           "fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-full -translate-x-1/2 -translate-y-1/2 overflow-hidden",
           "rounded-[var(--ds-radius-lg)] bg-[var(--ds-surface)]",

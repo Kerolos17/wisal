@@ -776,7 +776,7 @@ function Landing({ locale, plans, catalogState, templates, content, onStart, onG
           <Image src="/brand/cinematic-palace-hero.webp" width={1672} height={941} sizes="(max-width: 900px) 100vw, 55vw" alt={ar ? "مشهد افتتاح سينمائي لدعوة وِصال" : "Cinematic opening scene for a Wisal invitation"} />
           <div className="atlas-story-proof"><CircleCheckBig aria-hidden="true" /><span><small>{ar ? "مثال لردود الحضور" : "Example RSVP responses"}</small><b>{ar ? "٤١ من ٦٨ ضيفًا" : "41 of 68 guests"}</b></span></div>
         </div>
-        <div className="atlas-story-copy"><Quote aria-hidden="true" /><blockquote>{ar ? "دعوتنا بقيت جميلة. وضيوفنا بقوا منظّمين." : "Our invitation stayed beautiful. Our guests stayed organised."}</blockquote><p>{ar ? "ليلى وكريم، مثال توضيحي" : "Layla and Kareem, illustrative example"}</p></div>
+        <div className="atlas-story-copy"><CircleCheckBig aria-hidden="true" /><blockquote>{ar ? "الردود تصل من رابط كل ضيف الخاص، وتظهر في لوحة المناسبة لحظة وصولها." : "Replies arrive from each guest's private link and appear in the event dashboard the moment they land."}</blockquote><p>{ar ? "مثال توضيحي للوحة المتابعة" : "Illustrative dashboard preview"}</p></div>
       </section>
 
       <section className="atlas-section atlas-pricing" id="pricing">
