@@ -23,14 +23,10 @@
 
   /* Legacy color aliases (mapped to semantic tokens) */
   /* These map legacy variable names to semantic tokens for gradual migration */
-  --plum: var(--ds-brand);
-  --plum-2: var(--ds-brand);
   --rose: #c98779;
   --rose-dark: #9f6158;
   --ivory: #f8f3ef;
   --paper: var(--ds-surface);
-  --sage: #78836f;
-  --ink: var(--ds-ink);
   --muted: #796f79;
   --line: var(--ds-line);
   --green: var(--ds-success);

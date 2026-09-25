@@ -230,11 +230,9 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 /* Product-wide Atelier system: restrained, legible, and consistent. */
 :is(.view-studio,.view-dashboard,.view-guest,.view-admin) {
-  --plum: var(--atelier-aubergine);
   --rose-dark: #704665;
   --rose: #b88ea9;
   --ivory: #f4eef7;
-  --line: var(--atelier-line);
   --muted: #756579;
 }
 :is(.view-studio,.view-dashboard,.view-guest,.view-admin) .site-header {
