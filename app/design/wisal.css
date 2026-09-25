@@ -1176,10 +1176,6 @@
   background: rgba(215, 146, 97, .09);
 }
 
-.view-home .site-header nav {
-  gap: clamp(18px, 2.8vw, 42px);
-}
-
 .view-home .site-header nav button {
   position: relative;
   padding: 25px 0 23px;
@@ -1283,14 +1279,6 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
   padding-left: 0;
 }
 
-.atlas-hero::before {
-  content: "";
-  position: absolute;
-  inset: 8% auto 9% clamp(20px, 3.6vw, 58px);
-  width: 1px;
-  background: linear-gradient(transparent, var(--atlas-line), transparent);
-}
-
 [dir="rtl"] .atlas-hero::before {
   right: clamp(20px, 3.6vw, 58px);
   left: auto;
@@ -1329,14 +1317,6 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
   font-weight: 500;
 }
 
-.atlas-intro {
-  max-width: 440px;
-  margin: 28px 0 0;
-  color: var(--atlas-muted);
-  font-size: 15px;
-  line-height: 1.75;
-}
-
 .atlas-actions {
   display: flex;
   align-items: center;
@@ -1356,11 +1336,6 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
   white-space: nowrap;
   box-shadow: 0 16px 34px rgba(7, 3, 9, .26);
   transition: transform .22s ease, background-color .22s ease;
-}
-
-.atlas-primary:hover {
-  background: var(--atlas-copper-bright);
-  transform: translateY(-2px);
 }
 
 .atlas-primary:active {
@@ -2115,9 +2090,6 @@ html:has(.view-home)::-webkit-scrollbar-thumb {
 }
 
 /* Six-world template gallery: each preview carries the same art direction as its invitation. */
-.atlas-templates {
-  background: var(--atlas-ground);
-}
 .atlas-templates .atlas-section-head {
   max-width: 720px;
 }
