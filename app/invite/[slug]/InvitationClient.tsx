@@ -122,7 +122,7 @@ export default function InvitationClient({ data, previewMode = false }: { data: 
     () => eventDate.getTime(),
   );
   const [openingState, setOpeningState] = useState<"closed" | "opening" | "open">(previewMode ? "open" : "closed");
-  const [locale, setLocale] = useWisalLocale("lang");
+  const [locale, setLocale] = useWisalLocale();
   const [musicPlaying, setMusicPlaying] = useState(false);
   const [utilityFeedback, setUtilityFeedback] = useState<"idle" | "saved" | "copied" | "shared">("idle");
   const contentRef = useRef<HTMLElement>(null);

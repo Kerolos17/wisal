@@ -25,10 +25,10 @@ test("English is the platform-wide default with server-rendered document semanti
 
 test("all bilingual entry points share the same locale preference", () => {
   // Landing honors ?lang= deep links like invitations do (UX-001, D-Phase 2).
-  assert.match(home, /useWisalLocale\("lang"\)/);
+  assert.match(home, /useWisalLocale\(\)/);
   assert.match(auth, /useWisalLocale\(\)/);
   assert.match(legal, /useWisalLocale\(\)/);
-  assert.match(invite, /useWisalLocale\("lang"\)/);
+  assert.match(invite, /useWisalLocale\(\)/);
   assert.doesNotMatch(`${auth}\n${legal}`, /useState<Locale>\("ar"\)/);
   assert.doesNotMatch(invite, /wisal-invite-locale/);
 });

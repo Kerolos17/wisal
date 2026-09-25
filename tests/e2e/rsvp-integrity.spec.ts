@@ -49,7 +49,6 @@ test.describe("rsvp integrity - TASK-003", () => {
       const managedName = `Managed Guest ${suffix}`;
       const add = await ownerA.post(`/api/events/${eventId}/guests`, { data: { name: managedName } });
       expect(add.status()).toBe(201);
-      const before = (await ownerA.get(`/api/events/${eventId}`)).json as unknown;
       // anonymous RSVP with same name should 409
       const anon = await playwrightRequest.newContext({ baseURL });
       const rsvp = await anon.post("/api/rsvp", {

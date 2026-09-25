@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState, ReactNode } from "react";
 
 export type Locale = "ar" | "en";
 
@@ -20,21 +20,33 @@ const LocaleContext = createContext<{ locale: Locale; setLocale: (locale: Locale
 
 export function LocaleProvider({ initialLocale, children }: { initialLocale: Locale; children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(initialLocale);
+  const deepLinkApplied = useRef(false);
 
   useEffect(() => {
     // Deep links (?lang=) override once and persist through the cookie so the
-    // next server render matches without a direction flash.
-    const requested = new URLSearchParams(window.location.search).get("lang");
-    if (isLocale(requested) && requested !== locale) {
-      setLocaleState(requested);
-      persist(requested);
-      document.documentElement.lang = requested;
-      document.documentElement.dir = requested === "ar" ? "rtl" : "ltr";
-    } else {
+    // next server render matches without a direction flash. The once-guard
+    // keeps later locale changes (the visitor's own toggle) from being
+    // fought by the URL parameter.
+    if (deepLinkApplied.current) {
       persist(locale);
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    deepLinkApplied.current = true;
+    let cancelled = false;
+    const requested = new URLSearchParams(window.location.search).get("lang");
+    const nextLocale = isLocale(requested) ? requested : locale;
+    if (nextLocale !== locale) {
+      queueMicrotask(() => {
+        if (!cancelled) setLocaleState(nextLocale);
+      });
+    }
+    persist(nextLocale);
+    document.documentElement.lang = nextLocale;
+    document.documentElement.dir = nextLocale === "ar" ? "rtl" : "ltr";
+    return () => {
+      cancelled = true;
+    };
+  }, [locale]);
 
   const value = useMemo(() => ({
     locale,

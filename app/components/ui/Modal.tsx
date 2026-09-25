@@ -94,7 +94,6 @@ ref,
     const focusables = scope?.querySelectorAll<HTMLElement>(FOCUSABLE);
     (focusables && focusables.length ? focusables[0] : scope)?.focus();
     return () => previous?.focus();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   if (!isOpen) return null;
