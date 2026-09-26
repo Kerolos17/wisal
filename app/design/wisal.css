@@ -3048,3 +3048,28 @@ button, a { -webkit-tap-highlight-color: transparent; }
 @media (max-width: 768px) {
   .invite-concept-nile-moon .signature-copy { border: 1px solid rgba(227,207,146,.38); border-radius: 220px 220px 10px 10px; background: linear-gradient(180deg, rgba(13,22,40,.44), rgba(13,22,40,.82)); box-shadow: 0 24px 70px rgba(4,8,18,.45); }
 }
+/* --- 14 · Arabesque Gold (أرابيسك ذهبي) — cover world: dark plum-brown
+   ground under a gold hairline lattice (crossed 45° weaves), a double
+   hairline frame, and gold action surfaces. Cover photo stays the top
+   layer via --guest-photo when present. --- */
+.public-invite[class*="invite-concept-"].invite-concept-arabesque-gold {
+  --ci-bg:#171012; --ci-paper:#201619; --ci-ink:#f4ead8; --ci-muted:#c9b49a; --ci-accent:#c9a24f; --ci-dark:#0d090a; --ci-action-text:#1c1207;
+  --atelier-cream:#171012; --atelier-paper:#201619; --atelier-oxblood:#c9a24f; --atelier-ink:#f4ead8; --atelier-gold:#c9a24f; --atelier-muted:#c9b49a;
+  --atelier-dark:#0d090a; --atelier-action:#c9a24f; --atelier-action-ink:#1c1207; --atelier-action-hover:#e0bd6b; --atelier-border:rgba(201,162,79,.3); --atelier-focus:#c9a24f;
+  --invite-accent:#c9a24f;
+}
+.public-invite[class*="invite-concept-"].invite-concept-arabesque-gold .guest-cover:not(.with-cover) {
+  background-image:
+    repeating-linear-gradient(45deg, rgba(201,162,79,.13) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(-45deg, rgba(201,162,79,.13) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(45deg, rgba(201,162,79,.06) 0 1px, transparent 1px 44px),
+    repeating-linear-gradient(-45deg, rgba(201,162,79,.06) 0 1px, transparent 1px 44px),
+    radial-gradient(80% 60% at 50% 26%, rgba(201,162,79,.14), transparent 70%),
+    linear-gradient(180deg, #1c1215 0%, #120c0e 100%) !important;
+  box-shadow: inset 0 0 0 1px rgba(201,162,79,.42), inset 0 0 0 9px #171012, inset 0 0 0 10px rgba(201,162,79,.28);
+}
+.invite-concept-arabesque-gold .guest-content { background: #171012; }
+.invite-concept-arabesque-gold :is(.invite-message,.countdown-card,.event-details article,.rsvp-card,.segment-rsvp-list>section) { background: #201619; color: #f0e6d4; border-color: rgba(201,162,79,.3); }
+.invite-concept-arabesque-gold :is(.invite-schedule>h2,.rsvp-card h2) { color: #c9a24f; }
+.opening-concept-arabesque-gold { background: repeating-linear-gradient(45deg, rgba(201,162,79,.12) 0 1px, transparent 1px 20px), repeating-linear-gradient(-45deg, rgba(201,162,79,.12) 0 1px, transparent 1px 20px), linear-gradient(180deg, #1c1215, #0d090a); }
+.opening-concept-arabesque-gold.is-opening :is(.opening-envelope,.opening-card) { animation: atelier-seal-break .9s var(--ds-ease-cinematic) both; }

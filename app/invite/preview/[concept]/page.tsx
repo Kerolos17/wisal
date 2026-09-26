@@ -17,6 +17,7 @@ const previewConceptCodes = [
   "coastal-breeze",
   "modern-monogram",
   "nile-moon",
+  "arabesque-gold",
 ] as const satisfies readonly InvitationConcept[];
 type PreviewConcept = (typeof previewConceptCodes)[number];
 
@@ -34,6 +35,7 @@ const templates: Record<PreviewConcept, { name: string; accent: string; layout: 
   "coastal-breeze": { name: "Barefoot Vows", accent: "blue", layout: "classic" },
   "modern-monogram": { name: "Noor Monogram", accent: "plum", layout: "classic" },
   "nile-moon": { name: "Nile Moon", accent: "blue", layout: "cinematic" },
+  "arabesque-gold": { name: "Arabesque Gold", accent: "sand", layout: "classic" },
 };
 
 export const dynamic = "force-static";
