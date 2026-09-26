@@ -3014,3 +3014,37 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .atelier-main-invite, [dir="rtl"] .atelier-main-invite { transform: none; }
 }
 
+/* ==== Wave C — authored invitation worlds 13–18 ====
+   Same contract as the signed nine: flat authored color, one accent,
+   --guest-photo stays the top layer, easings via --ds-ease-* only,
+   mobile overrides at 768, flattened by the reduced-motion closer. */
+
+/* --- 13 · Nile Moon (قمر النيل) — cinematic hero: ink-blue night, a gold
+   moon over still water, rippled light at the waterline.
+   Token stacks ride a (0,3,0) selector so they win the shared
+   .public-invite[class*="invite-concept-"] aliases (0,2,0) on cascade order. --- */
+.public-invite[class*="invite-concept-"].invite-concept-nile-moon {
+  --ci-bg:#0a1224; --ci-paper:#16253f; --ci-ink:#f2ecd9; --ci-muted:#b9c4d8; --ci-accent:#e3cf92; --ci-dark:#0a1224; --ci-action-text:#0a1224;
+  --atelier-cream:#0f1a2e; --atelier-paper:#16253f; --atelier-oxblood:#e3cf92; --atelier-ink:#f2ecd9; --atelier-gold:#e3cf92; --atelier-muted:#b9c4d8;
+  --atelier-dark:#081222; --atelier-action:#e3cf92; --atelier-action-ink:#0a1224; --atelier-action-hover:#f4e6b8; --atelier-border:rgba(227,207,146,.26); --atelier-focus:#e3cf92;
+  --invite-accent:#e3cf92;
+}
+.invite-concept-nile-moon .signature-invite-hero {
+  background:
+    radial-gradient(circle 96px at 76% 16%, rgba(244,230,184,.22), rgba(244,230,184,0) 70%),
+    radial-gradient(circle 40px at 76% 16%, #f6e9bd 0 76%, rgba(246,233,189,0) 100%),
+    radial-gradient(120% 46% at 50% 108%, rgba(116,158,214,.34), rgba(116,158,214,0) 70%),
+    repeating-linear-gradient(180deg, rgba(148,180,215,.12) 0 2px, rgba(148,180,215,0) 2px 10px) 0 100% / 100% 30% no-repeat,
+    linear-gradient(180deg, #0a1224 0%, #13223c 58%, #1c3150 100%);
+}
+.invite-concept-nile-moon .signature-copy { color: #f2ecd9; }
+.invite-concept-nile-moon .signature-copy h1 { color: #f4e6b8; }
+.invite-concept-nile-moon .guest-content { background: #0f1a2e; }
+.invite-concept-nile-moon :is(.invite-message,.countdown-card,.event-details article,.rsvp-card,.segment-rsvp-list>section) { background: #16253f; color: #e9ecf5; border-color: rgba(227,207,146,.26); }
+.invite-concept-nile-moon :is(.invite-schedule>h2,.rsvp-card h2) { color: #e3cf92; }
+.opening-concept-nile-moon { background: radial-gradient(circle at 70% 18%, #f0e2b0 0 5%, transparent 5.5%), linear-gradient(160deg, #16263f, #0a1224); }
+.opening-concept-nile-moon.is-opening :is(.opening-envelope,.opening-card) { animation: atelier-nile-rise .9s var(--ds-ease-cinematic) both; }
+@keyframes atelier-nile-rise { from { opacity: 0; transform: translateY(26px) scale(.97); } }
+@media (max-width: 768px) {
+  .invite-concept-nile-moon .signature-copy { border: 1px solid rgba(227,207,146,.38); border-radius: 220px 220px 10px 10px; background: linear-gradient(180deg, rgba(13,22,40,.44), rgba(13,22,40,.82)); box-shadow: 0 24px 70px rgba(4,8,18,.45); }
+}

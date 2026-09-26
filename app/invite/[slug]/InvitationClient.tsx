@@ -61,6 +61,9 @@ const publicTemplateArt: Record<string, TemplateArt> = {
   "ليلة مخملية": "cinematic",
   "العرض المخملي": "cinematic",
   "Velvet Première": "cinematic",
+  "قمر النيل": "cinematic",
+  "ليلة القمر": "cinematic",
+  "Nile Moon": "cinematic",
 };
 
 function escapeCalendarText(value: string) {
@@ -83,6 +86,7 @@ const conceptLqipStops: Record<string, [string, string]> = {
   "velvet-night": ["#12080c", "#231218"],
   "coastal-breeze": ["#cfe3e6", "#edf2ec"],
   "modern-monogram": ["#101615", "#18201e"],
+  "nile-moon": ["#0c1526", "#24405e"],
 };
 
 function conceptLqip(concept: string) {

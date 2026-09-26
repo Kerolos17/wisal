@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import InvitationClient, { type InvitationData } from "@/app/invite/[slug]/InvitationClient";
 import type { InvitationConcept } from "@/lib/invitation-concepts";
 
@@ -15,6 +16,7 @@ const previewConceptCodes = [
   "velvet-night",
   "coastal-breeze",
   "modern-monogram",
+  "nile-moon",
 ] as const satisfies readonly InvitationConcept[];
 type PreviewConcept = (typeof previewConceptCodes)[number];
 
@@ -31,13 +33,19 @@ const templates: Record<PreviewConcept, { name: string; accent: string; layout: 
   "velvet-night": { name: "Velvet Première", accent: "plum", layout: "cinematic" },
   "coastal-breeze": { name: "Barefoot Vows", accent: "blue", layout: "classic" },
   "modern-monogram": { name: "Noor Monogram", accent: "plum", layout: "classic" },
+  "nile-moon": { name: "Nile Moon", accent: "blue", layout: "cinematic" },
 };
 
 export const dynamic = "force-static";
 
-export const metadata = {
-  robots: { index: false, follow: false, googleBot: { index: false, follow: false, noimageindex: true } },
-};
+export async function generateMetadata({ params }: { params: Promise<{ concept: string }> }): Promise<Metadata> {
+  const { concept } = await params;
+  return {
+    robots: { index: false, follow: false, googleBot: { index: false, follow: false, noimageindex: true } },
+    openGraph: { images: [`/invite/preview/${concept}/og-image`] },
+    twitter: { images: [`/invite/preview/${concept}/og-image`] },
+  };
+}
 
 export function generateStaticParams() {
   return previewConceptCodes.map((concept) => ({ concept }));
