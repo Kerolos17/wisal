@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "./components/ui";
+import Image from "next/image";
+import { Button, Empty, SkeletonBlock, useToast } from "./components/ui";
 
 type Locale = "ar" | "en";
 
@@ -67,8 +68,9 @@ function PaymentCard({ locale, payment, busy, onAct }: {
         <div><dt>{L("أُرسلت", "Submitted")}</dt><dd>{new Date(submitted).toLocaleString(locale === "ar" ? "ar-EG-u-nu-latn" : "en-GB")}</dd></div>
       </dl>
       {payment.hasReceipt && (
-        <a className="admin-receipt-link" href={`/api/admin/payments/${payment.id}/receipt`} target="_blank" rel="noreferrer">
-          {L("عرض الإيصال", "View receipt")}
+        <a className="admin-receipt-figure" href={`/api/admin/payments/${payment.id}/receipt`} target="_blank" rel="noreferrer">
+          <Image src={`/api/admin/payments/${payment.id}/receipt`} alt={L("إيصال الدفع المرفق", "Attached payment receipt")} width={280} height={360} unoptimized />
+          <small>{L("فتح الإيصال كاملًا ↗", "Open full receipt ↗")}</small>
         </a>
       )}
       {payment.rejectionReason && <p className="admin-payment-note rejected">{L("سبب الرفض: ", "Rejection reason: ")}{payment.rejectionReason}</p>}
@@ -122,6 +124,7 @@ function PaymentDestinationsPanel({ locale }: { locale: Locale }) {
 
 export default function AdminPayments({ locale, onReviewed }: { locale: Locale; onReviewed?: () => void }) {
   const L = (ar: string, en: string) => (locale === "ar" ? ar : en);
+  const toast = useToast();
   const [payments, setPayments] = useState<AdminPayment[] | null>(null);
   const [error, setError] = useState("");
   const [busyId, setBusyId] = useState("");
@@ -160,21 +163,28 @@ export default function AdminPayments({ locale, onReviewed }: { locale: Locale; 
       if (response.ok) {
         const data = await response.json() as { payment: AdminPayment };
         setPayments((prev) => (prev ? prev.map((item) => (item.id === id ? data.payment : item)) : prev));
+        const doneText = action === "approve" ? L("تم اعتماد الدفعة وتفعيل الاشتراك", "Payment approved and subscription activated") : action === "reject" ? L("تم رفض الدفعة", "Payment rejected") : L("تم إرسال طلب المعلومات", "Info request sent");
+        toast(doneText, "success");
         onReviewed?.();
       } else {
         const data = await response.json().catch(() => ({})) as { error?: string };
-        setError(data.error || L("تعذر تنفيذ الإجراء", "Could not perform action"));
+        toast(data.error || L("تعذر تنفيذ الإجراء", "Could not perform action"), "error");
       }
     } catch {
-      setError(L("تعذر الاتصال بالخادم. حاول مرة أخرى.", "Could not reach the server. Try again."));
+      toast(L("تعذر الاتصال بالخادم. حاول مرة أخرى.", "Could not reach the server. Try again."), "error");
     } finally {
       setBusyId("");
     }
   };
 
   if (payments === null) {
-    return <section className="admin-panel"><div className="admin-panel-title"><div><h2>{L("طلبات الدفع", "Payment requests")}</h2></div></div><p className="admin-empty">{L("جارٍ التحميل…", "Loading…")}</p></section>;
+    return <section className="admin-panel"><div className="admin-panel-title"><div><h2>{L("طلبات الدفع", "Payment requests")}</h2></div></div><SkeletonBlock lines={4} /></section>;
   }
+
+  // Calm queue: review-first order — pending, then info-needed, then settled.
+  const queueRank = (status: AdminPayment["status"]) => status === "pending_review" ? 0 : status === "needs_info" ? 1 : status === "draft" ? 2 : 3;
+  const queue = [...payments].sort((a, b) => queueRank(a.status) - queueRank(b.status));
+  const count = (status: AdminPayment["status"]) => payments.filter((payment) => payment.status === status).length;
 
   return (
     <section className="admin-panel">
@@ -186,14 +196,25 @@ export default function AdminPayments({ locale, onReviewed }: { locale: Locale; 
         <Button variant="primary" tone="ink" size="sm" className="admin-save" onClick={() => void load()}>{L("تحديث", "Refresh")}</Button>
       </div>
       {error && <div className="admin-notice">{error}</div>}
-      {payments.length ? (
+      {payments.length ? <>
+        <div className="admin-queue-summary" aria-label={L("ملخص قائمة المراجعة", "Review queue summary")}>
+          <span className="queue-chip is-pending"><b>{count("pending_review")}</b>{L("بانتظار المراجعة", "Pending review")}</span>
+          <span className="queue-chip is-info"><b>{count("needs_info")}</b>{L("معلومات مطلوبة", "Info requested")}</span>
+          <span className="queue-chip is-approved"><b>{count("approved")}</b>{L("معتمدة", "Approved")}</span>
+          <span className="queue-chip is-rejected"><b>{count("rejected")}</b>{L("مرفوضة", "Rejected")}</span>
+        </div>
         <div className="admin-payment-grid">
-          {payments.map((payment) => (
+          {queue.map((payment) => (
             <PaymentCard key={payment.id} locale={locale} payment={payment} busy={busyId === payment.id} onAct={(action, version, reason) => void act(action, payment.id, version, reason)} />
           ))}
         </div>
-      ) : (
-        <p className="admin-empty">{L("لا توجد طلبات دفع بعد.", "No payment requests yet.")}</p>
+      </> : (
+        <Empty
+          icon="💳"
+          title={L("لا توجد طلبات دفع بعد.", "No payment requests yet.")}
+          description={L("ستظهر هنا كل طلبات InstaPay والمحافظ فور إرسال العملاء إيصالاتهم.", "InstaPay and wallet requests appear here the moment customers submit receipts.")}
+          action={<Button variant="ghost" size="sm" onClick={() => void load()}>{L("تحديث القائمة", "Refresh queue")}</Button>}
+        />
       )}
       <PaymentDestinationsPanel locale={locale} />
     </section>

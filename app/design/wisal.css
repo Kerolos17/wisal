@@ -1060,7 +1060,6 @@
 .admin-payment-meta div{display:flex;flex-direction:column}
 .admin-payment-meta dt{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .admin-payment-meta dd{margin:0;font-size:13px;color: var(--ds-ink)}
-.admin-receipt-link{font-size:12px;color:var(--ds-brand);font-weight:700;text-decoration:underline;align-self:flex-start}
 .admin-payment-note{font-size:12px;margin:0;padding:8px 12px;border-radius:10px;background:#faf5f1}
 .admin-payment-note.rejected{background:#f6e3e1;color:#9c4034}
 .admin-payment-note.info{background:#eae7f6;color:#5c4ca0}
@@ -3014,3 +3013,51 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .atelier-main-invite, [dir="rtl"] .atelier-main-invite { transform: none; }
 }
 
+/* ==== Wave B — calm-ops layer (dashboard + admin) ====
+   Ops register: aubergine ink, gold only where it matters, tabular
+   numerals, no rose. New DS primitives (Toast/Skeleton/Empty) live here.
+   Easings via --ds-ease-* only; the reduced-motion closer flattens all. */
+.ui-toast-stack { position: fixed; z-index: 90; inset: auto auto 18px 18px; display: grid; gap: 10px; pointer-events: none; }
+[dir="rtl"] .ui-toast-stack { inset: auto 18px 18px auto; }
+.ui-toast { min-height: 44px; display: flex; align-items: center; padding: 10px 16px; border-radius: var(--ds-radius-md); background: var(--atelier-aubergine); color: #fff; box-shadow: 0 14px 34px rgba(30,22,30,.28); font-size: 13px; font-weight: 600; animation: ui-toast-in .32s var(--ds-ease-out); pointer-events: auto; }
+.ui-toast-success { background: #3d5238; }
+.ui-toast-error { background: #7c3a3a; }
+@keyframes ui-toast-in { from { opacity: 0; transform: translateY(10px); } }
+.ui-skeleton { display: block; width: 100%; background: rgba(67,40,70,.09); animation: ui-skeleton-pulse 1.6s var(--ds-ease-out) infinite; }
+@keyframes ui-skeleton-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+.ui-skeleton-block { display: grid; gap: 10px; padding: 14px 0; }
+.ui-skeleton-short { width: 55%; }
+.ui-empty { display: grid; justify-items: center; gap: 8px; padding: clamp(28px, 4vw, 56px); text-align: center; color: var(--atelier-aubergine-soft); }
+.ui-empty-icon { font-size: 30px; line-height: 1; opacity: .75; }
+.ui-empty b { color: var(--atelier-aubergine); font-size: 16px; }
+.ui-empty p { margin: 0; max-width: 46ch; font-size: 13px; line-height: 1.7; }
+.ui-empty-action { margin-top: 6px; }
+.rsvp-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; border: 1px solid var(--atelier-line); border-radius: var(--ds-radius-md); overflow: hidden; background: var(--atelier-line); }
+.rsvp-strip-item { display: grid; gap: 2px; align-content: center; justify-items: start; min-height: 96px; padding: 18px 20px; background: #fff; }
+.rsvp-strip-item b { font: 700 clamp(28px, 3vw, 40px)/1 var(--font-ui); font-variant-numeric: tabular-nums; color: var(--atelier-aubergine); }
+.rsvp-strip-item small { font-size: 11px; color: var(--atelier-aubergine-soft); font-weight: 650; }
+.rsvp-strip-item.is-yes b { color: #8a6d1f; }
+.rsvp-strip-item.is-yes { background: linear-gradient(180deg, #fff, #fdf9ef); }
+.view-dashboard :is(.stat-grid b,.segment-stat-values b,.donut b,.legend b,.follow-up-strip b,.audience-grid b,.message-priority b), .view-admin :is(.admin-stat-grid b,.report-funnel b,.report-summary span,.admin-health b,.admin-payment-meta dd,.queue-chip b,.template-count) { font-variant-numeric: tabular-nums; }
+.view-dashboard .stat-icon.rose { background: #efe7f3; color: #6d5a75; }
+.view-dashboard .filters button, .view-dashboard .guest-operations button, .view-dashboard .list-actions button, .view-dashboard .guest-actions button { min-height: 44px; }
+.admin-queue-summary { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+.queue-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 14px; border: 1px solid var(--atelier-line); border-radius: 999px; background: #fff; font-size: 12px; font-weight: 650; color: var(--atelier-aubergine-soft); }
+.queue-chip b { color: var(--atelier-aubergine); font-size: 14px; }
+.queue-chip.is-pending { border-color: #d8b46a; background: #fbf5e7; }
+.queue-chip.is-pending b { color: #8a6d1f; }
+.queue-chip.is-approved b { color: #4c6142; }
+.queue-chip.is-rejected b { color: #8a4444; }
+.admin-payment-card:has(.admin-receipt-figure) { display: grid; grid-template-columns: minmax(0, 1fr) 200px; column-gap: 18px; }
+.admin-payment-card:has(.admin-receipt-figure) > .admin-payment-meta { grid-column: 1; }
+.admin-payment-card:has(.admin-receipt-figure) > .admin-receipt-figure { grid-column: 2; grid-row: 2 / span 3; align-self: start; }
+.admin-receipt-figure { display: grid; gap: 6px; justify-items: center; padding: 8px; border: 1px solid var(--atelier-line); border-radius: var(--ds-radius-sm); background: #fff; }
+.admin-receipt-figure img { width: 100%; height: auto; max-height: 230px; object-fit: contain; }
+.admin-receipt-figure small { font-size: 11px; color: #6d5a75; font-weight: 650; }
+@media (max-width: 768px) {
+  .rsvp-strip { grid-template-columns: repeat(2, 1fr); }
+  .rsvp-strip-item { min-height: 76px; padding: 14px 16px; }
+  .rsvp-strip-item.is-seats { grid-column: span 2; }
+  .admin-payment-card:has(.admin-receipt-figure) { grid-template-columns: 1fr; }
+  .admin-payment-card:has(.admin-receipt-figure) > .admin-receipt-figure { grid-column: auto; grid-row: auto; justify-self: center; width: min(220px, 70%); }
+}
