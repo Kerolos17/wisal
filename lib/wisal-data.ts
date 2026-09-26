@@ -573,10 +573,10 @@ export async function saveRsvp(input: {
       sqlClient`
         INSERT INTO public.activity_logs (event_id, actor_label, action, details, created_at)
         SELECT ${eventId}, ${guestName}, 'rsvp_submitted', jsonb_build_object(
-          'status', ${input.status},
-          'partySize', ${partySize},
-          'personalized', ${Boolean(personalizedGuest)},
-          'segmentCount', ${segmentRows.length}
+          'status', ${input.status}::text,
+          'partySize', ${partySize}::int,
+          'personalized', ${personalizedGuest ? true : false}::bool,
+          'segmentCount', ${segmentRows.length}::int
         ), ${updatedAt}
         WHERE EXISTS (SELECT 1 FROM public.guests WHERE id = ${guestId} AND event_id = ${eventId})
       `,
