@@ -3099,3 +3099,27 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .opening-concept-linen-minimal { background: repeating-linear-gradient(0deg, rgba(23,21,19,.03) 0 1px, transparent 1px 3px), linear-gradient(180deg, #f7f4ec, #efebe0); }
 .opening-concept-linen-minimal .opening-envelope, .opening-concept-linen-minimal .opening-card { border-color: rgba(23,21,19,.4); }
 .opening-concept-linen-minimal.is-opening :is(.opening-envelope,.opening-card) { animation: atelier-still-lift .9s var(--ds-ease-cinematic) both; }
+/* --- 16 · Oud Night (ليل العود) — cover world: deep oud-brown night,
+   fine vertical wood grain, a low copper glow, warm brass surfaces. --- */
+.public-invite[class*="invite-concept-"].invite-concept-oud-night {
+  --ci-bg:#191014; --ci-paper:#241619; --ci-ink:#f0e2d2; --ci-muted:#c2a892; --ci-accent:#b0763c; --ci-dark:#100a0c; --ci-action-text:#1a0f06;
+  --atelier-cream:#191014; --atelier-paper:#241619; --atelier-oxblood:#b0763c; --atelier-ink:#f0e2d2; --atelier-gold:#c98d4f; --atelier-muted:#c2a892;
+  --atelier-dark:#100a0c; --atelier-action:#b0763c; --atelier-action-ink:#1a0f06; --atelier-action-hover:#c98d4f; --atelier-border:rgba(176,118,60,.32); --atelier-focus:#b0763c;
+  --invite-accent:#b0763c;
+}
+.public-invite[class*="invite-concept-"].invite-concept-oud-night .guest-cover:not(.with-cover) {
+  background-image:
+    repeating-linear-gradient(90deg, rgba(201,141,79,.05) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(90deg, rgba(0,0,0,.16) 0 2px, transparent 2px 23px),
+    radial-gradient(75% 55% at 50% 78%, rgba(176,118,60,.22), transparent 72%),
+    linear-gradient(180deg, #1d1216 0%, #120b0e 100%) !important;
+  box-shadow: inset 0 0 0 1px rgba(176,118,60,.4), inset 0 0 0 8px #191014, inset 0 0 0 9px rgba(176,118,60,.26);
+}
+.public-invite[class*="invite-concept-"].invite-concept-oud-night .guest-cover h1 { color: #f0e2d2; }
+.public-invite[class*="invite-concept-"].invite-concept-oud-night .guest-cover :is(small, i, span) { color: #c2a892; }
+.public-invite[class*="invite-concept-"].invite-concept-oud-night .guest-cover .guest-date { background: rgba(36,22,25,.9); color: #f0e2d2; border: 1px solid rgba(176,118,60,.36); backdrop-filter: none; }
+.invite-concept-oud-night .guest-content { background: #191014; }
+.invite-concept-oud-night :is(.invite-message,.countdown-card,.event-details article,.rsvp-card,.segment-rsvp-list>section) { background: #241619; color: #efe1d1; border-color: rgba(176,118,60,.3); }
+.invite-concept-oud-night :is(.invite-schedule>h2,.rsvp-card h2) { color: #c98d4f; }
+.opening-concept-oud-night { background: repeating-linear-gradient(90deg, rgba(201,141,79,.06) 0 1px, transparent 1px 9px), radial-gradient(70% 55% at 50% 80%, rgba(176,118,60,.25), transparent 75%), linear-gradient(180deg, #1d1216, #100a0c); }
+.opening-concept-oud-night.is-opening :is(.opening-envelope,.opening-card) { animation: atelier-seal-break .9s var(--ds-ease-cinematic) both; }

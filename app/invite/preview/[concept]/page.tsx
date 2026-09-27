@@ -19,6 +19,7 @@ const previewConceptCodes = [
   "nile-moon",
   "arabesque-gold",
   "linen-minimal",
+  "oud-night",
 ] as const satisfies readonly InvitationConcept[];
 type PreviewConcept = (typeof previewConceptCodes)[number];
 
@@ -38,6 +39,7 @@ const templates: Record<PreviewConcept, { name: string; accent: string; layout: 
   "nile-moon": { name: "Nile Moon", accent: "blue", layout: "cinematic" },
   "arabesque-gold": { name: "Arabesque Gold", accent: "sand", layout: "classic" },
   "linen-minimal": { name: "Linen Minimal", accent: "plum", layout: "story" },
+  "oud-night": { name: "Oud Night", accent: "sand", layout: "classic" },
 };
 
 export const dynamic = "force-static";
