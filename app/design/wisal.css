@@ -3073,3 +3073,29 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .invite-concept-arabesque-gold :is(.invite-schedule>h2,.rsvp-card h2) { color: #c9a24f; }
 .opening-concept-arabesque-gold { background: repeating-linear-gradient(45deg, rgba(201,162,79,.12) 0 1px, transparent 1px 20px), repeating-linear-gradient(-45deg, rgba(201,162,79,.12) 0 1px, transparent 1px 20px), linear-gradient(180deg, #1c1215, #0d090a); }
 .opening-concept-arabesque-gold.is-opening :is(.opening-envelope,.opening-card) { animation: atelier-seal-break .9s var(--ds-ease-cinematic) both; }
+/* --- 15 · Linen Minimal (كتان نقي) — cover world: Egyptian cotton ivory,
+   woven-thread texture, oversized black editorial type, hairline rules. --- */
+.public-invite[class*="invite-concept-"].invite-concept-linen-minimal {
+  --ci-bg:#f5f2ea; --ci-paper:#fffdf7; --ci-ink:#171513; --ci-muted:#6d675f; --ci-accent:#171513; --ci-dark:#0d0c0a; --ci-action-text:#f5f2ea;
+  --atelier-cream:#f5f2ea; --atelier-paper:#fffdf7; --atelier-oxblood:#171513; --atelier-ink:#171513; --atelier-gold:#8a6d3b; --atelier-muted:#6d675f;
+  --atelier-dark:#0d0c0a; --atelier-action:#171513; --atelier-action-ink:#f5f2ea; --atelier-action-hover:#33302b; --atelier-border:rgba(23,21,19,.18); --atelier-focus:#171513;
+  --invite-accent:#171513;
+}
+.public-invite[class*="invite-concept-"].invite-concept-linen-minimal .guest-cover:not(.with-cover) {
+  background-image:
+    repeating-linear-gradient(0deg, rgba(23,21,19,.025) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(23,21,19,.02) 0 1px, transparent 1px 3px),
+    radial-gradient(70% 50% at 50% 22%, rgba(255,255,255,.55), transparent 70%),
+    linear-gradient(180deg, #f7f4ec 0%, #efebe0 100%) !important;
+  box-shadow: inset 0 0 0 1px rgba(23,21,19,.2);
+}
+.public-invite[class*="invite-concept-"].invite-concept-linen-minimal .guest-cover h1 { color: #171513; font-size: clamp(52px, 9vw, 96px); letter-spacing: -.03em; }
+.public-invite[class*="invite-concept-"].invite-concept-linen-minimal .guest-cover :is(small, i, span) { color: #55504a; }
+.public-invite[class*="invite-concept-"].invite-concept-linen-minimal .guest-cover .guest-date { background: #fffdf7; color: #26231f; border: 1px solid rgba(23,21,19,.18); backdrop-filter: none; }
+.public-invite[class*="invite-concept-"].invite-concept-linen-minimal .guest-cover .scroll-hint { color: #55504a; }
+.invite-concept-linen-minimal .guest-content { background: #f5f2ea; }
+.invite-concept-linen-minimal :is(.invite-message,.countdown-card,.event-details article,.rsvp-card,.segment-rsvp-list>section) { background: #fffdf7; color: #26231f; border-color: rgba(23,21,19,.16); }
+.invite-concept-linen-minimal :is(.invite-schedule>h2,.rsvp-card h2) { color: #171513; }
+.opening-concept-linen-minimal { background: repeating-linear-gradient(0deg, rgba(23,21,19,.03) 0 1px, transparent 1px 3px), linear-gradient(180deg, #f7f4ec, #efebe0); }
+.opening-concept-linen-minimal .opening-envelope, .opening-concept-linen-minimal .opening-card { border-color: rgba(23,21,19,.4); }
+.opening-concept-linen-minimal.is-opening :is(.opening-envelope,.opening-card) { animation: atelier-still-lift .9s var(--ds-ease-cinematic) both; }

@@ -67,6 +67,9 @@ const publicTemplateArt: Record<string, TemplateArt> = {
   "أرابيسك ذهبي": "arabic",
   "زخرفة ذهبية": "arabic",
   "Arabesque Gold": "arabic",
+  "كتان نقي": "minimal",
+  "كتان مصري": "minimal",
+  "Linen Minimal": "minimal",
 };
 
 function escapeCalendarText(value: string) {
@@ -91,6 +94,7 @@ const conceptLqipStops: Record<string, [string, string]> = {
   "modern-monogram": ["#101615", "#18201e"],
   "nile-moon": ["#0c1526", "#24405e"],
   "arabesque-gold": ["#171012", "#33251a"],
+  "linen-minimal": ["#f1eee6", "#faf8f2"],
 };
 
 function conceptLqip(concept: string) {
