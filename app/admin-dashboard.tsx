@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Button } from "./components/ui";
+import { Button, useToast } from "./components/ui";
 import Image from "next/image";
 import { BadgeDollarSign, BarChart3, CalendarDays, CreditCard, Headphones, History, Languages, LayoutDashboard, LayoutTemplate, UsersRound } from "lucide-react";
 import AdminPayments from "./admin-payments";
@@ -21,13 +21,13 @@ type AdminData = {
 
 export default function AdminDashboard({ locale, isOwner = false, canManagePayments = false, onOpenEvent }: { locale: Locale; isOwner?: boolean; canManagePayments?: boolean; onOpenEvent: (id: string) => void }) {
   const L = (ar: string, en: string) => locale === "ar" ? ar : en;
+  const toast = useToast();
   const [section, setSection] = useState<AdminSection>("overview");
   const [data, setData] = useState<AdminData | null>(null);
   const [state, setState] = useState<"loading" | "ready" | "error">("loading");
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("all");
   const [savingCode, setSavingCode] = useState("");
-  const [notice, setNotice] = useState("");
 
   const load = async () => {
     setState("loading");
@@ -59,23 +59,23 @@ export default function AdminDashboard({ locale, isOwner = false, canManagePayme
     setSavingCode(id);
     const response = await fetch(`/api/admin/users/${encodeURIComponent(id)}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ role }) });
     if (response.ok) setData((current) => current ? { ...current, users: current.users.map((user) => user.id === id ? { ...user, role } : user) } : current);
-    else setNotice(L("تعذر تغيير الدور", "Could not change role"));
+    else toast(L("تعذر تغيير الدور", "Could not change role"), "error");
     setSavingCode("");
   };
   const savePlan = async (plan: AdminData["plans"][number]) => {
     setSavingCode(plan.code);
     const response = await fetch(`/api/admin/plans/${encodeURIComponent(plan.code)}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ priceEgp: plan.priceEgp, active: plan.active, featured: plan.featured }) });
-    setNotice(response.ok ? L("تم حفظ الباقة", "Plan saved") : L("تعذر حفظ الباقة", "Could not save plan")); setSavingCode("");
+    toast(response.ok ? L("تم حفظ الباقة", "Plan saved") : L("تعذر حفظ الباقة", "Could not save plan"), response.ok ? "success" : "error"); setSavingCode("");
   };
   const saveContent = async (item: AdminData["content"][number]) => {
     setSavingCode(item.key);
     const response = await fetch(`/api/admin/content/${encodeURIComponent(item.key)}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ valueAr: item.valueAr, valueEn: item.valueEn }) });
-    setNotice(response.ok ? L("تم حفظ الترجمتين", "Translations saved") : L("تعذر حفظ المحتوى", "Could not save content")); setSavingCode("");
+    toast(response.ok ? L("تم حفظ الترجمتين", "Translations saved") : L("تعذر حفظ المحتوى", "Could not save content"), response.ok ? "success" : "error"); setSavingCode("");
   };
   const saveTicket = async (ticket: AdminData["support"][number]) => {
     setSavingCode(ticket.id);
     const response = await fetch(`/api/admin/support-tickets/${encodeURIComponent(ticket.id)}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ status: ticket.status, priority: ticket.priority, resolution: ticket.resolution }) });
-    setNotice(response.ok ? L("تم تحديث طلب الدعم وإشعار المستخدم", "Support request updated and user notified") : L("تعذر تحديث طلب الدعم", "Could not update support request"));
+    toast(response.ok ? L("تم تحديث طلب الدعم وإشعار المستخدم", "Support request updated and user notified") : L("تعذر تحديث طلب الدعم", "Could not update support request"), response.ok ? "success" : "error");
     setSavingCode("");
   };
 
@@ -101,10 +101,10 @@ export default function AdminDashboard({ locale, isOwner = false, canManagePayme
   const adminArtTones = ["plum", "sage", "blue", "gold", "ivory", "noir", "plum", "sage", "blue", "gold", "ivory", "noir"];
 
   return <section className="admin-page">
-    <aside className="admin-sidebar"><div className="admin-brand"><span><Image src="/brand/wisal-monogram-64.png" width={46} height={46} alt="" unoptimized /></span><div><b>{L("وِصال", "Wisal")}</b><small>{L("إدارة المنصة", "Platform admin")}</small></div></div><nav>{nav.map(({ id, ar, en, icon: NavIcon }) => <button key={id} className={section === id ? "active" : ""} onClick={() => { setSection(id); setQuery(""); setNotice(""); }}><NavIcon aria-hidden="true" />{L(ar, en)}{id === "payments" && data.stats.paymentsPending > 0 ? <span className="admin-badge">{data.stats.paymentsPending}</span> : null}</button>)}</nav>{isOwner ? <div className="admin-owner"><span>K</span><div><b>{L("المالك", "Owner")}</b><small>{L("مالك المنصة", "Platform owner")}</small></div></div> : null}</aside>
+    <aside className="admin-sidebar"><div className="admin-brand"><span><Image src="/brand/wisal-monogram-64.png" width={46} height={46} alt="" unoptimized /></span><div><b>{L("وِصال", "Wisal")}</b><small>{L("إدارة المنصة", "Platform admin")}</small></div></div><nav>{nav.map(({ id, ar, en, icon: NavIcon }) => <button key={id} className={section === id ? "active" : ""} onClick={() => { setSection(id); setQuery(""); }}><NavIcon aria-hidden="true" />{L(ar, en)}{id === "payments" && data.stats.paymentsPending > 0 ? <span className="admin-badge">{data.stats.paymentsPending}</span> : null}</button>)}</nav>{isOwner ? <div className="admin-owner"><span>K</span><div><b>{L("المالك", "Owner")}</b><small>{L("مالك المنصة", "Platform owner")}</small></div></div> : null}</aside>
     <div className="admin-main">
-      <nav className="admin-mobile-tabs" aria-label={L("أقسام لوحة الإدارة", "Admin dashboard sections")}>{nav.map(({ id, ar, en, icon: NavIcon }) => <button key={id} className={section === id ? "active" : ""} onClick={() => { setSection(id); setQuery(""); setNotice(""); }}><NavIcon aria-hidden="true" />{L(ar, en)}{id === "payments" && data.stats.paymentsPending > 0 ? <span className="admin-badge">{data.stats.paymentsPending}</span> : null}</button>)}</nav>
-      <header className="admin-header"><div><span className="admin-kicker">{L("مركز التحكم", "Control center")}</span><h1>{L(nav.find((item) => item.id === section)?.ar ?? "", nav.find((item) => item.id === section)?.en ?? "")}</h1><p>{L("راقب المنصة واتخذ قرارات واضحة من مكان واحد.", "Monitor the platform and act from one clear workspace.")}</p></div><div className="admin-live"><i /> {L("المنصة تعمل", "Platform operational")}</div></header>{notice && <div className="admin-notice">{notice}</div>}
+      <nav className="admin-mobile-tabs" aria-label={L("أقسام لوحة الإدارة", "Admin dashboard sections")}>{nav.map(({ id, ar, en, icon: NavIcon }) => <button key={id} className={section === id ? "active" : ""} onClick={() => { setSection(id); setQuery(""); }}><NavIcon aria-hidden="true" />{L(ar, en)}{id === "payments" && data.stats.paymentsPending > 0 ? <span className="admin-badge">{data.stats.paymentsPending}</span> : null}</button>)}</nav>
+      <header className="admin-header"><div><span className="admin-kicker">{L("مركز التحكم", "Control center")}</span><h1>{L(nav.find((item) => item.id === section)?.ar ?? "", nav.find((item) => item.id === section)?.en ?? "")}</h1><p>{L("راقب المنصة واتخذ قرارات واضحة من مكان واحد.", "Monitor the platform and act from one clear workspace.")}</p></div><div className="admin-live"><i /> {L("المنصة تعمل", "Platform operational")}</div></header>
       {section === "overview" && <><div className="admin-stat-grid">{[["users", data.stats.users, "المستخدمون", "Users", "♙"], ["events", data.stats.events, "إجمالي الدعوات", "Total invitations", "✦"], ["published", data.stats.published, "الدعوات المنشورة", "Published invitations", "↗"], ["guests", data.stats.guests, "إجمالي الضيوف", "Total guests", "♡"]].map(([key, value, ar, en, icon]) => <article key={String(key)}><span>{icon}</span><div><small>{L(String(ar), String(en))}</small><b>{value}</b><p>{key === "events" ? L(`${data.stats.published} منشورة`, `${data.stats.published} published`) : L("محدثة لحظيًا", "Updated live")}</p></div></article>)}</div><div className="admin-overview-grid"><section className="admin-panel"><div className="admin-panel-title"><div><h2>{L("أحدث الدعوات", "Recent invitations")}</h2><p>{L("آخر الأنشطة على المنصة", "Latest platform activity")}</p></div><button onClick={() => setSection("events")}>{L("عرض الكل ←", "View all →")}</button></div><div className="admin-event-list">{data.events.slice(0, 5).map((event) => <button key={event.id} onClick={() => onOpenEvent(event.id)}><span className={`admin-status ${event.status}`}>{statusLabel(event.status)}</span><div><b>{event.title}</b><small>{event.ownerName} · {event.city}</small></div><time>{event.eventDate.slice(0, 10)}</time></button>)}</div></section><section className="admin-panel admin-health"><h2>{L("تفاعل الضيوف", "Guest engagement")}</h2><div><span><i style={{ width: `${pct(data.stats.opened)}%` }} /></span><b>{pct(data.stats.opened)}%</b><small>{L("فتحوا الدعوة", "Opened invitation")}</small></div><div><span><i style={{ width: `${pct(data.stats.responded)}%` }} /></span><b>{pct(data.stats.responded)}%</b><small>{L("أرسلوا ردًا", "Submitted RSVP")}</small></div><footer><b>{data.stats.responded}</b><span>{L("ردًا من", "responses from")} {data.stats.guests} {L("ضيفًا", "guests")}</span></footer></section></div></>}
       {section === "users" && <section className="admin-panel admin-table-panel"><div className="admin-panel-title"><div><h2>{L("إدارة المستخدمين والصلاحيات", "Users & permissions")}</h2><p>{L("عيّن مديرًا أو دعمًا أو محرر محتوى لكل حساب", "Assign admin, support or content access per account")}</p></div><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={L("بحث بالاسم أو البريد…", "Search name or email…")} /></div><div className="admin-table"><div className="admin-table-head"><span>{L("المستخدم", "User")}</span><span>{L("الدور", "Role")}</span><span>{L("اللغة", "Language")}</span><span>{L("تاريخ الانضمام", "Joined")}</span></div>{users.map((user) => <div className="admin-table-row" key={user.id}><span><i>{user.displayName[0]}</i><span><b>{user.displayName}</b><small>{user.email}</small></span></span><select className="admin-role" value={user.role} disabled={savingCode === user.id || user.roleLocked} onChange={(event) => void updateRole(user.id, event.target.value)}><option value="admin">{L("مدير", "Admin")}</option><option value="support">{L("دعم", "Support")}</option><option value="content_manager">{L("محرر محتوى", "Content manager")}</option><option value="couple">{L("صاحب مناسبة", "Event owner")}</option></select><span>{user.locale.toUpperCase()}</span><time>{user.createdAt.slice(0, 10)}</time></div>)}</div></section>}
       {section === "events" && <section className="admin-panel admin-table-panel"><div className="admin-panel-title"><div><h2>{L("إدارة الدعوات", "Invitation management")}</h2><p>{L("راجع كل الدعوات وحالات النشر", "Review every invitation and publishing state")}</p></div><div className="admin-filters"><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={L("بحث…", "Search…")} /><select value={status} onChange={(event) => setStatus(event.target.value)}><option value="all">{L("كل الحالات", "All statuses")}</option><option value="published">{L("منشورة", "Published")}</option><option value="draft">{L("مسودة", "Draft")}</option><option value="archived">{L("مؤرشفة", "Archived")}</option></select></div></div><div className="admin-table events"><div className="admin-table-head"><span>{L("الدعوة", "Invitation")}</span><span>{L("القالب", "Template")}</span><span>{L("الحالة", "Status")}</span><span>{L("الموعد", "Date")}</span><span /></div>{events.map((event) => <div className="admin-table-row" key={event.id}><span><i>✦</i><span><b>{event.title}</b><small>{event.ownerName} · {event.city}</small></span></span><span>{event.template || "—"}</span><em className={event.status}>{statusLabel(event.status)}</em><time>{event.eventDate.slice(0, 10)}</time><button onClick={() => onOpenEvent(event.id)}>{L("فتح ←", "Open →")}</button></div>)}</div></section>}

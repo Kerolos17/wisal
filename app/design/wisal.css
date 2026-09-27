@@ -1060,7 +1060,6 @@
 .admin-payment-meta div{display:flex;flex-direction:column}
 .admin-payment-meta dt{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .admin-payment-meta dd{margin:0;font-size:13px;color: var(--ds-ink)}
-.admin-receipt-link{font-size:12px;color:var(--ds-brand);font-weight:700;text-decoration:underline;align-self:flex-start}
 .admin-payment-note{font-size:12px;margin:0;padding:8px 12px;border-radius:10px;background:#faf5f1}
 .admin-payment-note.rejected{background:#f6e3e1;color:#9c4034}
 .admin-payment-note.info{background:#eae7f6;color:#5c4ca0}
@@ -3012,6 +3011,117 @@ button, a { -webkit-tap-highlight-color: transparent; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   .atelier-main-invite, [dir="rtl"] .atelier-main-invite { transform: none; }
+}
+
+/* ==== Wave A — cinematic landing layer (hero + worlds) ====
+   Appended after the ATELIER closer: easings come from --ds-ease-*
+   tokens only, all motion is transform/opacity, and the reduced-motion
+   closer above flattens every rule here to a still equivalent. */
+.atlas-hero { position: relative; }
+.atlas-hero .atelier-stage { z-index: 2; }
+.atelier-hero-veil { position: absolute; z-index: 0; inset: 0; overflow: hidden; pointer-events: none; }
+.atelier-hero-veil i { position: absolute; display: block; border-radius: 50%; will-change: transform; }
+.atelier-hero-veil-a { width: 58vw; height: 58vw; inset: -20vw auto auto -14vw; background: radial-gradient(closest-side, rgba(255,255,255,.55), rgba(255,255,255,0)); animation: atelier-veil-drift-a 26s var(--ds-ease-cinematic) infinite alternate; }
+.atelier-hero-veil-b { width: 44vw; height: 44vw; inset: auto -12vw -16vw auto; background: radial-gradient(closest-side, rgba(203,184,223,.5), rgba(203,184,223,0)); animation: atelier-veil-drift-b 32s var(--ds-ease-cinematic) infinite alternate; }
+.atelier-hero-veil-c { width: 30vw; height: 30vw; inset: 18% auto auto 46%; background: radial-gradient(closest-side, rgba(201,135,121,.16), rgba(201,135,121,0)); animation: atelier-veil-drift-a 38s var(--ds-ease-cinematic) infinite alternate-reverse; }
+@keyframes atelier-veil-drift-a { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(4vw,3vw,0) scale(1.12); } }
+@keyframes atelier-veil-drift-b { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(-3vw,-4vw,0) scale(1.08); } }
+.atelier-hero-ring { position: absolute; z-index: 0; width: min(24vw, 310px); aspect-ratio: 1; inset: 8px 38vw auto auto; pointer-events: none; }
+[dir="rtl"] .atelier-hero-ring { inset: 8px auto auto 38vw; }
+.atelier-hero-ring canvas { display: block; }
+.atelier-hero-ring-fallback { background: radial-gradient(closest-side, rgba(201,162,79,0) 56%, rgba(201,162,79,.9) 61%, rgba(184,143,76,.28) 71%, rgba(201,162,79,0) 75%); filter: drop-shadow(0 10px 26px rgba(184,143,76,.35)); transform: rotate(-12deg); }
+.atelier-hero-eyebrow { margin: 0; color: #6f5627; font-size: 12px; font-weight: 750; letter-spacing: .14em; text-transform: uppercase; }
+[dir="rtl"] .atelier-hero-eyebrow { letter-spacing: 0; }
+.atelier-hero-line, .atelier-hero-in { opacity: 0; transform: translateY(26px); animation: atelier-hero-in .9s var(--ds-ease-cinematic) forwards; animation-delay: calc(160ms + var(--line-i, 0) * var(--ds-stagger) * 4); }
+@keyframes atelier-hero-in { to { opacity: 1; transform: none; } }
+.atelier-hero-lines { display: block; }
+.atelier-hero-line { display: block; }
+.atelier-kicker { display: block; margin: 0 0 10px; color: #6f5627; font-size: 12px; font-weight: 750; letter-spacing: .14em; text-transform: uppercase; }
+[dir="rtl"] .atelier-kicker { letter-spacing: 0; }
+.atelier-worlds-head { max-width: 720px; margin-inline: auto; text-align: center; }
+.atelier-worlds-head h2 { margin: 0; font-size: clamp(30px, 3.4vw, 46px); }
+.atelier-worlds-head p { margin: 14px 0 0; }
+.atelier-world-list { display: grid; gap: clamp(28px, 4vw, 56px); margin-top: clamp(36px, 5vw, 72px); }
+.atelier-world { position: relative; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); align-items: center; gap: clamp(20px, 3vw, 48px); border-radius: var(--ds-radius-lg); overflow: hidden; background: #fff; box-shadow: 0 18px 52px rgba(67,40,70,.08); }
+.atelier-world:nth-child(even) .atelier-world-art { order: 2; }
+.atelier-world:nth-child(even) .atelier-world-copy { order: 1; }
+.atelier-world-art { position: relative; min-height: clamp(220px, 26vw, 340px); overflow: hidden; will-change: transform; }
+.atelier-world-copy { padding: clamp(24px, 3vw, 48px); }
+.atelier-world-copy h3 { margin: 0; font-size: clamp(22px, 2.2vw, 30px); font-weight: 680; letter-spacing: -.02em; color: var(--atelier-aubergine); }
+[dir="rtl"] .atelier-world-copy h3 { font-family: var(--font-ar-display); font-weight: 600; letter-spacing: 0; }
+.atelier-world-copy p { margin: 10px 0 0; color: var(--atelier-aubergine-soft); line-height: 1.7; }
+.atelier-world-rose-garden .atelier-world-art { background: linear-gradient(165deg, #f7e9e6 0%, #f0d7d9 58%, #e9c8cf 100%); }
+.atelier-world-petal { position: absolute; display: block; width: 14px; height: 18px; border-radius: 50% 50% 50% 0; background: rgba(194,106,126,.55); animation: atelier-petal-fall 9s var(--ds-ease-cinematic) infinite; }
+.atelier-world-petal-a { inset: -24px 22% auto auto; }
+.atelier-world-petal-b { width: 10px; height: 13px; inset: -24px 46% auto auto; animation-delay: 2.4s; background: rgba(194,106,126,.4); }
+.atelier-world-petal-c { width: 8px; height: 11px; inset: -24px 12% auto auto; animation-delay: 4.8s; background: rgba(194,106,126,.32); }
+@keyframes atelier-petal-fall { 0% { transform: translate3d(0,-10px,0) rotate(0); opacity: 0; } 14% { opacity: 1; } 100% { transform: translate3d(-4vw, 46vh, 0) rotate(160deg); opacity: 0; } }
+.atelier-world-desert-sunset .atelier-world-art { background: linear-gradient(180deg, #f6dfb2 0%, #eebd85 52%, #d99a66 100%); }
+.atelier-world-sun { position: absolute; width: clamp(90px, 12vw, 150px); aspect-ratio: 1; border-radius: 50%; inset: 16% 14% auto auto; background: radial-gradient(circle, #fff3d6 0%, #f2c979 55%, rgba(242,201,121,0) 74%); }
+.atelier-world-sweep { position: absolute; inset: 0; background: linear-gradient(100deg, rgba(255,244,214,0) 30%, rgba(255,244,214,.5) 50%, rgba(255,244,214,0) 70%); transform: translateX(-60%); animation: atelier-sweep 7s var(--ds-ease-cinematic) infinite; }
+@keyframes atelier-sweep { 0% { transform: translateX(-60%); opacity: 0; } 18% { opacity: 1; } 62% { transform: translateX(60%); opacity: 1; } 100% { transform: translateX(60%); opacity: 0; } }
+.atelier-world-cathedral-light .atelier-world-art { background: linear-gradient(200deg, #3a2440 0%, #241628 70%); }
+.atelier-world-shaft { position: absolute; top: -10%; width: clamp(40px, 6vw, 90px); height: 130%; background: linear-gradient(180deg, rgba(255,241,214,.34), rgba(255,241,214,0) 78%); transform: skewX(-14deg); filter: blur(6px); animation: atelier-shaft-breathe 8s var(--ds-ease-cinematic) infinite alternate; }
+.atelier-world-shaft-a { inset: 8% auto auto 24%; }
+.atelier-world-shaft-b { inset: 8% auto auto 52%; animation-delay: 2.6s; }
+@keyframes atelier-shaft-breathe { from { opacity: .55; } to { opacity: 1; } }
+@media (max-width: 1024px) {
+  .atelier-world .atelier-world-art, .atelier-world .atelier-world-copy { order: 0; }
+  .atelier-hero-ring { display: none; }
+}
+@media (max-width: 768px) {
+  .atelier-hero-veil-c { display: none; }
+  .atelier-world-list { gap: 20px; }
+}
+
+
+/* ==== Wave B — calm-ops layer (dashboard + admin) ====
+   Ops register: aubergine ink, gold only where it matters, tabular
+   numerals, no rose. New DS primitives (Toast/Skeleton/Empty) live here.
+   Easings via --ds-ease-* only; the reduced-motion closer flattens all. */
+.ui-toast-stack { position: fixed; z-index: 90; inset: auto auto 18px 18px; display: grid; gap: 10px; pointer-events: none; }
+[dir="rtl"] .ui-toast-stack { inset: auto 18px 18px auto; }
+.ui-toast { min-height: 44px; display: flex; align-items: center; padding: 10px 16px; border-radius: var(--ds-radius-md); background: var(--atelier-aubergine); color: #fff; box-shadow: 0 14px 34px rgba(30,22,30,.28); font-size: 13px; font-weight: 600; animation: ui-toast-in .32s var(--ds-ease-out); pointer-events: auto; }
+.ui-toast-success { background: #3d5238; }
+.ui-toast-error { background: #7c3a3a; }
+@keyframes ui-toast-in { from { opacity: 0; transform: translateY(10px); } }
+.ui-skeleton { display: block; width: 100%; background: rgba(67,40,70,.09); animation: ui-skeleton-pulse 1.6s var(--ds-ease-out) infinite; }
+@keyframes ui-skeleton-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+.ui-skeleton-block { display: grid; gap: 10px; padding: 14px 0; }
+.ui-skeleton-short { width: 55%; }
+.ui-empty { display: grid; justify-items: center; gap: 8px; padding: clamp(28px, 4vw, 56px); text-align: center; color: var(--atelier-aubergine-soft); }
+.ui-empty-icon { font-size: 30px; line-height: 1; opacity: .75; }
+.ui-empty b { color: var(--atelier-aubergine); font-size: 16px; }
+.ui-empty p { margin: 0; max-width: 46ch; font-size: 13px; line-height: 1.7; }
+.ui-empty-action { margin-top: 6px; }
+.rsvp-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; border: 1px solid var(--atelier-line); border-radius: var(--ds-radius-md); overflow: hidden; background: var(--atelier-line); }
+.rsvp-strip-item { display: grid; gap: 2px; align-content: center; justify-items: start; min-height: 96px; padding: 18px 20px; background: #fff; }
+.rsvp-strip-item b { font: 700 clamp(28px, 3vw, 40px)/1 var(--font-ui); font-variant-numeric: tabular-nums; color: var(--atelier-aubergine); }
+.rsvp-strip-item small { font-size: 11px; color: var(--atelier-aubergine-soft); font-weight: 650; }
+.rsvp-strip-item.is-yes b { color: #8a6d1f; }
+.rsvp-strip-item.is-yes { background: linear-gradient(180deg, #fff, #fdf9ef); }
+.view-dashboard :is(.stat-grid b,.segment-stat-values b,.donut b,.legend b,.follow-up-strip b,.audience-grid b,.message-priority b), .view-admin :is(.admin-stat-grid b,.report-funnel b,.report-summary span,.admin-health b,.admin-payment-meta dd,.queue-chip b,.template-count) { font-variant-numeric: tabular-nums; }
+.view-dashboard .stat-icon.rose { background: #efe7f3; color: #6d5a75; }
+.view-dashboard .filters button, .view-dashboard .guest-operations button, .view-dashboard .list-actions button, .view-dashboard .guest-actions button { min-height: 44px; }
+.admin-queue-summary { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+.queue-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 14px; border: 1px solid var(--atelier-line); border-radius: 999px; background: #fff; font-size: 12px; font-weight: 650; color: var(--atelier-aubergine-soft); }
+.queue-chip b { color: var(--atelier-aubergine); font-size: 14px; }
+.queue-chip.is-pending { border-color: #d8b46a; background: #fbf5e7; }
+.queue-chip.is-pending b { color: #8a6d1f; }
+.queue-chip.is-approved b { color: #4c6142; }
+.queue-chip.is-rejected b { color: #8a4444; }
+.admin-payment-card:has(.admin-receipt-figure) { display: grid; grid-template-columns: minmax(0, 1fr) 200px; column-gap: 18px; }
+.admin-payment-card:has(.admin-receipt-figure) > .admin-payment-meta { grid-column: 1; }
+.admin-payment-card:has(.admin-receipt-figure) > .admin-receipt-figure { grid-column: 2; grid-row: 2 / span 3; align-self: start; }
+.admin-receipt-figure { display: grid; gap: 6px; justify-items: center; padding: 8px; border: 1px solid var(--atelier-line); border-radius: var(--ds-radius-sm); background: #fff; }
+.admin-receipt-figure img { width: 100%; height: auto; max-height: 230px; object-fit: contain; }
+.admin-receipt-figure small { font-size: 11px; color: #6d5a75; font-weight: 650; }
+@media (max-width: 768px) {
+  .rsvp-strip { grid-template-columns: repeat(2, 1fr); }
+  .rsvp-strip-item { min-height: 76px; padding: 14px 16px; }
+  .rsvp-strip-item.is-seats { grid-column: span 2; }
+  .admin-payment-card:has(.admin-receipt-figure) { grid-template-columns: 1fr; }
+  .admin-payment-card:has(.admin-receipt-figure) > .admin-receipt-figure { grid-column: auto; grid-row: auto; justify-self: center; width: min(220px, 70%); }
 }
 
 /* ==== Wave C — authored invitation worlds 13–18 ====
