@@ -15,6 +15,7 @@ export const invitationConceptCodes = [
   "arabesque-gold",
   "linen-minimal",
   "oud-night",
+  "palm-oasis",
 ] as const;
 
 export type InvitationConcept = (typeof invitationConceptCodes)[number];
@@ -81,6 +82,9 @@ const invitationConceptByName: Record<string, InvitationConcept> = {
   "ليل العود": "oud-night",
   "ليلة العود": "oud-night",
   "Oud Night": "oud-night",
+  "واحة النخيل": "palm-oasis",
+  "ظل النخيل": "palm-oasis",
+  "Palm Oasis": "palm-oasis",
 };
 
 export function resolveInvitationConcept(templateName: string): InvitationConcept {

@@ -73,6 +73,9 @@ const publicTemplateArt: Record<string, TemplateArt> = {
   "ليل العود": "royal",
   "ليلة العود": "royal",
   "Oud Night": "royal",
+  "واحة النخيل": "botanical",
+  "ظل النخيل": "botanical",
+  "Palm Oasis": "botanical",
 };
 
 function escapeCalendarText(value: string) {
@@ -99,6 +102,7 @@ const conceptLqipStops: Record<string, [string, string]> = {
   "arabesque-gold": ["#171012", "#33251a"],
   "linen-minimal": ["#f1eee6", "#faf8f2"],
   "oud-night": ["#191014", "#3a2418"],
+  "palm-oasis": ["#c2d6a8", "#eef3e0"],
 };
 
 function conceptLqip(concept: string) {

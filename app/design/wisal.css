@@ -3123,3 +3123,30 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .invite-concept-oud-night :is(.invite-schedule>h2,.rsvp-card h2) { color: #c98d4f; }
 .opening-concept-oud-night { background: repeating-linear-gradient(90deg, rgba(201,141,79,.06) 0 1px, transparent 1px 9px), radial-gradient(70% 55% at 50% 80%, rgba(176,118,60,.25), transparent 75%), linear-gradient(180deg, #1d1216, #100a0c); }
 .opening-concept-oud-night.is-opening :is(.opening-envelope,.opening-card) { animation: atelier-seal-break .9s var(--ds-ease-cinematic) both; }
+/* --- 17 · Palm Oasis (واحة النخيل) — hero world: warm palm green, dappled
+   sun through fronds (soft radial shade spots), daylight-fresh and light.
+   Botanical art → signature-invite-hero; cover photo stays the top layer. --- */
+.public-invite[class*="invite-concept-"].invite-concept-palm-oasis {
+  --ci-bg:#2c4029; --ci-paper:#f2f6e8; --ci-ink:#22301c; --ci-muted:#5d7150; --ci-accent:#5d7a45; --ci-dark:#1b2a19; --ci-action-text:#f2f6e8;
+  --atelier-cream:#eef3e0; --atelier-paper:#f2f6e8; --atelier-oxblood:#3f5c33; --atelier-ink:#22301c; --atelier-gold:#8a6d3b; --atelier-muted:#5d7150;
+  --atelier-dark:#1b2a19; --atelier-action:#3f5c33; --atelier-action-ink:#f2f6e8; --atelier-action-hover:#54763f; --atelier-border:rgba(63,92,51,.26); --atelier-focus:#3f5c33;
+  --invite-accent:#f2f6e8;
+}
+.invite-concept-palm-oasis .signature-invite-hero {
+  background:
+    radial-gradient(22% 30% at 18% 14%, rgba(255,244,200,.34), transparent 70%),
+    radial-gradient(16% 22% at 82% 10%, rgba(27,42,25,.4), transparent 72%),
+    radial-gradient(14% 18% at 64% 22%, rgba(27,42,25,.26), transparent 70%),
+    radial-gradient(120% 42% at 50% 112%, rgba(31,48,28,.4), transparent 72%),
+    linear-gradient(180deg, #d7e5bd 0%, #b9cf9d 52%, #8fae72 100%);
+}
+.public-invite[class*="invite-concept-"].invite-concept-palm-oasis .signature-copy { color: #22301c; }
+.public-invite[class*="invite-concept-"].invite-concept-palm-oasis .signature-copy h1 { color: #22301c; }
+.invite-concept-palm-oasis .guest-content { background: #eef3e0; }
+.invite-concept-palm-oasis :is(.invite-message,.countdown-card,.event-details article,.rsvp-card,.segment-rsvp-list>section) { background: #f2f6e8; color: #2a3a24; border-color: rgba(63,92,51,.26); }
+.invite-concept-palm-oasis :is(.invite-schedule>h2,.rsvp-card h2) { color: #3f5c33; }
+.opening-concept-palm-oasis { background: radial-gradient(circle at 24% 18%, rgba(255,244,200,.5) 0 6%, transparent 6.5%), linear-gradient(165deg, #d7e5bd, #8fae72); }
+.opening-concept-palm-oasis.is-opening :is(.opening-envelope,.opening-card) { animation: atelier-garden-bloom .9s var(--ds-ease-cinematic) both; }
+@media (max-width: 768px) {
+  .invite-concept-palm-oasis .signature-copy { border: 1px solid rgba(63,92,51,.3); border-radius: 220px 220px 10px 10px; background: rgba(242,246,232,.88); box-shadow: 0 24px 70px rgba(31,48,28,.24); }
+}
