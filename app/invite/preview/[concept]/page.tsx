@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import InvitationClient, { type InvitationData } from "@/app/invite/[slug]/InvitationClient";
 import type { InvitationConcept } from "@/lib/invitation-concepts";
 
@@ -15,6 +16,12 @@ const previewConceptCodes = [
   "velvet-night",
   "coastal-breeze",
   "modern-monogram",
+  "nile-moon",
+  "arabesque-gold",
+  "linen-minimal",
+  "oud-night",
+  "palm-oasis",
+  "mirage-blush",
 ] as const satisfies readonly InvitationConcept[];
 type PreviewConcept = (typeof previewConceptCodes)[number];
 
@@ -31,13 +38,24 @@ const templates: Record<PreviewConcept, { name: string; accent: string; layout: 
   "velvet-night": { name: "Velvet Première", accent: "plum", layout: "cinematic" },
   "coastal-breeze": { name: "Barefoot Vows", accent: "blue", layout: "classic" },
   "modern-monogram": { name: "Noor Monogram", accent: "plum", layout: "classic" },
+  "nile-moon": { name: "Nile Moon", accent: "blue", layout: "cinematic" },
+  "arabesque-gold": { name: "Arabesque Gold", accent: "sand", layout: "classic" },
+  "linen-minimal": { name: "Linen Minimal", accent: "plum", layout: "story" },
+  "oud-night": { name: "Oud Night", accent: "sand", layout: "classic" },
+  "palm-oasis": { name: "Palm Oasis", accent: "sage", layout: "story" },
+  "mirage-blush": { name: "Mirage Blush", accent: "sand", layout: "story" },
 };
 
 export const dynamic = "force-static";
 
-export const metadata = {
-  robots: { index: false, follow: false, googleBot: { index: false, follow: false, noimageindex: true } },
-};
+export async function generateMetadata({ params }: { params: Promise<{ concept: string }> }): Promise<Metadata> {
+  const { concept } = await params;
+  return {
+    robots: { index: false, follow: false, googleBot: { index: false, follow: false, noimageindex: true } },
+    openGraph: { images: [`/invite/preview/${concept}/og-image`] },
+    twitter: { images: [`/invite/preview/${concept}/og-image`] },
+  };
+}
 
 export function generateStaticParams() {
   return previewConceptCodes.map((concept) => ({ concept }));

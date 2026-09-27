@@ -61,6 +61,24 @@ const publicTemplateArt: Record<string, TemplateArt> = {
   "ليلة مخملية": "cinematic",
   "العرض المخملي": "cinematic",
   "Velvet Première": "cinematic",
+  "قمر النيل": "cinematic",
+  "ليلة القمر": "cinematic",
+  "Nile Moon": "cinematic",
+  "أرابيسك ذهبي": "arabic",
+  "زخرفة ذهبية": "arabic",
+  "Arabesque Gold": "arabic",
+  "كتان نقي": "minimal",
+  "كتان مصري": "minimal",
+  "Linen Minimal": "minimal",
+  "ليل العود": "royal",
+  "ليلة العود": "royal",
+  "Oud Night": "royal",
+  "واحة النخيل": "botanical",
+  "ظل النخيل": "botanical",
+  "Palm Oasis": "botanical",
+  "سراب بلاش": "editorial",
+  "أفق بلاش": "editorial",
+  "Mirage Blush": "editorial",
 };
 
 function escapeCalendarText(value: string) {
@@ -83,6 +101,12 @@ const conceptLqipStops: Record<string, [string, string]> = {
   "velvet-night": ["#12080c", "#231218"],
   "coastal-breeze": ["#cfe3e6", "#edf2ec"],
   "modern-monogram": ["#101615", "#18201e"],
+  "nile-moon": ["#0c1526", "#24405e"],
+  "arabesque-gold": ["#171012", "#33251a"],
+  "linen-minimal": ["#f1eee6", "#faf8f2"],
+  "oud-night": ["#191014", "#3a2418"],
+  "palm-oasis": ["#c2d6a8", "#eef3e0"],
+  "mirage-blush": ["#ecc9ba", "#f6e4da"],
 };
 
 function conceptLqip(concept: string) {

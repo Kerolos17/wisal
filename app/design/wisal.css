@@ -3123,3 +3123,166 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .admin-payment-card:has(.admin-receipt-figure) { grid-template-columns: 1fr; }
   .admin-payment-card:has(.admin-receipt-figure) > .admin-receipt-figure { grid-column: auto; grid-row: auto; justify-self: center; width: min(220px, 70%); }
 }
+
+/* ==== Wave C — authored invitation worlds 13–18 ====
+   Same contract as the signed nine: flat authored color, one accent,
+   --guest-photo stays the top layer, easings via --ds-ease-* only,
+   mobile overrides at 768, flattened by the reduced-motion closer. */
+
+/* --- 13 · Nile Moon (قمر النيل) — cinematic hero: ink-blue night, a gold
+   moon over still water, rippled light at the waterline.
+   Token stacks ride a (0,3,0) selector so they win the shared
+   .public-invite[class*="invite-concept-"] aliases (0,2,0) on cascade order. --- */
+.public-invite[class*="invite-concept-"].invite-concept-nile-moon {
+  --ci-bg:#0a1224; --ci-paper:#16253f; --ci-ink:#f2ecd9; --ci-muted:#b9c4d8; --ci-accent:#e3cf92; --ci-dark:#0a1224; --ci-action-text:#0a1224;
+  --atelier-cream:#0f1a2e; --atelier-paper:#16253f; --atelier-oxblood:#e3cf92; --atelier-ink:#f2ecd9; --atelier-gold:#e3cf92; --atelier-muted:#b9c4d8;
+  --atelier-dark:#081222; --atelier-action:#e3cf92; --atelier-action-ink:#0a1224; --atelier-action-hover:#f4e6b8; --atelier-border:rgba(227,207,146,.26); --atelier-focus:#e3cf92;
+  --invite-accent:#e3cf92;
+}
+.invite-concept-nile-moon .signature-invite-hero {
+  background:
+    radial-gradient(circle 96px at 76% 16%, rgba(244,230,184,.22), rgba(244,230,184,0) 70%),
+    radial-gradient(circle 40px at 76% 16%, #f6e9bd 0 76%, rgba(246,233,189,0) 100%),
+    radial-gradient(120% 46% at 50% 108%, rgba(116,158,214,.34), rgba(116,158,214,0) 70%),
+    repeating-linear-gradient(180deg, rgba(148,180,215,.12) 0 2px, rgba(148,180,215,0) 2px 10px) 0 100% / 100% 30% no-repeat,
+    linear-gradient(180deg, #0a1224 0%, #13223c 58%, #1c3150 100%);
+}
+.invite-concept-nile-moon .signature-copy { color: #f2ecd9; }
+.invite-concept-nile-moon .signature-copy h1 { color: #f4e6b8; }
+.invite-concept-nile-moon .guest-content { background: #0f1a2e; }
+.invite-concept-nile-moon :is(.invite-message,.countdown-card,.event-details article,.rsvp-card,.segment-rsvp-list>section) { background: #16253f; color: #e9ecf5; border-color: rgba(227,207,146,.26); }
+.invite-concept-nile-moon :is(.invite-schedule>h2,.rsvp-card h2) { color: #e3cf92; }
+.opening-concept-nile-moon { background: radial-gradient(circle at 70% 18%, #f0e2b0 0 5%, transparent 5.5%), linear-gradient(160deg, #16263f, #0a1224); }
+.opening-concept-nile-moon.is-opening :is(.opening-envelope,.opening-card) { animation: atelier-nile-rise .9s var(--ds-ease-cinematic) both; }
+@keyframes atelier-nile-rise { from { opacity: 0; transform: translateY(26px) scale(.97); } }
+@media (max-width: 768px) {
+  .invite-concept-nile-moon .signature-copy { border: 1px solid rgba(227,207,146,.38); border-radius: 220px 220px 10px 10px; background: linear-gradient(180deg, rgba(13,22,40,.44), rgba(13,22,40,.82)); box-shadow: 0 24px 70px rgba(4,8,18,.45); }
+}
+/* --- 14 · Arabesque Gold (أرابيسك ذهبي) — cover world: dark plum-brown
+   ground under a gold hairline lattice (crossed 45° weaves), a double
+   hairline frame, and gold action surfaces. Cover photo stays the top
+   layer via --guest-photo when present. --- */
+.public-invite[class*="invite-concept-"].invite-concept-arabesque-gold {
+  --ci-bg:#171012; --ci-paper:#201619; --ci-ink:#f4ead8; --ci-muted:#c9b49a; --ci-accent:#c9a24f; --ci-dark:#0d090a; --ci-action-text:#1c1207;
+  --atelier-cream:#171012; --atelier-paper:#201619; --atelier-oxblood:#c9a24f; --atelier-ink:#f4ead8; --atelier-gold:#c9a24f; --atelier-muted:#c9b49a;
+  --atelier-dark:#0d090a; --atelier-action:#c9a24f; --atelier-action-ink:#1c1207; --atelier-action-hover:#e0bd6b; --atelier-border:rgba(201,162,79,.3); --atelier-focus:#c9a24f;
+  --invite-accent:#c9a24f;
+}
+.public-invite[class*="invite-concept-"].invite-concept-arabesque-gold .guest-cover:not(.with-cover) {
+  background-image:
+    repeating-linear-gradient(45deg, rgba(201,162,79,.13) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(-45deg, rgba(201,162,79,.13) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(45deg, rgba(201,162,79,.06) 0 1px, transparent 1px 44px),
+    repeating-linear-gradient(-45deg, rgba(201,162,79,.06) 0 1px, transparent 1px 44px),
+    radial-gradient(80% 60% at 50% 26%, rgba(201,162,79,.14), transparent 70%),
+    linear-gradient(180deg, #1c1215 0%, #120c0e 100%) !important;
+  box-shadow: inset 0 0 0 1px rgba(201,162,79,.42), inset 0 0 0 9px #171012, inset 0 0 0 10px rgba(201,162,79,.28);
+}
+.invite-concept-arabesque-gold .guest-content { background: #171012; }
+.invite-concept-arabesque-gold :is(.invite-message,.countdown-card,.event-details article,.rsvp-card,.segment-rsvp-list>section) { background: #201619; color: #f0e6d4; border-color: rgba(201,162,79,.3); }
+.invite-concept-arabesque-gold :is(.invite-schedule>h2,.rsvp-card h2) { color: #c9a24f; }
+.opening-concept-arabesque-gold { background: repeating-linear-gradient(45deg, rgba(201,162,79,.12) 0 1px, transparent 1px 20px), repeating-linear-gradient(-45deg, rgba(201,162,79,.12) 0 1px, transparent 1px 20px), linear-gradient(180deg, #1c1215, #0d090a); }
+.opening-concept-arabesque-gold.is-opening :is(.opening-envelope,.opening-card) { animation: atelier-seal-break .9s var(--ds-ease-cinematic) both; }
+/* --- 15 · Linen Minimal (كتان نقي) — cover world: Egyptian cotton ivory,
+   woven-thread texture, oversized black editorial type, hairline rules. --- */
+.public-invite[class*="invite-concept-"].invite-concept-linen-minimal {
+  --ci-bg:#f5f2ea; --ci-paper:#fffdf7; --ci-ink:#171513; --ci-muted:#6d675f; --ci-accent:#171513; --ci-dark:#0d0c0a; --ci-action-text:#f5f2ea;
+  --atelier-cream:#f5f2ea; --atelier-paper:#fffdf7; --atelier-oxblood:#171513; --atelier-ink:#171513; --atelier-gold:#8a6d3b; --atelier-muted:#6d675f;
+  --atelier-dark:#0d0c0a; --atelier-action:#171513; --atelier-action-ink:#f5f2ea; --atelier-action-hover:#33302b; --atelier-border:rgba(23,21,19,.18); --atelier-focus:#171513;
+  --invite-accent:#171513;
+}
+.public-invite[class*="invite-concept-"].invite-concept-linen-minimal .guest-cover:not(.with-cover) {
+  background-image:
+    repeating-linear-gradient(0deg, rgba(23,21,19,.025) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(23,21,19,.02) 0 1px, transparent 1px 3px),
+    radial-gradient(70% 50% at 50% 22%, rgba(255,255,255,.55), transparent 70%),
+    linear-gradient(180deg, #f7f4ec 0%, #efebe0 100%) !important;
+  box-shadow: inset 0 0 0 1px rgba(23,21,19,.2);
+}
+.public-invite[class*="invite-concept-"].invite-concept-linen-minimal .guest-cover h1 { color: #171513; font-size: clamp(52px, 9vw, 96px); letter-spacing: -.03em; }
+.public-invite[class*="invite-concept-"].invite-concept-linen-minimal .guest-cover :is(small, i, span) { color: #55504a; }
+.public-invite[class*="invite-concept-"].invite-concept-linen-minimal .guest-cover .guest-date { background: #fffdf7; color: #26231f; border: 1px solid rgba(23,21,19,.18); backdrop-filter: none; }
+.public-invite[class*="invite-concept-"].invite-concept-linen-minimal .guest-cover .scroll-hint { color: #55504a; }
+.invite-concept-linen-minimal .guest-content { background: #f5f2ea; }
+.invite-concept-linen-minimal :is(.invite-message,.countdown-card,.event-details article,.rsvp-card,.segment-rsvp-list>section) { background: #fffdf7; color: #26231f; border-color: rgba(23,21,19,.16); }
+.invite-concept-linen-minimal :is(.invite-schedule>h2,.rsvp-card h2) { color: #171513; }
+.opening-concept-linen-minimal { background: repeating-linear-gradient(0deg, rgba(23,21,19,.03) 0 1px, transparent 1px 3px), linear-gradient(180deg, #f7f4ec, #efebe0); }
+.opening-concept-linen-minimal .opening-envelope, .opening-concept-linen-minimal .opening-card { border-color: rgba(23,21,19,.4); }
+.opening-concept-linen-minimal.is-opening :is(.opening-envelope,.opening-card) { animation: atelier-still-lift .9s var(--ds-ease-cinematic) both; }
+/* --- 16 · Oud Night (ليل العود) — cover world: deep oud-brown night,
+   fine vertical wood grain, a low copper glow, warm brass surfaces. --- */
+.public-invite[class*="invite-concept-"].invite-concept-oud-night {
+  --ci-bg:#191014; --ci-paper:#241619; --ci-ink:#f0e2d2; --ci-muted:#c2a892; --ci-accent:#b0763c; --ci-dark:#100a0c; --ci-action-text:#1a0f06;
+  --atelier-cream:#191014; --atelier-paper:#241619; --atelier-oxblood:#b0763c; --atelier-ink:#f0e2d2; --atelier-gold:#c98d4f; --atelier-muted:#c2a892;
+  --atelier-dark:#100a0c; --atelier-action:#b0763c; --atelier-action-ink:#1a0f06; --atelier-action-hover:#c98d4f; --atelier-border:rgba(176,118,60,.32); --atelier-focus:#b0763c;
+  --invite-accent:#b0763c;
+}
+.public-invite[class*="invite-concept-"].invite-concept-oud-night .guest-cover:not(.with-cover) {
+  background-image:
+    repeating-linear-gradient(90deg, rgba(201,141,79,.05) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(90deg, rgba(0,0,0,.16) 0 2px, transparent 2px 23px),
+    radial-gradient(75% 55% at 50% 78%, rgba(176,118,60,.22), transparent 72%),
+    linear-gradient(180deg, #1d1216 0%, #120b0e 100%) !important;
+  box-shadow: inset 0 0 0 1px rgba(176,118,60,.4), inset 0 0 0 8px #191014, inset 0 0 0 9px rgba(176,118,60,.26);
+}
+.public-invite[class*="invite-concept-"].invite-concept-oud-night .guest-cover h1 { color: #f0e2d2; }
+.public-invite[class*="invite-concept-"].invite-concept-oud-night .guest-cover :is(small, i, span) { color: #c2a892; }
+.public-invite[class*="invite-concept-"].invite-concept-oud-night .guest-cover .guest-date { background: rgba(36,22,25,.9); color: #f0e2d2; border: 1px solid rgba(176,118,60,.36); backdrop-filter: none; }
+.invite-concept-oud-night .guest-content { background: #191014; }
+.invite-concept-oud-night :is(.invite-message,.countdown-card,.event-details article,.rsvp-card,.segment-rsvp-list>section) { background: #241619; color: #efe1d1; border-color: rgba(176,118,60,.3); }
+.invite-concept-oud-night :is(.invite-schedule>h2,.rsvp-card h2) { color: #c98d4f; }
+.opening-concept-oud-night { background: repeating-linear-gradient(90deg, rgba(201,141,79,.06) 0 1px, transparent 1px 9px), radial-gradient(70% 55% at 50% 80%, rgba(176,118,60,.25), transparent 75%), linear-gradient(180deg, #1d1216, #100a0c); }
+.opening-concept-oud-night.is-opening :is(.opening-envelope,.opening-card) { animation: atelier-seal-break .9s var(--ds-ease-cinematic) both; }
+/* --- 17 · Palm Oasis (واحة النخيل) — hero world: warm palm green, dappled
+   sun through fronds (soft radial shade spots), daylight-fresh and light.
+   Botanical art → signature-invite-hero; cover photo stays the top layer. --- */
+.public-invite[class*="invite-concept-"].invite-concept-palm-oasis {
+  --ci-bg:#2c4029; --ci-paper:#f2f6e8; --ci-ink:#22301c; --ci-muted:#5d7150; --ci-accent:#5d7a45; --ci-dark:#1b2a19; --ci-action-text:#f2f6e8;
+  --atelier-cream:#eef3e0; --atelier-paper:#f2f6e8; --atelier-oxblood:#3f5c33; --atelier-ink:#22301c; --atelier-gold:#8a6d3b; --atelier-muted:#5d7150;
+  --atelier-dark:#1b2a19; --atelier-action:#3f5c33; --atelier-action-ink:#f2f6e8; --atelier-action-hover:#54763f; --atelier-border:rgba(63,92,51,.26); --atelier-focus:#3f5c33;
+  --invite-accent:#f2f6e8;
+}
+.invite-concept-palm-oasis .signature-invite-hero {
+  background:
+    radial-gradient(22% 30% at 18% 14%, rgba(255,244,200,.34), transparent 70%),
+    radial-gradient(16% 22% at 82% 10%, rgba(27,42,25,.4), transparent 72%),
+    radial-gradient(14% 18% at 64% 22%, rgba(27,42,25,.26), transparent 70%),
+    radial-gradient(120% 42% at 50% 112%, rgba(31,48,28,.4), transparent 72%),
+    linear-gradient(180deg, #d7e5bd 0%, #b9cf9d 52%, #8fae72 100%);
+}
+.public-invite[class*="invite-concept-"].invite-concept-palm-oasis .signature-copy { color: #22301c; }
+.public-invite[class*="invite-concept-"].invite-concept-palm-oasis .signature-copy h1 { color: #22301c; }
+.invite-concept-palm-oasis .guest-content { background: #eef3e0; }
+.invite-concept-palm-oasis :is(.invite-message,.countdown-card,.event-details article,.rsvp-card,.segment-rsvp-list>section) { background: #f2f6e8; color: #2a3a24; border-color: rgba(63,92,51,.26); }
+.invite-concept-palm-oasis :is(.invite-schedule>h2,.rsvp-card h2) { color: #3f5c33; }
+.opening-concept-palm-oasis { background: radial-gradient(circle at 24% 18%, rgba(255,244,200,.5) 0 6%, transparent 6.5%), linear-gradient(165deg, #d7e5bd, #8fae72); }
+.opening-concept-palm-oasis.is-opening :is(.opening-envelope,.opening-card) { animation: atelier-garden-bloom .9s var(--ds-ease-cinematic) both; }
+@media (max-width: 768px) {
+  .invite-concept-palm-oasis .signature-copy { border: 1px solid rgba(63,92,51,.3); border-radius: 220px 220px 10px 10px; background: rgba(242,246,232,.88); box-shadow: 0 24px 70px rgba(31,48,28,.24); }
+}
+/* --- 18 · Mirage Blush (سراب بلاش) — hero world: soft sand-to-blush sunset
+   haze, a low warm sun mirage on the horizon, romance without the rose.
+   Editorial art → signature-invite-hero; cover photo stays the top layer. --- */
+.public-invite[class*="invite-concept-"].invite-concept-mirage-blush {
+  --ci-bg:#e9c4b4; --ci-paper:#fdf6ef; --ci-ink:#4c2f31; --ci-muted:#8a6560; --ci-accent:#a26362; --ci-dark:#3a2224; --ci-action-text:#fdf6ef;
+  --atelier-cream:#f6e4da; --atelier-paper:#fdf6ef; --atelier-oxblood:#a26362; --atelier-ink:#4c2f31; --atelier-gold:#b98f4c; --atelier-muted:#8a6560;
+  --atelier-dark:#3a2224; --atelier-action:#a26362; --atelier-action-ink:#fdf6ef; --atelier-action-hover:#8f5254; --atelier-border:rgba(162,99,98,.28); --atelier-focus:#a26362;
+  --invite-accent:#fdf6ef;
+}
+.invite-concept-mirage-blush .signature-invite-hero {
+  background:
+    radial-gradient(26% 18% at 50% 74%, rgba(255,236,208,.75), rgba(255,236,208,0) 72%),
+    radial-gradient(46% 12% at 50% 76%, rgba(211,138,120,.34), transparent 74%),
+    repeating-linear-gradient(180deg, rgba(162,99,98,.05) 0 2px, rgba(162,99,98,0) 2px 26px) 0 68% / 100% 30% no-repeat,
+    linear-gradient(180deg, #f6ddcf 0%, #eec0ae 48%, #dda49b 74%, #d1948f 100%);
+}
+.public-invite[class*="invite-concept-"].invite-concept-mirage-blush .signature-copy { color: #4c2f31; }
+.public-invite[class*="invite-concept-"].invite-concept-mirage-blush .signature-copy h1 { color: #4c2f31; }
+.invite-concept-mirage-blush .guest-content { background: #f6e4da; }
+.invite-concept-mirage-blush :is(.invite-message,.countdown-card,.event-details article,.rsvp-card,.segment-rsvp-list>section) { background: #fdf6ef; color: #55383a; border-color: rgba(162,99,98,.28); }
+.invite-concept-mirage-blush :is(.invite-schedule>h2,.rsvp-card h2) { color: #a26362; }
+.opening-concept-mirage-blush { background: radial-gradient(circle at 50% 70%, rgba(255,236,208,.8) 0 8%, transparent 9%), linear-gradient(180deg, #f6ddcf, #d1948f); }
+.opening-concept-mirage-blush.is-opening :is(.opening-envelope,.opening-card) { animation: atelier-editorial-fold .9s var(--ds-ease-cinematic) both; }
+@media (max-width: 768px) {
+  .invite-concept-mirage-blush .signature-copy { border: 1px solid rgba(162,99,98,.3); border-radius: 220px 220px 10px 10px; background: rgba(253,246,239,.86); box-shadow: 0 24px 70px rgba(90,50,50,.2); }
+}

@@ -1,5 +1,5 @@
 import { chromium } from '@playwright/test';
-const worlds = ['love-poem','garden-night','moonlight','golden-vows','white-story','cinema-night','rose-garden','cathedral-light','desert-sunset','velvet-night','coastal-breeze','modern-monogram'];
+const worlds = ['love-poem','garden-night','moonlight','golden-vows','white-story','cinema-night','rose-garden','cathedral-light','desert-sunset','velvet-night','coastal-breeze','modern-monogram','nile-moon','arabesque-gold','linen-minimal','oud-night','palm-oasis','mirage-blush'];
 const only = process.argv[2] ? process.argv[2].split(',') : worlds;
 const b = await chromium.launch();
 for (const c of only) {

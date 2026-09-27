@@ -11,6 +11,12 @@ export const invitationConceptCodes = [
   "velvet-night",
   "coastal-breeze",
   "modern-monogram",
+  "nile-moon",
+  "arabesque-gold",
+  "linen-minimal",
+  "oud-night",
+  "palm-oasis",
+  "mirage-blush",
 ] as const;
 
 export type InvitationConcept = (typeof invitationConceptCodes)[number];
@@ -65,6 +71,24 @@ const invitationConceptByName: Record<string, InvitationConcept> = {
   "حروف النور": "modern-monogram",
   "Modern Monogram": "modern-monogram",
   "Noor Monogram": "modern-monogram",
+  "قمر النيل": "nile-moon",
+  "ليلة القمر": "nile-moon",
+  "Nile Moon": "nile-moon",
+  "أرابيسك ذهبي": "arabesque-gold",
+  "زخرفة ذهبية": "arabesque-gold",
+  "Arabesque Gold": "arabesque-gold",
+  "كتان نقي": "linen-minimal",
+  "كتان مصري": "linen-minimal",
+  "Linen Minimal": "linen-minimal",
+  "ليل العود": "oud-night",
+  "ليلة العود": "oud-night",
+  "Oud Night": "oud-night",
+  "واحة النخيل": "palm-oasis",
+  "ظل النخيل": "palm-oasis",
+  "Palm Oasis": "palm-oasis",
+  "سراب بلاش": "mirage-blush",
+  "أفق بلاش": "mirage-blush",
+  "Mirage Blush": "mirage-blush",
 };
 
 export function resolveInvitationConcept(templateName: string): InvitationConcept {
