@@ -1,16 +1,20 @@
 "use client";
 
-import { lazy, Suspense, useCallback, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
+import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import { Bell, CircleCheckBig, CircleDashed, Eye, Headphones, History, House, LayoutDashboard, LayoutTemplate, ListChecks, MessageSquareText, Palette, Rocket, Send, Settings, UsersRound } from "lucide-react";
 import { type Locale, dateLocale, useWisalLocale, AR_DATE_LOCALE } from "./use-wisal-locale";
 import { isPremiumTemplateCode } from "@/lib/template-entitlements";
+import { message } from "./messages";
 import { Button } from "./components/ui/Button";
 
 const AdminDashboard = lazy(() => import("./admin-dashboard"));
 const AccountCenter = lazy(() => import("./account-center"));
+const AtelierHeroRing = dynamic(() => import("./atelier-hero-ring"), { ssr: false });
 
 type View = "home" | "studio" | "guest" | "dashboard" | "admin";
 type DataState = "loading" | "ready" | "empty" | "error";
@@ -659,20 +663,64 @@ function Landing({ locale, plans, catalogState, templates, content, onStart, onG
   const [previewTemplateCode, setPreviewTemplateCode] = useState("love-poem");
   const previewTemplate = showcaseTemplates.find((template) => template.code === previewTemplateCode) ?? showcaseTemplates[0];
   const previewDirection = atelierDirections[previewTemplate?.code as keyof typeof atelierDirections];
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [ringReady, setRingReady] = useState(false);
+
+  // The signature ring is decorative and heavy: mount it after the page is
+  // idle so the headline stays the LCP element, with the CSS ring showing
+  // until then (and permanently for reduced motion / no WebGL).
+  useEffect(() => {
+    let cancelled = false;
+    const idle = window.requestIdleCallback(() => { if (!cancelled) setRingReady(true); }, { timeout: 4000 });
+    return () => {
+      cancelled = true;
+      window.cancelIdleCallback(idle);
+    };
+  }, []);
+
+  // The scroll narrative (GSAP + ScrollTrigger) is client-only and loaded
+  // after first paint; reduced-motion users skip it entirely inside the module.
+  useEffect(() => {
+    let cancelled = false;
+    let stop: (() => void) | undefined;
+    const timer = window.setTimeout(() => {
+      void import("./landing-motion").then(({ initLandingMotion }) => {
+        if (cancelled || !rootRef.current) return;
+        void initLandingMotion(rootRef.current).then((cleanup) => { stop = cleanup; });
+      });
+    }, 1200);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+      stop?.();
+    };
+  }, []);
+
   return (
-    <div className="atlas-home">
+    <MotionConfig reducedMotion="user">
+      <div className="atlas-home" ref={rootRef}>
       <section className="atlas-hero">
+        <div className="atelier-hero-veil" aria-hidden="true"><i className="atelier-hero-veil-a" /><i className="atelier-hero-veil-b" /><i className="atelier-hero-veil-c" /></div>
+        {ringReady ? <AtelierHeroRing /> : <span className="atelier-hero-ring atelier-hero-ring-fallback" aria-hidden="true" />}
         <div className="atlas-hero-copy">
-          <h1>{ar ? <>دعوة تشبهكم.<br /><em>وفرحة تجمعكم.</em></> : <>Your invitation.<br /><em>Your celebration.</em></>}</h1>
-          <p className="atlas-intro">{ar ? "صمّم دعوة زفافك، شاركها مع ضيوفك، وتابع تأكيدات الحضور في مكان واحد." : "Design your wedding invitation, share it with your guests, and follow every RSVP in one place."}</p>
-          <div className="atlas-actions">
+          <p className="atelier-hero-eyebrow atelier-hero-in" style={{ "--line-i": 0 } as CSSProperties}>{message(locale, "hero_eyebrow")}</p>
+          <h1>
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span key={locale} className="atelier-hero-lines" exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.35, ease: "easeOut" }}>
+                <span className="atelier-hero-line" style={{ "--line-i": 1 } as CSSProperties}>{ar ? "دعوة تشبهكم." : "Your invitation."}</span>
+                <span className="atelier-hero-line atelier-hero-line-em" style={{ "--line-i": 3 } as CSSProperties}><em>{ar ? "وفرحة تجمعكم." : "Your celebration."}</em></span>
+              </motion.span>
+            </AnimatePresence>
+          </h1>
+          <p className="atlas-intro atelier-hero-in" style={{ "--line-i": 5 } as CSSProperties}>{ar ? "صمّم دعوة زفافك، شاركها مع ضيوفك، وتابع تأكيدات الحضور في مكان واحد." : "Design your wedding invitation, share it with your guests, and follow every RSVP in one place."}</p>
+          <div className="atelier-hero-in" style={{ "--line-i": 7 } as CSSProperties}><div className="atlas-actions">
             <Button size="lg" onClick={onStart}>{copy("hero_primary_cta", "صمّم دعوتك", "Design your invitation")} <span aria-hidden="true">{ar ? "←" : "→"}</span></Button>
             <Button size="lg" variant="ghost" onClick={() => document.getElementById("templates")?.scrollIntoView({ behavior: "smooth" })}>{ar ? "استعرض التصاميم" : "Browse designs"}</Button>
-          </div>
-          <p className="atelier-assurance"><CircleCheckBig aria-hidden="true" />{ar ? "ابدأ بالمعاينة قبل تسجيل الدخول" : "Preview first — sign in when you are ready"}</p>
+          </div></div>
+          <p className="atelier-assurance atelier-hero-in" style={{ "--line-i": 9 } as CSSProperties}><CircleCheckBig aria-hidden="true" />{ar ? "ابدأ بالمعاينة قبل تسجيل الدخول" : "Preview first — sign in when you are ready"}</p>
         </div>
 
-        <div className="atelier-stage" aria-label={ar ? "معاينة تفاعلية لتصميم دعوة رقمية" : "Interactive digital invitation preview"}>
+        <div className="atelier-stage atelier-hero-in" style={{ "--line-i": 4 } as CSSProperties} aria-label={ar ? "معاينة تفاعلية لتصميم دعوة رقمية" : "Interactive digital invitation preview"}>
           <span className="atelier-preview-label"><Eye aria-hidden="true" />{ar ? "معاينة دعوة رقمية" : "Digital invitation preview"}</span>
           <Image className="atelier-scene" src="/brand/atelier/porcelain-invitation-on-lilac-silk.png" fill priority sizes="(max-width: 760px) 100vw, 56vw" alt="" />
           <button className="atelier-main-invite" type="button" onClick={onGuest} aria-label={ar ? "افتح تجربة الدعوة" : "Open the invitation experience"}>
@@ -701,14 +749,36 @@ function Landing({ locale, plans, catalogState, templates, content, onStart, onG
           <p>{ar ? "بدل انتظار تنفيذ يدوي، يبدأ العميل من قالب حقيقي، يراجع التجربة بصريًا، ثم يكمل التفاصيل والضيوف من نفس المكان." : "Instead of waiting on manual production, couples start from a real template, preview the experience, then finish details and guests in one place."}</p>
         </div>
         <div className="atlas-advantage-grid">
-          <article><span>{ar ? "اختيار" : "Choose"}</span><b>{ar ? "معاينة قبل الاشتراك" : "Preview before signing in"}</b><p>{ar ? "كل بطاقة في المعرض تعرض هوية الدعوة نفسها، لا لونًا عامًا." : "Every gallery card shows the invitation world itself, not a generic colour tile."}</p></article>
-          <article><span>{ar ? "تخصيص" : "Edit"}</span><b>{ar ? "استوديو واحد للتفاصيل" : "One studio for the essentials"}</b><p>{ar ? "الأسماء، الموعد، الصورة، ترتيب الأقسام وتجربة الفتح كلها في مسار واضح." : "Names, date, image, section order, and the opening moment stay in one clear flow."}</p></article>
-          <article><span>{ar ? "متابعة" : "Track"}</span><b>{ar ? "الردود داخل الدعوة" : "RSVP inside the invitation"}</b><p>{ar ? "الضيف يرد من نفس الرابط، وصاحب المناسبة يرى الفتح والردود في لوحة واحدة." : "Guests answer in the same link, while the host sees opens and replies in one dashboard."}</p></article>
+          <motion.article whileHover={{ y: -4 }} transition={{ duration: 0.3, ease: "easeOut" }}><span>{ar ? "اختيار" : "Choose"}</span><b>{ar ? "معاينة قبل الاشتراك" : "Preview before signing in"}</b><p>{ar ? "كل بطاقة في المعرض تعرض هوية الدعوة نفسها، لا لونًا عامًا." : "Every gallery card shows the invitation world itself, not a generic colour tile."}</p></motion.article>
+          <motion.article whileHover={{ y: -4 }} transition={{ duration: 0.3, ease: "easeOut" }}><span>{ar ? "تخصيص" : "Edit"}</span><b>{ar ? "استوديو واحد للتفاصيل" : "One studio for the essentials"}</b><p>{ar ? "الأسماء، الموعد، الصورة، ترتيب الأقسام وتجربة الفتح كلها في مسار واضح." : "Names, date, image, section order, and the opening moment stay in one clear flow."}</p></motion.article>
+          <motion.article whileHover={{ y: -4 }} transition={{ duration: 0.3, ease: "easeOut" }}><span>{ar ? "متابعة" : "Track"}</span><b>{ar ? "الردود داخل الدعوة" : "RSVP inside the invitation"}</b><p>{ar ? "الضيف يرد من نفس الرابط، وصاحب المناسبة يرى الفتح والردود في لوحة واحدة." : "Guests answer in the same link, while the host sees opens and replies in one dashboard."}</p></motion.article>
+        </div>
+      </section>
+
+      <section className="atlas-section atelier-worlds" aria-label={message(locale, "worlds_title")}>
+        <header className="atlas-section-head atelier-worlds-head" data-motion="reveal">
+          <small className="atelier-kicker">{message(locale, "worlds_kicker")}</small>
+          <h2>{message(locale, "worlds_title")}</h2>
+          <p>{message(locale, "worlds_intro")}</p>
+        </header>
+        <div className="atelier-world-list">
+          <article className="atelier-world atelier-world-rose-garden">
+            <div className="atelier-world-art" aria-hidden="true"><i className="atelier-world-petal atelier-world-petal-a" /><i className="atelier-world-petal atelier-world-petal-b" /><i className="atelier-world-petal atelier-world-petal-c" /></div>
+            <div className="atelier-world-copy"><h3>{message(locale, "world_rose_garden_title")}</h3><p>{message(locale, "world_rose_garden_line")}</p></div>
+          </article>
+          <article className="atelier-world atelier-world-desert-sunset">
+            <div className="atelier-world-art" aria-hidden="true"><i className="atelier-world-sun" /><i className="atelier-world-sweep" /></div>
+            <div className="atelier-world-copy"><h3>{message(locale, "world_desert_sunset_title")}</h3><p>{message(locale, "world_desert_sunset_line")}</p></div>
+          </article>
+          <article className="atelier-world atelier-world-cathedral-light">
+            <div className="atelier-world-art" aria-hidden="true"><i className="atelier-world-shaft atelier-world-shaft-a" /><i className="atelier-world-shaft atelier-world-shaft-b" /></div>
+            <div className="atelier-world-copy"><h3>{message(locale, "world_cathedral_light_title")}</h3><p>{message(locale, "world_cathedral_light_line")}</p></div>
+          </article>
         </div>
       </section>
 
       <section className="atlas-section atlas-templates" id="templates">
-        <header className="atlas-section-head">
+        <header className="atlas-section-head" data-motion="reveal">
           <h2>{ar ? "اختاروا المزاج الذي يشبهكم" : "Choose the mood that feels like you"}</h2>
           <p>{ar ? "اختبروا كل عالم كدعوة حقيقية أولًا، ثم انتقلوا للتخصيص عندما تجدون الإيقاع الذي يشبهكم." : "Experience each world as a real invitation first, then move into customisation when you find the rhythm that feels like you."}</p>
         </header>
@@ -747,7 +817,7 @@ function Landing({ locale, plans, catalogState, templates, content, onStart, onG
       </section>
 
       <section className="atlas-section atlas-journey">
-        <div className="atlas-journey-intro">
+        <div className="atlas-journey-intro" data-motion="reveal">
           <h2>{ar ? "من أول اسم إلى آخر رد" : "From the first name to the final reply"}</h2>
           <p>{ar ? "مسار واحد واضح يبقي الدعوة والضيوف في الصورة نفسها." : "One clear path keeps the invitation and every guest in the same picture."}</p>
           <button className="atlas-primary" onClick={onStart}>{ar ? "ابدأ التصميم" : "Start designing"} <span aria-hidden="true">{ar ? "←" : "→"}</span></button>
@@ -760,14 +830,14 @@ function Landing({ locale, plans, catalogState, templates, content, onStart, onG
       </section>
 
       <section className="atlas-section atlas-product" id="product">
-        <div className="atlas-product-title">
+        <div className="atlas-product-title" data-motion="reveal">
           <h2>{ar ? "دعوة جميلة، ونظام يعرف من سيحضر" : "A beautiful invitation that knows who is coming"}</h2>
           <p>{ar ? "وِصال يجمع التجربة التي يراها الضيف مع الأدوات التي تحتاجونها خلف الكواليس." : "Wisal joins the guest experience to the tools you need behind the scenes."}</p>
         </div>
         <div className="atlas-feature-list">
-          <article><UsersRound aria-hidden="true" /><b>{ar ? "ضيوف منظمون" : "Organised guests"}</b><p>{ar ? "مجموعات وروابط وصلاحيات تناسب كل جزء من يومكم." : "Groups, links, and access shaped for each part of your day."}</p></article>
-          <article><Eye aria-hidden="true" /><b>{ar ? "صورة حية وواضحة" : "A clear live picture"}</b><p>{ar ? "تعرفون من فتح ومن رد وعدد الحضور المتوقع." : "Know who opened, who replied, and the expected headcount."}</p></article>
-          <article><MessageSquareText aria-hidden="true" /><b>{ar ? "رسالة تصل لمن يحتاجها" : "The right message reaches the right people"}</b><p>{ar ? "اختاروا الفئة المناسبة بدل إرسال كل تحديث للجميع." : "Choose the right audience instead of sending every update to everyone."}</p></article>
+          <motion.article whileHover={{ y: -4 }} transition={{ duration: 0.3, ease: "easeOut" }}><UsersRound aria-hidden="true" /><b>{ar ? "ضيوف منظمون" : "Organised guests"}</b><p>{ar ? "مجموعات وروابط وصلاحيات تناسب كل جزء من يومكم." : "Groups, links, and access shaped for each part of your day."}</p></motion.article>
+          <motion.article whileHover={{ y: -4 }} transition={{ duration: 0.3, ease: "easeOut" }}><Eye aria-hidden="true" /><b>{ar ? "صورة حية وواضحة" : "A clear live picture"}</b><p>{ar ? "تعرفون من فتح ومن رد وعدد الحضور المتوقع." : "Know who opened, who replied, and the expected headcount."}</p></motion.article>
+          <motion.article whileHover={{ y: -4 }} transition={{ duration: 0.3, ease: "easeOut" }}><MessageSquareText aria-hidden="true" /><b>{ar ? "رسالة تصل لمن يحتاجها" : "The right message reaches the right people"}</b><p>{ar ? "اختاروا الفئة المناسبة بدل إرسال كل تحديث للجميع." : "Choose the right audience instead of sending every update to everyone."}</p></motion.article>
         </div>
       </section>
 
@@ -795,13 +865,16 @@ function Landing({ locale, plans, catalogState, templates, content, onStart, onG
 
       <section className="atlas-final">
         <span className="atlas-final-ring" aria-hidden="true" />
+        <div className="atlas-final-inner" data-motion="reveal">
         <h2>{ar ? "ابدؤوا دعوتكم من مكان يليق بالحكاية" : "Begin your invitation somewhere worthy of the story"}</h2>
         <p>{ar ? "اختاروا القالب، أضيفوا تفاصيلكم، وشاركوا رابطًا يليق بمن تحبون." : "Choose a template, add your details, and share a link worthy of the people you love."}</p>
         <button className="atlas-primary" onClick={onStart}>{ar ? "أنشئ دعوتك" : "Create your invitation"} <span aria-hidden="true">{ar ? "←" : "→"}</span></button>
+        </div>
       </section>
 
       <footer className="atlas-footer"><Mark locale={locale} /><p>{ar ? "صُنعت بعناية لتبدأ حكايتكم بصورة أجمل." : "Made with care, so your story begins beautifully."}</p><nav><a href="/privacy">{ar ? "سياسة الخصوصية" : "Privacy"}</a><a href="/terms">{ar ? "شروط الاستخدام" : "Terms"}</a></nav></footer>
-    </div>
+      </div>
+    </MotionConfig>
   );
 }
 
