@@ -3150,3 +3150,29 @@ button, a { -webkit-tap-highlight-color: transparent; }
 @media (max-width: 768px) {
   .invite-concept-palm-oasis .signature-copy { border: 1px solid rgba(63,92,51,.3); border-radius: 220px 220px 10px 10px; background: rgba(242,246,232,.88); box-shadow: 0 24px 70px rgba(31,48,28,.24); }
 }
+/* --- 18 · Mirage Blush (سراب بلاش) — hero world: soft sand-to-blush sunset
+   haze, a low warm sun mirage on the horizon, romance without the rose.
+   Editorial art → signature-invite-hero; cover photo stays the top layer. --- */
+.public-invite[class*="invite-concept-"].invite-concept-mirage-blush {
+  --ci-bg:#e9c4b4; --ci-paper:#fdf6ef; --ci-ink:#4c2f31; --ci-muted:#8a6560; --ci-accent:#a26362; --ci-dark:#3a2224; --ci-action-text:#fdf6ef;
+  --atelier-cream:#f6e4da; --atelier-paper:#fdf6ef; --atelier-oxblood:#a26362; --atelier-ink:#4c2f31; --atelier-gold:#b98f4c; --atelier-muted:#8a6560;
+  --atelier-dark:#3a2224; --atelier-action:#a26362; --atelier-action-ink:#fdf6ef; --atelier-action-hover:#8f5254; --atelier-border:rgba(162,99,98,.28); --atelier-focus:#a26362;
+  --invite-accent:#fdf6ef;
+}
+.invite-concept-mirage-blush .signature-invite-hero {
+  background:
+    radial-gradient(26% 18% at 50% 74%, rgba(255,236,208,.75), rgba(255,236,208,0) 72%),
+    radial-gradient(46% 12% at 50% 76%, rgba(211,138,120,.34), transparent 74%),
+    repeating-linear-gradient(180deg, rgba(162,99,98,.05) 0 2px, rgba(162,99,98,0) 2px 26px) 0 68% / 100% 30% no-repeat,
+    linear-gradient(180deg, #f6ddcf 0%, #eec0ae 48%, #dda49b 74%, #d1948f 100%);
+}
+.public-invite[class*="invite-concept-"].invite-concept-mirage-blush .signature-copy { color: #4c2f31; }
+.public-invite[class*="invite-concept-"].invite-concept-mirage-blush .signature-copy h1 { color: #4c2f31; }
+.invite-concept-mirage-blush .guest-content { background: #f6e4da; }
+.invite-concept-mirage-blush :is(.invite-message,.countdown-card,.event-details article,.rsvp-card,.segment-rsvp-list>section) { background: #fdf6ef; color: #55383a; border-color: rgba(162,99,98,.28); }
+.invite-concept-mirage-blush :is(.invite-schedule>h2,.rsvp-card h2) { color: #a26362; }
+.opening-concept-mirage-blush { background: radial-gradient(circle at 50% 70%, rgba(255,236,208,.8) 0 8%, transparent 9%), linear-gradient(180deg, #f6ddcf, #d1948f); }
+.opening-concept-mirage-blush.is-opening :is(.opening-envelope,.opening-card) { animation: atelier-editorial-fold .9s var(--ds-ease-cinematic) both; }
+@media (max-width: 768px) {
+  .invite-concept-mirage-blush .signature-copy { border: 1px solid rgba(162,99,98,.3); border-radius: 220px 220px 10px 10px; background: rgba(253,246,239,.86); box-shadow: 0 24px 70px rgba(90,50,50,.2); }
+}
